@@ -14,16 +14,222 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      diamond_packages: {
+        Row: {
+          active: boolean
+          badge: string | null
+          created_at: string
+          diamond_amount: number
+          id: string
+          name: string
+          original_price: number | null
+          price: number
+          sort_order: number
+        }
+        Insert: {
+          active?: boolean
+          badge?: string | null
+          created_at?: string
+          diamond_amount: number
+          id?: string
+          name: string
+          original_price?: number | null
+          price: number
+          sort_order?: number
+        }
+        Update: {
+          active?: boolean
+          badge?: string | null
+          created_at?: string
+          diamond_amount?: number
+          id?: string
+          name?: string
+          original_price?: number | null
+          price?: number
+          sort_order?: number
+        }
+        Relationships: []
+      }
+      orders: {
+        Row: {
+          buyer_email: string
+          buyer_name: string
+          buyer_whatsapp: string
+          created_at: string
+          diamond_amount: number
+          expires_at: string
+          fee: number
+          game_user_id: string
+          id: string
+          invoice_no: string
+          nickname: string | null
+          package_id: string
+          package_name: string
+          payment_method_id: string
+          payment_method_name: string
+          status: string
+          subtotal: number
+          total: number
+          updated_at: string
+          user_id: string | null
+          zone_id: string
+        }
+        Insert: {
+          buyer_email: string
+          buyer_name: string
+          buyer_whatsapp: string
+          created_at?: string
+          diamond_amount: number
+          expires_at?: string
+          fee?: number
+          game_user_id: string
+          id?: string
+          invoice_no: string
+          nickname?: string | null
+          package_id: string
+          package_name: string
+          payment_method_id: string
+          payment_method_name: string
+          status?: string
+          subtotal: number
+          total: number
+          updated_at?: string
+          user_id?: string | null
+          zone_id: string
+        }
+        Update: {
+          buyer_email?: string
+          buyer_name?: string
+          buyer_whatsapp?: string
+          created_at?: string
+          diamond_amount?: number
+          expires_at?: string
+          fee?: number
+          game_user_id?: string
+          id?: string
+          invoice_no?: string
+          nickname?: string | null
+          package_id?: string
+          package_name?: string
+          payment_method_id?: string
+          payment_method_name?: string
+          status?: string
+          subtotal?: number
+          total?: number
+          updated_at?: string
+          user_id?: string | null
+          zone_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "orders_package_id_fkey"
+            columns: ["package_id"]
+            isOneToOne: false
+            referencedRelation: "diamond_packages"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "orders_payment_method_id_fkey"
+            columns: ["payment_method_id"]
+            isOneToOne: false
+            referencedRelation: "payment_methods"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      payment_methods: {
+        Row: {
+          active: boolean
+          code: string
+          fee: number
+          id: string
+          name: string
+          sort_order: number
+          type: string
+        }
+        Insert: {
+          active?: boolean
+          code: string
+          fee?: number
+          id?: string
+          name: string
+          sort_order?: number
+          type: string
+        }
+        Update: {
+          active?: boolean
+          code?: string
+          fee?: number
+          id?: string
+          name?: string
+          sort_order?: number
+          type?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          full_name: string | null
+          id: string
+          phone: string | null
+          updated_at: string
+          whatsapp: string | null
+        }
+        Insert: {
+          created_at?: string
+          full_name?: string | null
+          id: string
+          phone?: string | null
+          updated_at?: string
+          whatsapp?: string | null
+        }
+        Update: {
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          phone?: string | null
+          updated_at?: string
+          whatsapp?: string | null
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "customer"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +356,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "customer"],
+    },
   },
 } as const
