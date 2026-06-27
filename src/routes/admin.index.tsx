@@ -10,7 +10,7 @@ type Order = {
   buyer_name: string; buyer_email: string; game_user_id: string;
 };
 
-export const Route = createFileRoute("/admin")({
+export const Route = createFileRoute("/admin/")({
   head: () => ({ meta: [{ title: "Admin — DiamondHub" }] }),
   component: AdminPage,
 });

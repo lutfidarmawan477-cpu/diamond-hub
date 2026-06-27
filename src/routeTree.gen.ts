@@ -9,38 +9,161 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TrackingRouteImport } from './routes/tracking'
+import { Route as TopupRouteImport } from './routes/topup'
+import { Route as DashboardRouteImport } from './routes/dashboard'
+import { Route as AuthRouteImport } from './routes/auth'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as InvoiceInvoiceRouteImport } from './routes/invoice.$invoice'
+import { Route as AdminPackagesRouteImport } from './routes/admin.packages'
 
+const TrackingRoute = TrackingRouteImport.update({
+  id: '/tracking',
+  path: '/tracking',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TopupRoute = TopupRouteImport.update({
+  id: '/topup',
+  path: '/topup',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardRoute = DashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/admin/',
+  path: '/admin/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InvoiceInvoiceRoute = InvoiceInvoiceRouteImport.update({
+  id: '/invoice/$invoice',
+  path: '/invoice/$invoice',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminPackagesRoute = AdminPackagesRouteImport.update({
+  id: '/admin/packages',
+  path: '/admin/packages',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/dashboard': typeof DashboardRoute
+  '/topup': typeof TopupRoute
+  '/tracking': typeof TrackingRoute
+  '/admin/packages': typeof AdminPackagesRoute
+  '/invoice/$invoice': typeof InvoiceInvoiceRoute
+  '/admin/': typeof AdminIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/dashboard': typeof DashboardRoute
+  '/topup': typeof TopupRoute
+  '/tracking': typeof TrackingRoute
+  '/admin/packages': typeof AdminPackagesRoute
+  '/invoice/$invoice': typeof InvoiceInvoiceRoute
+  '/admin': typeof AdminIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/dashboard': typeof DashboardRoute
+  '/topup': typeof TopupRoute
+  '/tracking': typeof TrackingRoute
+  '/admin/packages': typeof AdminPackagesRoute
+  '/invoice/$invoice': typeof InvoiceInvoiceRoute
+  '/admin/': typeof AdminIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/dashboard'
+    | '/topup'
+    | '/tracking'
+    | '/admin/packages'
+    | '/invoice/$invoice'
+    | '/admin/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/auth'
+    | '/dashboard'
+    | '/topup'
+    | '/tracking'
+    | '/admin/packages'
+    | '/invoice/$invoice'
+    | '/admin'
+  id:
+    | '__root__'
+    | '/'
+    | '/auth'
+    | '/dashboard'
+    | '/topup'
+    | '/tracking'
+    | '/admin/packages'
+    | '/invoice/$invoice'
+    | '/admin/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthRoute: typeof AuthRoute
+  DashboardRoute: typeof DashboardRoute
+  TopupRoute: typeof TopupRoute
+  TrackingRoute: typeof TrackingRoute
+  AdminPackagesRoute: typeof AdminPackagesRoute
+  InvoiceInvoiceRoute: typeof InvoiceInvoiceRoute
+  AdminIndexRoute: typeof AdminIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/tracking': {
+      id: '/tracking'
+      path: '/tracking'
+      fullPath: '/tracking'
+      preLoaderRoute: typeof TrackingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/topup': {
+      id: '/topup'
+      path: '/topup'
+      fullPath: '/topup'
+      preLoaderRoute: typeof TopupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard': {
+      id: '/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,11 +171,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/': {
+      id: '/admin/'
+      path: '/admin'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/invoice/$invoice': {
+      id: '/invoice/$invoice'
+      path: '/invoice/$invoice'
+      fullPath: '/invoice/$invoice'
+      preLoaderRoute: typeof InvoiceInvoiceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/packages': {
+      id: '/admin/packages'
+      path: '/admin/packages'
+      fullPath: '/admin/packages'
+      preLoaderRoute: typeof AdminPackagesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthRoute: AuthRoute,
+  DashboardRoute: DashboardRoute,
+  TopupRoute: TopupRoute,
+  TrackingRoute: TrackingRoute,
+  AdminPackagesRoute: AdminPackagesRoute,
+  InvoiceInvoiceRoute: InvoiceInvoiceRoute,
+  AdminIndexRoute: AdminIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
