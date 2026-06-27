@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { formatIDR } from "@/lib/format";
 import { toast } from "sonner";
+import { AdminSidebar } from "@/components/AdminSidebar";
 
 type Order = {
   id: string; invoice_no: string; package_name: string; diamond_amount: number;
@@ -76,17 +77,7 @@ function AdminPage() {
     <div className="min-h-screen bg-background">
       {/* Admin sidebar layout */}
       <div className="flex">
-        <aside className="hidden md:block w-60 border-r border-border min-h-screen p-4">
-          <Link to="/" className="flex items-center gap-2 mb-6">
-            <div className="grid h-9 w-9 place-items-center rounded-lg btn-gold">💎</div>
-            <span className="font-display font-bold">Admin</span>
-          </Link>
-          <nav className="space-y-1 text-sm">
-            <div className="rounded-md bg-primary/20 px-3 py-2">📦 Pesanan</div>
-            <Link to="/admin/packages" className="block rounded-md hover:bg-accent px-3 py-2">💎 Paket Diamond</Link>
-            <Link to="/" className="block rounded-md hover:bg-accent px-3 py-2">← Lihat Situs</Link>
-          </nav>
-        </aside>
+        <AdminSidebar />
 
         <main className="flex-1 p-6">
           <h1 className="font-display text-2xl mb-6">Dashboard Admin</h1>

@@ -1,8 +1,9 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { formatIDR } from "@/lib/format";
 import { toast } from "sonner";
+import { AdminSidebar } from "@/components/AdminSidebar";
 
 type Pkg = {
   id: string; name: string; diamond_amount: number; price: number;
@@ -69,17 +70,7 @@ function AdminPackages() {
 
   return (
     <div className="min-h-screen flex">
-      <aside className="hidden md:block w-60 border-r border-border min-h-screen p-4">
-        <Link to="/" className="flex items-center gap-2 mb-6">
-          <div className="grid h-9 w-9 place-items-center rounded-lg btn-gold">💎</div>
-          <span className="font-display font-bold">Admin</span>
-        </Link>
-        <nav className="space-y-1 text-sm">
-          <Link to="/admin" className="block rounded-md hover:bg-accent px-3 py-2">📦 Pesanan</Link>
-          <div className="rounded-md bg-primary/20 px-3 py-2">💎 Paket Diamond</div>
-          <Link to="/" className="block rounded-md hover:bg-accent px-3 py-2">← Lihat Situs</Link>
-        </nav>
-      </aside>
+      <AdminSidebar />
       <main className="flex-1 p-6">
         <div className="flex justify-between items-center mb-6">
           <h1 className="font-display text-2xl">Paket Diamond</h1>

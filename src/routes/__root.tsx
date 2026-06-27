@@ -153,8 +153,9 @@ function SiteFooter() {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const router = useRouter();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const isAdmin = pathname.startsWith("/admin");
+  const isAdminPath = pathname.startsWith("/admin");
 
   useEffect(() => {
     const { data: sub } = supabase.auth.onAuthStateChange((event) => {
@@ -165,14 +166,28 @@ function RootComponent() {
     return () => sub.subscription.unsubscribe();
   }, [queryClient]);
 
+  // Admin lock: if logged in as admin, prevent navigating to customer-facing pages
+  useEffect(() => {
+    if (isAdminPath || pathname === "/auth") return;
+    let cancelled = false;
+    (async () => {
+      const { data: s } = await supabase.auth.getSession();
+      if (!s.session) return;
+      const { data: roles } = await supabase.from("user_roles").select("role").eq("user_id", s.session.user.id);
+      const isAdmin = (roles ?? []).some((r) => r.role === "admin");
+      if (!cancelled && isAdmin) router.navigate({ to: "/admin", replace: true });
+    })();
+    return () => { cancelled = true; };
+  }, [pathname, isAdminPath, router]);
+
   return (
     <QueryClientProvider client={queryClient}>
       <Toaster position="top-center" richColors theme="dark" />
-      {!isAdmin && <SiteHeader />}
+      {!isAdminPath && <SiteHeader />}
       <main className="min-h-[60vh]">
         <Outlet />
       </main>
-      {!isAdmin && <SiteFooter />}
+      {!isAdminPath && <SiteFooter />}
     </QueryClientProvider>
   );
 }

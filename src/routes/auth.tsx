@@ -35,7 +35,17 @@ function AuthPage() {
       .select("role")
       .eq("user_id", userId);
     const isAdmin = (roles ?? []).some((r) => r.role === "admin");
-    navigate({ to: isAdmin ? "/admin" : "/dashboard" });
+    navigate({ to: isAdmin ? "/admin" : "/dashboard", replace: true });
+  };
+
+  const trackLogin = async (userId: string, userEmail: string) => {
+    try {
+      await supabase.from("login_history").insert({
+        user_id: userId,
+        email: userEmail,
+        user_agent: typeof navigator !== "undefined" ? navigator.userAgent : null,
+      });
+    } catch { /* ignore */ }
   };
 
   const submit = async (e: React.FormEvent) => {
@@ -49,12 +59,15 @@ function AuthPage() {
         });
         if (error) throw error;
         toast.success("Pendaftaran berhasil!");
-        if (data.session) await redirectByRole(data.session.user.id);
-        else navigate({ to: "/dashboard" });
+        if (data.session) {
+          await trackLogin(data.session.user.id, data.session.user.email ?? email);
+          await redirectByRole(data.session.user.id);
+        } else navigate({ to: "/dashboard" });
       } else {
         const { data, error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
         toast.success("Selamat datang kembali!");
+        await trackLogin(data.user.id, data.user.email ?? email);
         await redirectByRole(data.user.id);
       }
     } catch (err) {
