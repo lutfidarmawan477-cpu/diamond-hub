@@ -20,12 +20,14 @@ function AuthPage() {
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
+  const [checkingSession, setCheckingSession] = useState(true);
 
   useEffect(() => {
     supabase.auth.getSession().then(async ({ data }) => {
       if (data.session) {
         await redirectByRole(data.session.user.id);
       }
+      setCheckingSession(false);
     });
   }, []);
 
@@ -77,6 +79,10 @@ function AuthPage() {
     }
   };
 
+
+  if (checkingSession) {
+    return <div className="container mx-auto px-4 py-16 text-center text-sm text-muted-foreground">Mengalihkan…</div>;
+  }
 
   return (
     <div className="container mx-auto max-w-md px-4 py-16">

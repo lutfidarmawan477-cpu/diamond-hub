@@ -26,9 +26,10 @@ function AdminPage() {
   useEffect(() => {
     (async () => {
       const { data: s } = await supabase.auth.getSession();
-      if (!s.session) { navigate({ to: "/auth" }); return; }
+      if (!s.session) { navigate({ to: "/auth", replace: true }); return; }
       const { data: roles } = await supabase.from("user_roles").select("role").eq("user_id", s.session.user.id);
       const admin = (roles ?? []).some((r) => r.role === "admin");
+      if (!admin) { navigate({ to: "/dashboard", replace: true }); return; }
       setIsAdmin(admin);
       if (admin) {
         const { data, error } = await supabase
@@ -54,9 +55,7 @@ function AdminPage() {
     return (
       <div className="container mx-auto max-w-md p-10 text-center">
         <h1 className="font-display text-2xl">Akses ditolak</h1>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Akunmu bukan admin. Jadikan akun ini admin lewat tabel <code>user_roles</code> di Backend (role = <code>admin</code>).
-        </p>
+        <p className="mt-2 text-sm text-muted-foreground">Akun customer tidak bisa membuka halaman admin.</p>
         <Link to="/dashboard" className="mt-4 inline-block text-gold underline">Kembali ke Dashboard</Link>
       </div>
     );
@@ -76,7 +75,7 @@ function AdminPage() {
   return (
     <div className="min-h-screen bg-background">
       {/* Admin sidebar layout */}
-      <div className="flex">
+      <div className="flex flex-col md:flex-row">
         <AdminSidebar />
 
         <main className="flex-1 p-6">

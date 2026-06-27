@@ -19,9 +19,10 @@ function AdminHistory() {
   useEffect(() => {
     (async () => {
       const { data: s } = await supabase.auth.getSession();
-      if (!s.session) { navigate({ to: "/auth" }); return; }
+      if (!s.session) { navigate({ to: "/auth", replace: true }); return; }
       const { data: roles } = await supabase.from("user_roles").select("role").eq("user_id", s.session.user.id);
       const admin = (roles ?? []).some((r) => r.role === "admin");
+      if (!admin) { navigate({ to: "/dashboard", replace: true }); return; }
       setIsAdmin(admin);
       if (admin) {
         const { data, error } = await supabase
@@ -39,7 +40,7 @@ function AdminHistory() {
   if (!isAdmin) return <div className="container mx-auto p-10 text-center">Akses ditolak</div>;
 
   return (
-    <div className="min-h-screen flex bg-background">
+    <div className="min-h-screen flex flex-col bg-background md:flex-row">
       <AdminSidebar />
       <main className="flex-1 p-6">
         <h1 className="font-display text-2xl mb-6">Login History</h1>
