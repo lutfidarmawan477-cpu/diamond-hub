@@ -22,34 +22,48 @@ function AuthPage() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
-      if (data.session) navigate({ to: "/dashboard" });
+    supabase.auth.getSession().then(async ({ data }) => {
+      if (data.session) {
+        await redirectByRole(data.session.user.id);
+      }
     });
-  }, [navigate]);
+  }, []);
+
+  const redirectByRole = async (userId: string) => {
+    const { data: roles } = await supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", userId);
+    const isAdmin = (roles ?? []).some((r) => r.role === "admin");
+    navigate({ to: isAdmin ? "/admin" : "/dashboard" });
+  };
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     try {
       if (mode === "signup") {
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
           email, password,
           options: { data: { full_name: name }, emailRedirectTo: window.location.origin },
         });
         if (error) throw error;
         toast.success("Pendaftaran berhasil!");
+        if (data.session) await redirectByRole(data.session.user.id);
+        else navigate({ to: "/dashboard" });
       } else {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
         toast.success("Selamat datang kembali!");
+        await redirectByRole(data.user.id);
       }
-      navigate({ to: "/dashboard" });
     } catch (err) {
       toast.error((err as Error).message);
     } finally {
       setLoading(false);
     }
   };
+
 
   return (
     <div className="container mx-auto max-w-md px-4 py-16">
