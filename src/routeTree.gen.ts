@@ -17,6 +17,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as InvoiceInvoiceRouteImport } from './routes/invoice.$invoice'
 import { Route as AdminPackagesRouteImport } from './routes/admin.packages'
+import { Route as AdminHistoryRouteImport } from './routes/admin.history'
 
 const TrackingRoute = TrackingRouteImport.update({
   id: '/tracking',
@@ -58,6 +59,11 @@ const AdminPackagesRoute = AdminPackagesRouteImport.update({
   path: '/admin/packages',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminHistoryRoute = AdminHistoryRouteImport.update({
+  id: '/admin/history',
+  path: '/admin/history',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -65,6 +71,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof DashboardRoute
   '/topup': typeof TopupRoute
   '/tracking': typeof TrackingRoute
+  '/admin/history': typeof AdminHistoryRoute
   '/admin/packages': typeof AdminPackagesRoute
   '/invoice/$invoice': typeof InvoiceInvoiceRoute
   '/admin/': typeof AdminIndexRoute
@@ -75,6 +82,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof DashboardRoute
   '/topup': typeof TopupRoute
   '/tracking': typeof TrackingRoute
+  '/admin/history': typeof AdminHistoryRoute
   '/admin/packages': typeof AdminPackagesRoute
   '/invoice/$invoice': typeof InvoiceInvoiceRoute
   '/admin': typeof AdminIndexRoute
@@ -86,6 +94,7 @@ export interface FileRoutesById {
   '/dashboard': typeof DashboardRoute
   '/topup': typeof TopupRoute
   '/tracking': typeof TrackingRoute
+  '/admin/history': typeof AdminHistoryRoute
   '/admin/packages': typeof AdminPackagesRoute
   '/invoice/$invoice': typeof InvoiceInvoiceRoute
   '/admin/': typeof AdminIndexRoute
@@ -98,6 +107,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/topup'
     | '/tracking'
+    | '/admin/history'
     | '/admin/packages'
     | '/invoice/$invoice'
     | '/admin/'
@@ -108,6 +118,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/topup'
     | '/tracking'
+    | '/admin/history'
     | '/admin/packages'
     | '/invoice/$invoice'
     | '/admin'
@@ -118,6 +129,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/topup'
     | '/tracking'
+    | '/admin/history'
     | '/admin/packages'
     | '/invoice/$invoice'
     | '/admin/'
@@ -129,6 +141,7 @@ export interface RootRouteChildren {
   DashboardRoute: typeof DashboardRoute
   TopupRoute: typeof TopupRoute
   TrackingRoute: typeof TrackingRoute
+  AdminHistoryRoute: typeof AdminHistoryRoute
   AdminPackagesRoute: typeof AdminPackagesRoute
   InvoiceInvoiceRoute: typeof InvoiceInvoiceRoute
   AdminIndexRoute: typeof AdminIndexRoute
@@ -192,6 +205,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminPackagesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/history': {
+      id: '/admin/history'
+      path: '/admin/history'
+      fullPath: '/admin/history'
+      preLoaderRoute: typeof AdminHistoryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -201,6 +221,7 @@ const rootRouteChildren: RootRouteChildren = {
   DashboardRoute: DashboardRoute,
   TopupRoute: TopupRoute,
   TrackingRoute: TrackingRoute,
+  AdminHistoryRoute: AdminHistoryRoute,
   AdminPackagesRoute: AdminPackagesRoute,
   InvoiceInvoiceRoute: InvoiceInvoiceRoute,
   AdminIndexRoute: AdminIndexRoute,
