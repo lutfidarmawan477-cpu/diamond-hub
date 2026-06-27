@@ -8,12 +8,26 @@ import {
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
-import { useEffect, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { Toaster } from "sonner";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { supabase } from "@/integrations/supabase/client";
+
+type UserRole = "admin" | "customer" | null;
+
+async function getCurrentRole(): Promise<UserRole> {
+  const { data: sessionData } = await supabase.auth.getSession();
+  if (!sessionData.session) return null;
+
+  const { data: roles } = await supabase
+    .from("user_roles")
+    .select("role")
+    .eq("user_id", sessionData.session.user.id);
+
+  return (roles ?? []).some((row) => row.role === "admin") ? "admin" : "customer";
+}
 
 function NotFoundComponent() {
   return (
@@ -88,7 +102,7 @@ function RootShell({ children }: { children: ReactNode }) {
   );
 }
 
-function SiteHeader() {
+function SiteHeader({ role, onSignOut }: { role: UserRole | undefined; onSignOut: () => Promise<void> }) {
   return (
     <header className="sticky top-0 z-50 backdrop-blur-md bg-background/70 border-b border-border">
       <div className="container mx-auto flex items-center justify-between px-4 py-3">
@@ -103,7 +117,27 @@ function SiteHeader() {
           <Link to="/dashboard" className="hover:text-gold transition">Dashboard</Link>
         </nav>
         <div className="flex items-center gap-2">
-          <Link to="/auth" className="rounded-md px-4 py-2 text-sm border border-border hover:border-primary transition">Masuk</Link>
+          {role === undefined ? (
+            <span className="h-9 w-20 rounded-md border border-border/60 opacity-60" aria-hidden="true" />
+          ) : role ? (
+            <>
+              <Link
+                to={role === "admin" ? "/admin" : "/dashboard"}
+                className="rounded-md px-4 py-2 text-sm border border-border hover:border-primary transition"
+              >
+                {role === "admin" ? "Admin" : "Dashboard"}
+              </Link>
+              <button
+                type="button"
+                onClick={onSignOut}
+                className="rounded-md px-4 py-2 text-sm border border-border hover:border-destructive hover:text-destructive transition"
+              >
+                Keluar
+              </button>
+            </>
+          ) : (
+            <Link to="/auth" className="rounded-md px-4 py-2 text-sm border border-border hover:border-primary transition">Masuk</Link>
+          )}
         </div>
       </div>
     </header>
@@ -156,34 +190,63 @@ function RootComponent() {
   const router = useRouter();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const isAdminPath = pathname.startsWith("/admin");
+  const [role, setRole] = useState<UserRole | undefined>(undefined);
+
+  const signOut = async () => {
+    await queryClient.cancelQueries();
+    queryClient.clear();
+    setRole(null);
+    await supabase.auth.signOut();
+    router.navigate({ to: "/auth", replace: true });
+  };
 
   useEffect(() => {
+    let cancelled = false;
+    const refreshRole = async () => {
+      const nextRole = await getCurrentRole();
+      if (!cancelled) setRole(nextRole);
+    };
+
+    refreshRole();
     const { data: sub } = supabase.auth.onAuthStateChange((event) => {
       if (event === "SIGNED_IN" || event === "SIGNED_OUT" || event === "USER_UPDATED") {
         queryClient.invalidateQueries();
+        if (event === "SIGNED_OUT") setRole(null);
+        else {
+          setRole(undefined);
+          refreshRole();
+        }
       }
     });
-    return () => sub.subscription.unsubscribe();
+    return () => {
+      cancelled = true;
+      sub.subscription.unsubscribe();
+    };
   }, [queryClient]);
 
-  // Admin lock: if logged in as admin, prevent navigating to customer-facing pages
+  // Role lock: admins stay in admin area, customers stay out of admin/login pages.
   useEffect(() => {
-    if (isAdminPath || pathname === "/auth") return;
-    let cancelled = false;
-    (async () => {
-      const { data: s } = await supabase.auth.getSession();
-      if (!s.session) return;
-      const { data: roles } = await supabase.from("user_roles").select("role").eq("user_id", s.session.user.id);
-      const isAdmin = (roles ?? []).some((r) => r.role === "admin");
-      if (!cancelled && isAdmin) router.navigate({ to: "/admin", replace: true });
-    })();
-    return () => { cancelled = true; };
-  }, [pathname, isAdminPath, router]);
+    if (role === undefined) return;
+
+    if (pathname === "/auth") {
+      if (role === "admin") router.navigate({ to: "/admin", replace: true });
+      if (role === "customer") router.navigate({ to: "/dashboard", replace: true });
+      return;
+    }
+
+    if (isAdminPath) {
+      if (role === null) router.navigate({ to: "/auth", replace: true });
+      if (role === "customer") router.navigate({ to: "/dashboard", replace: true });
+      return;
+    }
+
+    if (role === "admin") router.navigate({ to: "/admin", replace: true });
+  }, [role, pathname, isAdminPath, router]);
 
   return (
     <QueryClientProvider client={queryClient}>
       <Toaster position="top-center" richColors theme="dark" />
-      {!isAdminPath && <SiteHeader />}
+      {!isAdminPath && <SiteHeader role={role} onSignOut={signOut} />}
       <main className="min-h-[60vh]">
         <Outlet />
       </main>

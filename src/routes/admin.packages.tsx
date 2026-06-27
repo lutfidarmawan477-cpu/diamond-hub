@@ -32,9 +32,10 @@ function AdminPackages() {
   useEffect(() => {
     (async () => {
       const { data: s } = await supabase.auth.getSession();
-      if (!s.session) { navigate({ to: "/auth" }); return; }
+      if (!s.session) { navigate({ to: "/auth", replace: true }); return; }
       const { data: roles } = await supabase.from("user_roles").select("role").eq("user_id", s.session.user.id);
       const admin = (roles ?? []).some((r) => r.role === "admin");
+      if (!admin) { navigate({ to: "/dashboard", replace: true }); return; }
       setIsAdmin(admin);
       if (admin) await load();
     })();
@@ -69,7 +70,7 @@ function AdminPackages() {
   if (!isAdmin) return <div className="container mx-auto p-10 text-center">Akses ditolak</div>;
 
   return (
-    <div className="min-h-screen flex">
+    <div className="min-h-screen flex flex-col md:flex-row">
       <AdminSidebar />
       <main className="flex-1 p-6">
         <div className="flex justify-between items-center mb-6">

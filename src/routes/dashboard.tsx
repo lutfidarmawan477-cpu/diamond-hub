@@ -1,4 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { formatIDR } from "@/lib/format";
@@ -16,6 +17,7 @@ export const Route = createFileRoute("/dashboard")({
 
 function DashboardPage() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [email, setEmail] = useState<string | null>(null);
   const [orders, setOrders] = useState<Order[] | null>(null);
   const [loading, setLoading] = useState(true);
@@ -23,7 +25,12 @@ function DashboardPage() {
   useEffect(() => {
     (async () => {
       const { data: s } = await supabase.auth.getSession();
-      if (!s.session) { navigate({ to: "/auth" }); return; }
+      if (!s.session) { navigate({ to: "/auth", replace: true }); return; }
+      const { data: roles } = await supabase.from("user_roles").select("role").eq("user_id", s.session.user.id);
+      if ((roles ?? []).some((r) => r.role === "admin")) {
+        navigate({ to: "/admin", replace: true });
+        return;
+      }
       setEmail(s.session.user.email ?? null);
       const { data, error } = await supabase
         .from("orders")
@@ -38,8 +45,10 @@ function DashboardPage() {
   }, [navigate]);
 
   const signOut = async () => {
+    await queryClient.cancelQueries();
+    queryClient.clear();
     await supabase.auth.signOut();
-    navigate({ to: "/auth" });
+    navigate({ to: "/auth", replace: true });
   };
 
   const totalSpent = orders?.filter((o) => o.status === "success" || o.status === "paid").reduce((a, b) => a + b.total, 0) ?? 0;
