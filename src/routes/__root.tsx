@@ -184,7 +184,7 @@ function SiteHeader({
 
 function SiteFooter() {
   return (
-    <footer className="border-t border-border mt-20 bg-card/40">
+    <footer className="border-t border-border mt-20 bg-card/40 no-print">
       <div className="container mx-auto px-4 py-10 grid gap-8 md:grid-cols-4">
         <div>
           <div className="flex items-center gap-2 mb-3">
