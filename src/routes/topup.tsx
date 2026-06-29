@@ -1,9 +1,10 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { queryOptions, useSuspenseQuery, useMutation } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { getStorefront, createOrder } from "@/lib/storefront.functions";
 import { formatIDR } from "@/lib/format";
+import { useSession } from "@/hooks/useSession";
 
 const storefrontQO = queryOptions({ queryKey: ["storefront"], queryFn: () => getStorefront() });
 
@@ -25,6 +26,10 @@ export const Route = createFileRoute("/topup")({
 function TopupPage() {
   const { data } = useSuspenseQuery(storefrontQO);
   const navigate = useNavigate();
+  const loggedIn = useSession();
+  useEffect(() => {
+    if (loggedIn === false) navigate({ to: "/auth", replace: true });
+  }, [loggedIn, navigate]);
   const [userId, setUserId] = useState("");
   const [zoneId, setZoneId] = useState("");
   const [nickname, setNickname] = useState<string | null>(null);
