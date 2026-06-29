@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
 import { getStorefront } from "@/lib/storefront.functions";
 import { formatIDR } from "@/lib/format";
+import { useSession } from "@/hooks/useSession";
 import heroImg from "@/assets/hero-ml.jpg";
 
 const storefrontQO = queryOptions({
@@ -27,6 +28,8 @@ export const Route = createFileRoute("/")({
 function Home() {
   const { data } = useSuspenseQuery(storefrontQO);
   const popular = data.packages.filter((p) => p.badge).slice(0, 4);
+  const loggedIn = useSession();
+  const topupHref = loggedIn ? "/topup" : "/auth";
 
   return (
     <div>
@@ -49,7 +52,7 @@ function Home() {
               Beli diamond ML langsung masuk akun dalam hitungan detik. Pembayaran lengkap — e‑wallet, bank, QRIS — aman & terpercaya.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
-              <Link to="/topup" className="rounded-md btn-gold px-6 py-3 text-sm">💎 Top Up Sekarang</Link>
+              <Link to={topupHref} className="rounded-md btn-gold px-6 py-3 text-sm">💎 Top Up Sekarang</Link>
               <Link to="/tracking" className="rounded-md border border-border px-6 py-3 text-sm hover:border-primary transition">Lacak Pesanan</Link>
             </div>
             <div className="mt-10 grid grid-cols-3 max-w-md gap-4">
@@ -76,7 +79,7 @@ function Home() {
               {p.original_price && (
                 <div className="text-xs text-muted-foreground line-through">{formatIDR(p.original_price)}</div>
               )}
-              <Link to="/topup" className="mt-4 block rounded-md bg-primary/80 hover:bg-primary py-2 text-center text-sm transition">
+              <Link to={topupHref} className="mt-4 block rounded-md bg-primary/80 hover:bg-primary py-2 text-center text-sm transition">
                 Beli
               </Link>
             </div>

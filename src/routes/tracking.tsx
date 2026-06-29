@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { getOrderByInvoice } from "@/lib/storefront.functions";
@@ -46,6 +46,12 @@ function TrackingPage() {
         <button disabled={m.isPending} className="w-full rounded-md btn-gold py-3 text-sm disabled:opacity-50">
           {m.isPending ? "Memeriksa…" : "Cek Status"}
         </button>
+        <Link
+          to="/"
+          className="block w-full rounded-md border border-border py-3 text-center text-sm hover:border-primary transition"
+        >
+          ← Kembali ke Beranda
+        </Link>
       </form>
     </div>
   );

@@ -102,43 +102,81 @@ function RootShell({ children }: { children: ReactNode }) {
   );
 }
 
-function SiteHeader({ role, onSignOut }: { role: UserRole | undefined; onSignOut: () => Promise<void> }) {
-  return (
-    <header className="sticky top-0 z-50 backdrop-blur-md bg-background/70 border-b border-border">
-      <div className="container mx-auto flex items-center justify-between px-4 py-3">
-        <Link to="/" className="flex items-center gap-2">
-          <div className="grid h-9 w-9 place-items-center rounded-lg btn-gold text-base">💎</div>
-          <span className="font-display text-xl font-bold tracking-wider">Diamond<span className="gold-text">Hub</span></span>
-        </Link>
-        <nav className="hidden md:flex items-center gap-6 text-sm">
-          <Link to="/" className="hover:text-gold transition">Beranda</Link>
-          <Link to="/topup" className="hover:text-gold transition">Top Up</Link>
-          <Link to="/tracking" className="hover:text-gold transition">Lacak Pesanan</Link>
-          <Link to="/dashboard" className="hover:text-gold transition">Dashboard</Link>
-        </nav>
-        <div className="flex items-center gap-2">
-          {role === undefined ? (
-            <span className="h-9 w-20 rounded-md border border-border/60 opacity-60" aria-hidden="true" />
-          ) : role ? (
-            <>
-              <Link
-                to={role === "admin" ? "/admin" : "/dashboard"}
-                className="rounded-md px-4 py-2 text-sm border border-border hover:border-primary transition"
-              >
-                {role === "admin" ? "Admin" : "Dashboard"}
-              </Link>
-              <button
-                type="button"
-                onClick={onSignOut}
-                className="rounded-md px-4 py-2 text-sm border border-border hover:border-destructive hover:text-destructive transition"
-              >
-                Keluar
-              </button>
-            </>
-          ) : (
-            <Link to="/auth" className="rounded-md px-4 py-2 text-sm border border-border hover:border-primary transition">Masuk</Link>
-          )}
+function SiteHeader({
+  role,
+  pathname,
+}: {
+  role: UserRole | undefined;
+  pathname: string;
+}) {
+  // On the auth page: replace navbar with a single "back to home" button.
+  if (pathname === "/auth") {
+    return (
+      <header className="sticky top-0 z-50 backdrop-blur-md bg-background/70 border-b border-border no-print">
+        <div className="container mx-auto flex items-center justify-between px-4 py-3">
+          <Link to="/" className="flex items-center gap-2">
+            <div className="grid h-9 w-9 place-items-center rounded-lg btn-gold text-base">💎</div>
+            <span className="font-display text-lg font-bold tracking-wider">
+              Diamond<span className="gold-text">Hub</span>
+            </span>
+          </Link>
+          <Link
+            to="/"
+            className="rounded-md px-3 py-2 text-xs border border-border hover:border-primary transition"
+          >
+            ← Beranda
+          </Link>
         </div>
+      </header>
+    );
+  }
+
+  // Determine which links to show based on role + current page.
+  let links: { to: string; label: string }[] = [];
+  if (role === "customer") {
+    if (pathname === "/dashboard") {
+      links = [{ to: "/tracking", label: "Lacak Pesanan" }];
+    } else {
+      // Customer on /topup, /tracking, /invoice/*, etc.
+      links = [{ to: "/dashboard", label: "Dashboard" }];
+    }
+  } else if (!role) {
+    // Guest
+    links = [
+      { to: "/", label: "Beranda" },
+      { to: "/topup", label: "Top Up" },
+      { to: "/tracking", label: "Lacak Pesanan" },
+    ];
+  }
+
+  return (
+    <header className="sticky top-0 z-50 backdrop-blur-md bg-background/70 border-b border-border no-print">
+      <div className="container mx-auto flex items-center justify-between gap-3 px-4 py-3">
+        <Link to="/" className="flex items-center gap-2 shrink-0">
+          <div className="grid h-9 w-9 place-items-center rounded-lg btn-gold text-base">💎</div>
+          <span className="font-display text-lg font-bold tracking-wider">
+            Diamond<span className="gold-text">Hub</span>
+          </span>
+        </Link>
+        <nav className="flex items-center gap-3 text-sm overflow-x-auto">
+          {links.map((l) => (
+            <Link
+              key={l.to}
+              to={l.to}
+              className="hover:text-gold transition whitespace-nowrap"
+            >
+              {l.label}
+            </Link>
+          ))}
+          {role === null && (
+            <Link
+              to="/auth"
+              className="rounded-md px-3 py-2 text-xs border border-border hover:border-primary transition whitespace-nowrap"
+            >
+              Masuk
+            </Link>
+          )}
+        </nav>
       </div>
     </header>
   );
@@ -146,7 +184,7 @@ function SiteHeader({ role, onSignOut }: { role: UserRole | undefined; onSignOut
 
 function SiteFooter() {
   return (
-    <footer className="border-t border-border mt-20 bg-card/40">
+    <footer className="border-t border-border mt-20 bg-card/40 no-print">
       <div className="container mx-auto px-4 py-10 grid gap-8 md:grid-cols-4">
         <div>
           <div className="flex items-center gap-2 mb-3">
@@ -246,7 +284,7 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <Toaster position="top-center" richColors theme="dark" />
-      {!isAdminPath && <SiteHeader role={role} onSignOut={signOut} />}
+      {!isAdminPath && <SiteHeader role={role} pathname={pathname} />}
       <main className="min-h-[60vh]">
         <Outlet />
       </main>

@@ -119,3 +119,10 @@
 @utility glow-ring {
   box-shadow: var(--shadow-glow);
 }
+
+@media print {
+  body { background: white !important; color: black !important; }
+  .no-print { display: none !important; }
+  .print-area, .print-area * { color: black !important; box-shadow: none !important; }
+  .print-area { border: 1px solid #ccc !important; background: white !important; }
+}

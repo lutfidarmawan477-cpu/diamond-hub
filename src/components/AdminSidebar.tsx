@@ -16,14 +16,13 @@ export function AdminSidebar() {
     navigate({ to: "/auth", replace: true });
   };
 
-  const item = (to: string, label: string, icon: string) => {
+  const item = (to: string, label: string) => {
     const active = pathname === to;
     return (
       <Link
         to={to}
         className={`block rounded-md px-3 py-2 ${active ? "bg-primary/20 text-foreground" : "hover:bg-accent text-muted-foreground"}`}
       >
-        <span className="mr-2">{icon}</span>
         {label}
       </Link>
     );
@@ -36,9 +35,9 @@ export function AdminSidebar() {
         <span className="font-display font-bold">Admin Panel</span>
       </div>
       <nav className="flex flex-wrap gap-1 text-sm md:flex-1 md:flex-col md:flex-nowrap">
-        {item("/admin", "Dashboard", "📊")}
-        {item("/admin/packages", "CRUD Barang", "💎")}
-        {item("/admin/history", "Riwayat Login", "🕒")}
+        {item("/admin", "Dashboard")}
+        {item("/admin/packages", "CRUD Barang")}
+        {item("/admin/history", "Riwayat Login")}
       </nav>
       <button
         onClick={signOut}
