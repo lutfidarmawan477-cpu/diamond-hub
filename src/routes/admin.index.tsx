@@ -41,12 +41,7 @@ function AdminPage() {
     })();
   }, [navigate]);
 
-  const updateStatus = async (id: string, status: string) => {
-    const { error } = await supabase.from("orders").update({ status }).eq("id", id);
-    if (error) return toast.error(error.message);
-    setOrders((o) => o.map((x) => (x.id === id ? { ...x, status } : x)));
-    toast.success("Status diperbarui");
-  };
+  // status updates moved to detail/invoice flow; admin dashboard is read-only.
 
   if (isAdmin === null) {
     return <div className="container mx-auto p-10 text-center">Memuat…</div>;
