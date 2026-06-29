@@ -16,14 +16,13 @@ export function AdminSidebar() {
     navigate({ to: "/auth", replace: true });
   };
 
-  const item = (to: string, label: string, icon: string) => {
+  const item = (to: string, label: string) => {
     const active = pathname === to;
     return (
       <Link
         to={to}
         className={`block rounded-md px-3 py-2 ${active ? "bg-primary/20 text-foreground" : "hover:bg-accent text-muted-foreground"}`}
       >
-        <span className="mr-2">{icon}</span>
         {label}
       </Link>
     );
