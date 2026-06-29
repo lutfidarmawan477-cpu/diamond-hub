@@ -35,9 +35,9 @@ export function AdminSidebar() {
         <span className="font-display font-bold">Admin Panel</span>
       </div>
       <nav className="flex flex-wrap gap-1 text-sm md:flex-1 md:flex-col md:flex-nowrap">
-        {item("/admin", "Dashboard", "📊")}
-        {item("/admin/packages", "CRUD Barang", "💎")}
-        {item("/admin/history", "Riwayat Login", "🕒")}
+        {item("/admin", "Dashboard")}
+        {item("/admin/packages", "CRUD Barang")}
+        {item("/admin/history", "Riwayat Login")}
       </nav>
       <button
         onClick={signOut}
