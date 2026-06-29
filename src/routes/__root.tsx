@@ -284,7 +284,7 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <Toaster position="top-center" richColors theme="dark" />
-      {!isAdminPath && <SiteHeader role={role} onSignOut={signOut} />}
+      {!isAdminPath && <SiteHeader role={role} pathname={pathname} />}
       <main className="min-h-[60vh]">
         <Outlet />
       </main>
