@@ -100,7 +100,7 @@ function AdminPage() {
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead className="text-left text-xs text-muted-foreground border-b border-border">
-                  <tr><th className="py-2">Invoice</th><th>Pembeli</th><th>Paket</th><th>Total</th><th>Status</th><th>Aksi</th></tr>
+                  <tr><th className="py-2">Invoice</th><th>Pembeli</th><th>Paket</th><th>Total</th><th>Status</th></tr>
                 </thead>
                 <tbody>
                   {filtered.map((o) => (
@@ -110,15 +110,11 @@ function AdminPage() {
                       <td>{o.package_name}<div className="text-xs text-muted-foreground">ID: {o.game_user_id}</div></td>
                       <td className="gold-text font-semibold">{formatIDR(o.total)}</td>
                       <td>
-                        <select value={o.status} onChange={(e) => updateStatus(o.id, e.target.value)}
-                          className="rounded-md bg-input border border-border px-2 py-1 text-xs">
-                          {["pending", "paid", "processing", "success", "failed", "expired"].map((s) => <option key={s}>{s}</option>)}
-                        </select>
+                        <span className="rounded-full border border-border px-2 py-0.5 text-xs uppercase">{o.status}</span>
                       </td>
-                      <td><Link to="/invoice/$invoice" params={{ invoice: o.invoice_no }} className="text-xs text-gold underline">Lihat</Link></td>
                     </tr>
                   ))}
-                  {filtered.length === 0 && <tr><td colSpan={6} className="py-8 text-center text-sm text-muted-foreground">Tidak ada data</td></tr>}
+                  {filtered.length === 0 && <tr><td colSpan={5} className="py-8 text-center text-sm text-muted-foreground">Tidak ada data</td></tr>}
                 </tbody>
               </table>
             </div>
