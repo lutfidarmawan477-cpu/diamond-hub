@@ -1,8 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
+import { queryOptions, useSuspenseQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { getOrderByInvoice } from "@/lib/storefront.functions";
 import { formatIDR } from "@/lib/format";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 const orderQO = (invoice: string) =>
   queryOptions({
@@ -26,6 +28,8 @@ export const Route = createFileRoute("/invoice/$invoice")({
 function InvoicePage() {
   const { invoice } = Route.useParams();
   const { data: order } = useSuspenseQuery(orderQO(invoice));
+  const queryClient = useQueryClient();
+  const [cancelling, setCancelling] = useState(false);
 
   if (!order) {
     return (
