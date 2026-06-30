@@ -29,6 +29,7 @@ function InvoicePage() {
   const { invoice } = Route.useParams();
   const { data: order } = useSuspenseQuery(orderQO(invoice));
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const [cancelling, setCancelling] = useState(false);
 
   if (!order) {
