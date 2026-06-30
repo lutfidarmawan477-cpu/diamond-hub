@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { queryOptions, useSuspenseQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { getOrderByInvoice } from "@/lib/storefront.functions";
@@ -29,6 +29,7 @@ function InvoicePage() {
   const { invoice } = Route.useParams();
   const { data: order } = useSuspenseQuery(orderQO(invoice));
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const [cancelling, setCancelling] = useState(false);
 
   if (!order) {
@@ -61,16 +62,17 @@ function InvoicePage() {
   const isSuccess = order.status === "success" || order.status === "paid";
 
   const cancelOrder = async () => {
-    if (!confirm("Batalkan pesanan ini?")) return;
+    if (!confirm("Batalkan dan hapus pesanan ini dari riwayat?")) return;
     setCancelling(true);
     const { error } = await supabase
       .from("orders")
-      .update({ status: "cancelled" })
+      .delete()
       .eq("invoice_no", order.invoice_no);
     setCancelling(false);
     if (error) return toast.error(error.message);
-    toast.success("Pesanan dibatalkan");
-    await queryClient.invalidateQueries({ queryKey: ["order", invoice] });
+    toast.success("Pesanan dibatalkan & dihapus");
+    queryClient.removeQueries({ queryKey: ["order", invoice] });
+    navigate({ to: "/dashboard", replace: true });
   };
 
   return (
