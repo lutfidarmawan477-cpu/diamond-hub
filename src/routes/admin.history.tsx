@@ -41,8 +41,8 @@ function AdminHistory() {
     })();
   }, [navigate]);
 
-  if (isAdmin === null) return <div className="container mx-auto p-10 text-center">Memuat…</div>;
-  if (!isAdmin) return <div className="container mx-auto p-10 text-center">Akses ditolak</div>;
+  if (isAdmin === null) return <div className="container mx-auto p-10 text-center">Loading…</div>;
+  if (!isAdmin) return <div className="container mx-auto p-10 text-center">Access denied</div>;
 
   const statusBadge = (s: string) => {
     const color =
@@ -56,18 +56,18 @@ function AdminHistory() {
     <div className="min-h-screen flex flex-col bg-background md:flex-row animate-fade-in">
       <AdminSidebar />
       <main className="flex-1 p-6">
-        <h1 className="font-display text-2xl mb-2">Riwayat Login</h1>
+        <h1 className="font-display text-2xl mb-2">Login History</h1>
         <p className="text-sm text-muted-foreground mb-6">
-          Daftar akun customer terdaftar beserta waktu login terakhir.
+          Registered customer accounts and their most recent sign-in.
         </p>
         <div className="card-premium rounded-xl p-5 overflow-x-auto">
           <table className="w-full text-sm">
             <thead className="text-left text-xs text-muted-foreground border-b border-border">
               <tr>
-                <th className="py-2 pr-3">Nama</th>
+                <th className="py-2 pr-3">Name</th>
                 <th className="pr-3">Email</th>
-                <th className="pr-3">Registrasi</th>
-                <th className="pr-3">Login Terakhir</th>
+                <th className="pr-3">Registered</th>
+                <th className="pr-3">Last Login</th>
                 <th>Status</th>
               </tr>
             </thead>
@@ -76,16 +76,16 @@ function AdminHistory() {
                 <tr key={r.id} className="border-b border-border/60 hover:bg-accent/30 transition">
                   <td className="py-3 pr-3">{r.full_name ?? "—"}</td>
                   <td className="pr-3">{r.email}</td>
-                  <td className="pr-3 text-xs">{new Date(r.registered_at).toLocaleString("id-ID")}</td>
-                  <td className="pr-3 text-xs">{r.last_login ? new Date(r.last_login).toLocaleString("id-ID") : "—"}</td>
+                  <td className="pr-3 text-xs">{new Date(r.registered_at).toLocaleString("en-US")}</td>
+                  <td className="pr-3 text-xs">{r.last_login ? new Date(r.last_login).toLocaleString("en-US") : "—"}</td>
                   <td>{statusBadge(r.status)}</td>
                 </tr>
               ))}
               {!loading && rows.length === 0 && (
-                <tr><td colSpan={5} className="py-8 text-center text-muted-foreground">Belum ada data</td></tr>
+                <tr><td colSpan={5} className="py-8 text-center text-muted-foreground">No data yet</td></tr>
               )}
               {loading && (
-                <tr><td colSpan={5} className="py-8 text-center text-muted-foreground">Memuat…</td></tr>
+                <tr><td colSpan={5} className="py-8 text-center text-muted-foreground">Loading…</td></tr>
               )}
             </tbody>
           </table>

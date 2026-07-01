@@ -11,15 +11,15 @@ const storefrontQO = queryOptions({ queryKey: ["storefront"], queryFn: () => get
 export const Route = createFileRoute("/topup")({
   head: () => ({
     meta: [
-      { title: "Top Up Diamond Mobile Legends — DiamondHub" },
-      { name: "description", content: "Form top up diamond Mobile Legends. Pilih paket, isi User ID & Zone ID, bayar — diamond langsung masuk." },
-      { property: "og:title", content: "Top Up Diamond Mobile Legends" },
-      { property: "og:description", content: "Pilih paket diamond ML, bayar dengan e-wallet / bank / QRIS." },
+      { title: "Top Up Mobile Legends Diamond — DiamondHub" },
+      { name: "description", content: "Top up Mobile Legends diamonds. Choose a package, enter your User ID & Zone ID, pay — diamonds delivered instantly." },
+      { property: "og:title", content: "Mobile Legends Diamond Top Up" },
+      { property: "og:description", content: "Pick an ML diamond package and pay with e-wallet, bank transfer, or QRIS." },
     ],
   }),
   loader: ({ context }) => context.queryClient.ensureQueryData(storefrontQO),
-  errorComponent: ({ error }) => <div className="container mx-auto p-10 text-center">Gagal memuat: {error.message}</div>,
-  notFoundComponent: () => <div className="container mx-auto p-10 text-center">Tidak ditemukan</div>,
+  errorComponent: ({ error }) => <div className="container mx-auto p-10 text-center">Failed to load: {error.message}</div>,
+  notFoundComponent: () => <div className="container mx-auto p-10 text-center">Not found</div>,
   component: TopupPage,
 });
 
@@ -47,10 +47,9 @@ function TopupPage() {
   const total = subtotal + fee;
 
   const checkNick = () => {
-    if (!userId || !zoneId) { toast.error("Isi User ID dan Zone ID terlebih dahulu"); return; }
-    // Mock nickname — integrate provider here later
+    if (!userId || !zoneId) { toast.error("Please enter both User ID and Zone ID first"); return; }
     setNickname("Player" + userId.slice(-4));
-    toast.success("Nickname ditemukan!");
+    toast.success("Nickname found!");
   };
 
   const mutation = useMutation({
@@ -68,7 +67,7 @@ function TopupPage() {
         },
       }),
     onSuccess: (res) => {
-      toast.success("Pesanan dibuat!");
+      toast.success("Order created!");
       navigate({ to: "/invoice/$invoice", params: { invoice: res.invoice_no } });
     },
     onError: (e: Error) => toast.error(e.message),
@@ -76,9 +75,9 @@ function TopupPage() {
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!pkgId) return toast.error("Pilih paket diamond");
-    if (!payId) return toast.error("Pilih metode pembayaran");
-    if (!agree) return toast.error("Centang persetujuan syarat & ketentuan");
+    if (!pkgId) return toast.error("Please choose a diamond package");
+    if (!payId) return toast.error("Please choose a payment method");
+    if (!agree) return toast.error("You must agree to the terms and conditions");
     mutation.mutate();
   };
 
@@ -86,37 +85,37 @@ function TopupPage() {
     (acc[p.type] ??= []).push(p);
     return acc;
   }, {});
-  const typeLabel: Record<string, string> = { ewallet: "E-Wallet", qris: "QRIS", va: "Virtual Account", bank: "Bank" };
+  const typeLabel: Record<string, string> = { ewallet: "E-Wallet", qris: "QRIS", va: "Virtual Account", bank: "Bank Transfer" };
 
   return (
     <div className="container mx-auto px-4 py-10">
       <div className="mb-8">
-        <h1 className="font-display text-3xl md:text-4xl font-bold">Top Up <span className="gold-text">Diamond Mobile Legends</span></h1>
-        <p className="text-muted-foreground mt-1">Isi data, pilih paket, bayar — diamond langsung masuk.</p>
+        <h1 className="font-display text-3xl md:text-4xl font-bold">Top Up <span className="gold-text">Mobile Legends Diamonds</span></h1>
+        <p className="text-muted-foreground mt-1">Fill in your details, pick a package, pay — diamonds delivered instantly.</p>
       </div>
 
       <form onSubmit={submit} className="grid gap-6 lg:grid-cols-3">
         <div className="lg:col-span-2 space-y-6">
-          {/* 1. Akun */}
-          <Card step="1" title="Data Akun">
+          {/* 1. Account */}
+          <Card step="1" title="Account Details">
             <div className="grid gap-3 sm:grid-cols-2">
               <Field label="User ID">
-                <input className={inputCls} value={userId} onChange={(e) => setUserId(e.target.value)} placeholder="Contoh: 123456789" required />
+                <input className={inputCls} value={userId} onChange={(e) => setUserId(e.target.value)} placeholder="e.g. 123456789" required />
               </Field>
               <Field label="Zone ID">
-                <input className={inputCls} value={zoneId} onChange={(e) => setZoneId(e.target.value)} placeholder="Contoh: 1234" required />
+                <input className={inputCls} value={zoneId} onChange={(e) => setZoneId(e.target.value)} placeholder="e.g. 1234" required />
               </Field>
             </div>
             <div className="mt-3 flex items-center gap-3">
               <button type="button" onClick={checkNick} className="rounded-md border border-gold/50 bg-gold/10 text-gold px-4 py-2 text-sm hover:bg-gold/20 transition">
-                Cek Nickname
+                Check Nickname
               </button>
               {nickname && <span className="text-sm text-success">✓ {nickname}</span>}
             </div>
           </Card>
 
-          {/* 2. Paket */}
-          <Card step="2" title="Pilih Nominal Diamond">
+          {/* 2. Package */}
+          <Card step="2" title="Choose Diamond Amount">
             <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3">
               {data.packages.map((p) => {
                 const selected = p.id === pkgId;
@@ -134,8 +133,8 @@ function TopupPage() {
             </div>
           </Card>
 
-          {/* 3. Bayar */}
-          <Card step="3" title="Metode Pembayaran">
+          {/* 3. Payment */}
+          <Card step="3" title="Payment Method">
             <div className="space-y-4">
               {Object.entries(groupedPay).map(([type, list]) => (
                 <div key={type}>
@@ -157,17 +156,17 @@ function TopupPage() {
             </div>
           </Card>
 
-          {/* 4. Pembeli */}
-          <Card step="4" title="Data Pembeli">
+          {/* 4. Buyer */}
+          <Card step="4" title="Buyer Information">
             <div className="grid gap-3 sm:grid-cols-2">
-              <Field label="Nama"><input className={inputCls} value={buyerName} onChange={(e) => setBuyerName(e.target.value)} required minLength={2} /></Field>
-              <Field label="Nomor WhatsApp"><input className={inputCls} value={buyerWa} onChange={(e) => setBuyerWa(e.target.value)} placeholder="08xx" required /></Field>
+              <Field label="Name"><input className={inputCls} value={buyerName} onChange={(e) => setBuyerName(e.target.value)} required minLength={2} /></Field>
+              <Field label="WhatsApp Number"><input className={inputCls} value={buyerWa} onChange={(e) => setBuyerWa(e.target.value)} placeholder="08xx" required /></Field>
               <Field label="Email"><input type="email" className={inputCls} value={buyerEmail} onChange={(e) => setBuyerEmail(e.target.value)} required /></Field>
-              <Field label="Kode Voucher (opsional)"><input className={inputCls} placeholder="HEMAT10" /></Field>
+              <Field label="Voucher Code (optional)"><input className={inputCls} placeholder="SAVE10" /></Field>
             </div>
             <label className="mt-4 flex items-start gap-2 text-sm">
               <input type="checkbox" checked={agree} onChange={(e) => setAgree(e.target.checked)} className="mt-1" />
-              <span>Saya menyetujui <span className="text-gold underline">Syarat & Ketentuan</span> dan data User ID/Zone ID yang dimasukkan sudah benar.</span>
+              <span>I agree to the <span className="text-gold underline">Terms & Conditions</span> and confirm the User ID / Zone ID I entered are correct.</span>
             </label>
           </Card>
         </div>
@@ -175,13 +174,13 @@ function TopupPage() {
         {/* SUMMARY */}
         <aside className="lg:col-span-1">
           <div className="card-premium rounded-xl p-5 sticky top-24">
-            <h3 className="font-display text-lg mb-4">Ringkasan</h3>
+            <h3 className="font-display text-lg mb-4">Summary</h3>
             <SumRow label="User ID" value={userId || "—"} />
             <SumRow label="Zone ID" value={zoneId || "—"} />
             <SumRow label="Nickname" value={nickname ?? "—"} />
             <hr className="my-3 border-border" />
-            <SumRow label="Paket" value={pkg?.name ?? "—"} />
-            <SumRow label="Pembayaran" value={pay?.name ?? "—"} />
+            <SumRow label="Package" value={pkg?.name ?? "—"} />
+            <SumRow label="Payment" value={pay?.name ?? "—"} />
             <hr className="my-3 border-border" />
             <SumRow label="Subtotal" value={formatIDR(subtotal)} />
             <SumRow label="Fee" value={formatIDR(fee)} />
@@ -191,7 +190,7 @@ function TopupPage() {
             </div>
             <button type="submit" disabled={mutation.isPending}
               className="mt-5 w-full rounded-md btn-gold py-3 text-sm disabled:opacity-50">
-              {mutation.isPending ? "Memproses…" : "💎 Beli Sekarang"}
+              {mutation.isPending ? "Processing…" : "💎 Buy Now"}
             </button>
           </div>
         </aside>
