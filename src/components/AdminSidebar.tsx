@@ -12,7 +12,7 @@ export function AdminSidebar() {
     await queryClient.cancelQueries();
     queryClient.clear();
     await supabase.auth.signOut();
-    toast.success("Berhasil keluar");
+    toast.success("Signed out successfully");
     navigate({ to: "/auth", replace: true });
   };
 
@@ -36,14 +36,14 @@ export function AdminSidebar() {
       </div>
       <nav className="flex flex-wrap gap-1 text-sm md:flex-1 md:flex-col md:flex-nowrap">
         {item("/admin", "Dashboard")}
-        {item("/admin/packages", "CRUD Barang")}
-        {item("/admin/history", "Riwayat Login")}
+        {item("/admin/packages", "Manage Products")}
+        {item("/admin/history", "Login History")}
       </nav>
       <button
         onClick={signOut}
         className="mt-4 w-full rounded-md border border-border px-3 py-2 text-left text-sm transition hover:border-destructive hover:text-destructive md:w-auto"
       >
-        ⎋ Keluar
+        ⎋ Sign Out
       </button>
     </aside>
   );

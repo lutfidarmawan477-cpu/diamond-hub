@@ -8,7 +8,15 @@ import { toast } from "sonner";
 type Order = {
   id: string; invoice_no: string; package_name: string; diamond_amount: number;
   total: number; status: string; created_at: string; payment_method_name: string;
+  expires_at: string;
 };
+
+const ALLOWED_STATUSES = ["success", "paid", "pending", "failed"] as const;
+
+function displayStatus(s: string) {
+  if (s === "paid") return "success";
+  return s;
+}
 
 export const Route = createFileRoute("/dashboard")({
   head: () => ({ meta: [{ title: "Dashboard — DiamondHub" }] }),
@@ -31,15 +39,29 @@ function DashboardPage() {
         navigate({ to: "/admin", replace: true });
         return;
       }
-      setEmail(s.session.user.email ?? null);
+      const userEmail = s.session.user.email ?? "";
+      setEmail(userEmail);
       const { data, error } = await supabase
         .from("orders")
-        .select("id,invoice_no,package_name,diamond_amount,total,status,created_at,payment_method_name")
-        .eq("buyer_email", s.session.user.email ?? "")
+        .select("id,invoice_no,package_name,diamond_amount,total,status,created_at,payment_method_name,expires_at")
+        .eq("buyer_email", userEmail)
         .order("created_at", { ascending: false })
-        .limit(50);
+        .limit(100);
       if (error) toast.error(error.message);
-      setOrders((data as Order[]) ?? []);
+
+      // Auto-expire any pending orders whose countdown has passed.
+      const now = Date.now();
+      const rows = (data as Order[]) ?? [];
+      const expired = rows.filter((o) => o.status === "pending" && new Date(o.expires_at).getTime() <= now);
+      if (expired.length > 0) {
+        await Promise.all(
+          expired.map((o) =>
+            supabase.from("orders").update({ status: "failed" }).eq("id", o.id).eq("status", "pending"),
+          ),
+        );
+        expired.forEach((o) => (o.status = "failed"));
+      }
+      setOrders(rows.filter((o) => ALLOWED_STATUSES.includes(o.status as typeof ALLOWED_STATUSES[number])));
       setLoading(false);
     })();
   }, [navigate]);
@@ -54,6 +76,15 @@ function DashboardPage() {
   const totalSpent = orders?.filter((o) => o.status === "success" || o.status === "paid").reduce((a, b) => a + b.total, 0) ?? 0;
   const totalOrders = orders?.length ?? 0;
 
+  const statusBadge = (s: string) => {
+    const st = displayStatus(s);
+    const color =
+      st === "success" ? "bg-success/20 text-success border-success/40"
+      : st === "pending" ? "bg-gold/20 text-gold border-gold/40"
+      : "bg-destructive/20 text-destructive border-destructive/40";
+    return <span className={`rounded-full border px-2 py-0.5 text-xs uppercase ${color}`}>{st}</span>;
+  };
+
   return (
     <div className="container mx-auto px-4 py-10">
       <div className="flex items-center justify-between flex-wrap gap-3">
@@ -61,27 +92,27 @@ function DashboardPage() {
           <h1 className="font-display text-3xl">Dashboard</h1>
           <p className="text-sm text-muted-foreground">{email}</p>
         </div>
-        <button onClick={signOut} className="rounded-md border border-border px-4 py-2 text-sm hover:border-destructive transition">Keluar</button>
+        <button onClick={signOut} className="rounded-md border border-border px-4 py-2 text-sm hover:border-destructive transition">Sign Out</button>
       </div>
 
       <div className="mt-6 grid gap-4 md:grid-cols-3">
-        <StatCard label="Total Transaksi" value={totalOrders.toString()} />
-        <StatCard label="Total Pembelian" value={formatIDR(totalSpent)} />
+        <StatCard label="Total Transactions" value={totalOrders.toString()} />
+        <StatCard label="Total Spent" value={formatIDR(totalSpent)} />
         <StatCard label="Member Level" value="Bronze" />
       </div>
 
       <div className="mt-8 card-premium rounded-xl p-5">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="font-display text-lg">Riwayat Transaksi</h2>
+          <h2 className="font-display text-lg">Transaction History</h2>
           <Link to="/topup" className="rounded-md btn-gold px-4 py-2 text-xs">+ Top Up</Link>
         </div>
-        {loading && <div className="text-sm text-muted-foreground">Memuat…</div>}
-        {!loading && (orders?.length ?? 0) === 0 && <div className="text-sm text-muted-foreground">Belum ada transaksi.</div>}
+        {loading && <div className="text-sm text-muted-foreground">Loading…</div>}
+        {!loading && (orders?.length ?? 0) === 0 && <div className="text-sm text-muted-foreground">No transactions yet.</div>}
         {!loading && orders && orders.length > 0 && (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead className="text-left text-xs text-muted-foreground border-b border-border">
-                <tr><th className="py-2">Invoice</th><th>Paket</th><th>Pembayaran</th><th>Total</th><th>Status</th><th>Tanggal</th><th></th></tr>
+                <tr><th className="py-2">Invoice</th><th>Package</th><th>Payment</th><th>Total</th><th>Status</th><th>Date</th><th></th></tr>
               </thead>
               <tbody>
                 {orders.map((o) => (
@@ -90,9 +121,17 @@ function DashboardPage() {
                     <td>{o.package_name}</td>
                     <td>{o.payment_method_name}</td>
                     <td className="gold-text font-semibold">{formatIDR(o.total)}</td>
-                    <td><span className="rounded-full border border-border px-2 py-0.5 text-xs">{o.status}</span></td>
-                    <td className="text-muted-foreground text-xs">{new Date(o.created_at).toLocaleDateString("id-ID")}</td>
-                    <td><Link to="/invoice/$invoice" params={{ invoice: o.invoice_no }} className="text-gold underline text-xs">Detail</Link></td>
+                    <td>{statusBadge(o.status)}</td>
+                    <td className="text-muted-foreground text-xs">{new Date(o.created_at).toLocaleDateString("en-US")}</td>
+                    <td>
+                      <Link
+                        to="/invoice/$invoice"
+                        params={{ invoice: o.invoice_no }}
+                        className="rounded-md border border-primary/60 bg-primary/10 px-3 py-1 text-xs font-semibold hover:bg-primary/20 transition"
+                      >
+                        View Details
+                      </Link>
+                    </td>
                   </tr>
                 ))}
               </tbody>
