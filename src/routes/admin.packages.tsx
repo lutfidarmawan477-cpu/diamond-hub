@@ -11,7 +11,7 @@ type Pkg = {
 };
 
 export const Route = createFileRoute("/admin/packages")({
-  head: () => ({ meta: [{ title: "Admin Paket — DiamondHub" }] }),
+  head: () => ({ meta: [{ title: "Manage Products — Admin" }] }),
   component: AdminPackages,
 });
 
@@ -55,33 +55,33 @@ function AdminPackages() {
       err = r.error;
     }
     if (err) return toast.error(err.message);
-    toast.success("Tersimpan");
+    toast.success("Saved");
     setEditing(null);
     await load();
   };
   const remove = async (id: string) => {
-    if (!confirm("Hapus paket ini?")) return;
+    if (!confirm("Delete this product?")) return;
     const { error } = await supabase.from("diamond_packages").delete().eq("id", id);
     if (error) return toast.error(error.message);
     await load();
   };
 
-  if (isAdmin === null) return <div className="container mx-auto p-10 text-center">Memuat…</div>;
-  if (!isAdmin) return <div className="container mx-auto p-10 text-center">Akses ditolak</div>;
+  if (isAdmin === null) return <div className="container mx-auto p-10 text-center">Loading…</div>;
+  if (!isAdmin) return <div className="container mx-auto p-10 text-center">Access denied</div>;
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row">
       <AdminSidebar />
       <main className="flex-1 p-6">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="font-display text-2xl">Paket Diamond</h1>
-          <button onClick={() => setEditing({ ...empty })} className="rounded-md btn-gold px-4 py-2 text-sm">+ Tambah Paket</button>
+          <h1 className="font-display text-2xl">Diamond Products</h1>
+          <button onClick={() => setEditing({ ...empty })} className="rounded-md btn-gold px-4 py-2 text-sm">+ Add Product</button>
         </div>
 
         <div className="card-premium rounded-xl p-5 overflow-x-auto">
           <table className="w-full text-sm">
             <thead className="text-left text-xs text-muted-foreground border-b border-border">
-              <tr><th className="py-2">Nama</th><th>Diamond</th><th>Harga</th><th>Badge</th><th>Order</th><th>Status</th><th></th></tr>
+              <tr><th className="py-2">Name</th><th>Diamonds</th><th>Price</th><th>Badge</th><th>Order</th><th>Active</th><th></th></tr>
             </thead>
             <tbody>
               {list.map((p) => (
@@ -94,7 +94,7 @@ function AdminPackages() {
                   <td>{p.active ? "✓" : "✗"}</td>
                   <td className="space-x-2">
                     <button onClick={() => setEditing(p)} className="text-gold underline text-xs">Edit</button>
-                    <button onClick={() => remove(p.id)} className="text-destructive underline text-xs">Hapus</button>
+                    <button onClick={() => remove(p.id)} className="text-destructive underline text-xs">Delete</button>
                   </td>
                 </tr>
               ))}
@@ -105,23 +105,23 @@ function AdminPackages() {
         {editing && (
           <div className="fixed inset-0 bg-black/70 grid place-items-center p-4 z-50" onClick={() => setEditing(null)}>
             <div className="card-premium rounded-2xl p-6 max-w-md w-full" onClick={(e) => e.stopPropagation()}>
-              <h2 className="font-display text-lg mb-4">{editing.id ? "Edit Paket" : "Tambah Paket"}</h2>
+              <h2 className="font-display text-lg mb-4">{editing.id ? "Edit Product" : "Add Product"}</h2>
               <div className="space-y-3">
-                <Field label="Nama"><input className={ic} value={editing.name} onChange={(e) => setEditing({ ...editing, name: e.target.value })} /></Field>
+                <Field label="Name"><input className={ic} value={editing.name} onChange={(e) => setEditing({ ...editing, name: e.target.value })} /></Field>
                 <div className="grid grid-cols-2 gap-3">
-                  <Field label="Jumlah Diamond"><input type="number" className={ic} value={editing.diamond_amount} onChange={(e) => setEditing({ ...editing, diamond_amount: Number(e.target.value) })} /></Field>
+                  <Field label="Diamond Amount"><input type="number" className={ic} value={editing.diamond_amount} onChange={(e) => setEditing({ ...editing, diamond_amount: Number(e.target.value) })} /></Field>
                   <Field label="Sort Order"><input type="number" className={ic} value={editing.sort_order} onChange={(e) => setEditing({ ...editing, sort_order: Number(e.target.value) })} /></Field>
-                  <Field label="Harga"><input type="number" className={ic} value={editing.price} onChange={(e) => setEditing({ ...editing, price: Number(e.target.value) })} /></Field>
-                  <Field label="Harga Coret (opsional)"><input type="number" className={ic} value={editing.original_price ?? ""} onChange={(e) => setEditing({ ...editing, original_price: e.target.value ? Number(e.target.value) : null })} /></Field>
+                  <Field label="Price"><input type="number" className={ic} value={editing.price} onChange={(e) => setEditing({ ...editing, price: Number(e.target.value) })} /></Field>
+                  <Field label="Original Price (optional)"><input type="number" className={ic} value={editing.original_price ?? ""} onChange={(e) => setEditing({ ...editing, original_price: e.target.value ? Number(e.target.value) : null })} /></Field>
                 </div>
-                <Field label="Badge (opsional)"><input className={ic} value={editing.badge ?? ""} onChange={(e) => setEditing({ ...editing, badge: e.target.value || null })} /></Field>
+                <Field label="Badge (optional)"><input className={ic} value={editing.badge ?? ""} onChange={(e) => setEditing({ ...editing, badge: e.target.value || null })} /></Field>
                 <label className="flex items-center gap-2 text-sm">
-                  <input type="checkbox" checked={editing.active} onChange={(e) => setEditing({ ...editing, active: e.target.checked })} /> Aktif
+                  <input type="checkbox" checked={editing.active} onChange={(e) => setEditing({ ...editing, active: e.target.checked })} /> Active
                 </label>
               </div>
               <div className="mt-5 flex gap-2 justify-end">
-                <button onClick={() => setEditing(null)} className="rounded-md border border-border px-4 py-2 text-sm">Batal</button>
-                <button onClick={save} className="rounded-md btn-gold px-4 py-2 text-sm">Simpan</button>
+                <button onClick={() => setEditing(null)} className="rounded-md border border-border px-4 py-2 text-sm">Cancel</button>
+                <button onClick={save} className="rounded-md btn-gold px-4 py-2 text-sm">Save</button>
               </div>
             </div>
           </div>

@@ -41,17 +41,15 @@ function AdminPage() {
     })();
   }, [navigate]);
 
-  // status updates moved to detail/invoice flow; admin dashboard is read-only.
-
   if (isAdmin === null) {
-    return <div className="container mx-auto p-10 text-center">Memuat…</div>;
+    return <div className="container mx-auto p-10 text-center">Loading…</div>;
   }
   if (!isAdmin) {
     return (
       <div className="container mx-auto max-w-md p-10 text-center">
-        <h1 className="font-display text-2xl">Akses ditolak</h1>
-        <p className="mt-2 text-sm text-muted-foreground">Akun customer tidak bisa membuka halaman admin.</p>
-        <Link to="/dashboard" className="mt-4 inline-block text-gold underline">Kembali ke Dashboard</Link>
+        <h1 className="font-display text-2xl">Access denied</h1>
+        <p className="mt-2 text-sm text-muted-foreground">Customer accounts cannot access the admin area.</p>
+        <Link to="/dashboard" className="mt-4 inline-block text-gold underline">Back to Dashboard</Link>
       </div>
     );
   }
@@ -69,27 +67,26 @@ function AdminPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Admin sidebar layout */}
       <div className="flex flex-col md:flex-row">
         <AdminSidebar />
 
         <main className="flex-1 p-6">
-          <h1 className="font-display text-2xl mb-6">Dashboard Admin</h1>
+          <h1 className="font-display text-2xl mb-6">Admin Dashboard</h1>
 
           <div className="grid gap-4 md:grid-cols-4 mb-6">
-            <Stat label="Total Order" value={stats.total.toString()} />
-            <Stat label="Sukses" value={stats.success.toString()} />
+            <Stat label="Total Orders" value={stats.total.toString()} />
+            <Stat label="Successful" value={stats.success.toString()} />
             <Stat label="Pending" value={stats.pending.toString()} />
-            <Stat label="Pendapatan" value={formatIDR(stats.revenue)} />
+            <Stat label="Revenue" value={formatIDR(stats.revenue)} />
           </div>
 
           <div className="card-premium rounded-xl p-5">
             <div className="flex flex-wrap items-center gap-3 mb-4">
               <input className="rounded-md bg-input border border-border px-3 py-2 text-sm flex-1 min-w-[180px]"
-                placeholder="Cari invoice / email…" value={search} onChange={(e) => setSearch(e.target.value)} />
+                placeholder="Search invoice / email…" value={search} onChange={(e) => setSearch(e.target.value)} />
               <select className="rounded-md bg-input border border-border px-3 py-2 text-sm"
                 value={filter} onChange={(e) => setFilter(e.target.value)}>
-                <option value="all">Semua Status</option>
+                <option value="all">All Statuses</option>
                 <option value="pending">Pending</option>
                 <option value="paid">Paid</option>
                 <option value="success">Success</option>
@@ -100,7 +97,7 @@ function AdminPage() {
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead className="text-left text-xs text-muted-foreground border-b border-border">
-                  <tr><th className="py-2">Invoice</th><th>Pembeli</th><th>Paket</th><th>Total</th><th>Status</th></tr>
+                  <tr><th className="py-2">Invoice</th><th>Buyer</th><th>Package</th><th>Total</th><th>Status</th></tr>
                 </thead>
                 <tbody>
                   {filtered.map((o) => (
@@ -114,7 +111,7 @@ function AdminPage() {
                       </td>
                     </tr>
                   ))}
-                  {filtered.length === 0 && <tr><td colSpan={5} className="py-8 text-center text-sm text-muted-foreground">Tidak ada data</td></tr>}
+                  {filtered.length === 0 && <tr><td colSpan={5} className="py-8 text-center text-sm text-muted-foreground">No data</td></tr>}
                 </tbody>
               </table>
             </div>

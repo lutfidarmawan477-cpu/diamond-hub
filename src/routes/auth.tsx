@@ -6,8 +6,8 @@ import { toast } from "sonner";
 export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
-      { title: "Masuk / Daftar — DiamondHub" },
-      { name: "description", content: "Masuk atau daftar akun DiamondHub untuk melacak transaksi dan poin." },
+      { title: "Sign In / Sign Up — DiamondHub" },
+      { name: "description", content: "Sign in or create your DiamondHub account to track your transactions and rewards." },
     ],
   }),
   component: AuthPage,
@@ -60,7 +60,7 @@ function AuthPage() {
           options: { data: { full_name: name }, emailRedirectTo: window.location.origin },
         });
         if (error) throw error;
-        toast.success("Pendaftaran berhasil!");
+        toast.success("Account created successfully!");
         if (data.session) {
           await trackLogin(data.session.user.id, data.session.user.email ?? email);
           await redirectByRole(data.session.user.id);
@@ -68,7 +68,7 @@ function AuthPage() {
       } else {
         const { data, error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
-        toast.success("Selamat datang kembali!");
+        toast.success("Welcome back!");
         await trackLogin(data.user.id, data.user.email ?? email);
         await redirectByRole(data.user.id);
       }
@@ -81,25 +81,25 @@ function AuthPage() {
 
 
   if (checkingSession) {
-    return <div className="container mx-auto px-4 py-16 text-center text-sm text-muted-foreground">Mengalihkan…</div>;
+    return <div className="container mx-auto px-4 py-16 text-center text-sm text-muted-foreground">Redirecting…</div>;
   }
 
   return (
     <div className="container mx-auto max-w-md px-4 py-16">
       <div className="card-premium rounded-2xl p-6">
-        <h1 className="font-display text-2xl text-center">{mode === "login" ? "Masuk" : "Daftar"}</h1>
+        <h1 className="font-display text-2xl text-center">{mode === "login" ? "Sign In" : "Sign Up"}</h1>
         <div className="mt-4 flex rounded-lg border border-border p-1 text-sm">
-          <button onClick={() => setMode("login")} className={`flex-1 rounded-md py-2 transition ${mode === "login" ? "btn-gold" : ""}`}>Masuk</button>
-          <button onClick={() => setMode("signup")} className={`flex-1 rounded-md py-2 transition ${mode === "signup" ? "btn-gold" : ""}`}>Daftar</button>
+          <button onClick={() => setMode("login")} className={`flex-1 rounded-md py-2 transition ${mode === "login" ? "btn-gold" : ""}`}>Sign In</button>
+          <button onClick={() => setMode("signup")} className={`flex-1 rounded-md py-2 transition ${mode === "signup" ? "btn-gold" : ""}`}>Sign Up</button>
         </div>
         <form onSubmit={submit} className="mt-5 space-y-3">
           {mode === "signup" && (
-            <input className={inputCls} placeholder="Nama lengkap" value={name} onChange={(e) => setName(e.target.value)} required />
+            <input className={inputCls} placeholder="Full name" value={name} onChange={(e) => setName(e.target.value)} required />
           )}
           <input className={inputCls} type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-          <input className={inputCls} type="password" placeholder="Password (min. 6 karakter)" value={password} onChange={(e) => setPassword(e.target.value)} minLength={6} required />
+          <input className={inputCls} type="password" placeholder="Password (min. 6 characters)" value={password} onChange={(e) => setPassword(e.target.value)} minLength={6} required />
           <button disabled={loading} className="w-full rounded-md btn-gold py-3 text-sm disabled:opacity-50">
-            {loading ? "Memproses…" : mode === "login" ? "Masuk" : "Daftar"}
+            {loading ? "Processing…" : mode === "login" ? "Sign In" : "Sign Up"}
           </button>
         </form>
       </div>
