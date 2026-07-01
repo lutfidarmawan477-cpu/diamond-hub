@@ -34,9 +34,9 @@ function NotFoundComponent() {
     <div className="flex min-h-screen items-center justify-center px-4">
       <div className="max-w-md text-center">
         <h1 className="text-7xl font-display font-bold gold-text">404</h1>
-        <h2 className="mt-4 text-xl font-semibold">Halaman tidak ditemukan</h2>
+        <h2 className="mt-4 text-xl font-semibold">Page not found</h2>
         <Link to="/" className="mt-6 inline-block rounded-md btn-gold px-5 py-2 text-sm">
-          Kembali ke Beranda
+          Back to Home
         </Link>
       </div>
     </div>
@@ -52,13 +52,13 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   return (
     <div className="flex min-h-screen items-center justify-center px-4">
       <div className="max-w-md text-center">
-        <h1 className="text-xl font-semibold">Terjadi kesalahan</h1>
-        <p className="mt-2 text-sm text-muted-foreground">Coba muat ulang halaman.</p>
+        <h1 className="text-xl font-semibold">Something went wrong</h1>
+        <p className="mt-2 text-sm text-muted-foreground">Please try reloading the page.</p>
         <button
           onClick={() => { router.invalidate(); reset(); }}
           className="mt-6 rounded-md btn-gold px-5 py-2 text-sm"
         >
-          Coba lagi
+          Try again
         </button>
       </div>
     </div>
@@ -70,10 +70,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "DiamondHub — Top Up Diamond Mobile Legends Murah & Cepat" },
-      { name: "description", content: "Top up diamond Mobile Legends termurah, proses instan 24 jam, pembayaran lengkap DANA OVO GoPay QRIS Bank. Aman dan terpercaya." },
-      { property: "og:title", content: "DiamondHub — Top Up Diamond Mobile Legends" },
-      { property: "og:description", content: "Top up diamond ML termurah dan tercepat. Proses instan 24 jam." },
+      { title: "DiamondHub — Cheap & Fast Mobile Legends Diamond Top Up" },
+      { name: "description", content: "Cheapest Mobile Legends diamond top up, instant 24/7 delivery, pay with DANA OVO GoPay QRIS or bank. Safe and trusted." },
+      { property: "og:title", content: "DiamondHub — Mobile Legends Diamond Top Up" },
+      { property: "og:description", content: "Cheapest and fastest ML diamond top up. Instant 24/7 delivery." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -124,7 +124,7 @@ function SiteHeader({
             to="/"
             className="rounded-md px-3 py-2 text-xs border border-border hover:border-primary transition"
           >
-            ← Beranda
+            ← Home
           </Link>
         </div>
       </header>
@@ -135,17 +135,15 @@ function SiteHeader({
   let links: { to: string; label: string }[] = [];
   if (role === "customer") {
     if (pathname === "/dashboard") {
-      links = [{ to: "/tracking", label: "Lacak Pesanan" }];
+      links = [{ to: "/tracking", label: "Track Order" }];
     } else {
-      // Customer on /topup, /tracking, /invoice/*, etc.
       links = [{ to: "/dashboard", label: "Dashboard" }];
     }
   } else if (!role) {
-    // Guest
     links = [
-      { to: "/", label: "Beranda" },
+      { to: "/", label: "Home" },
       { to: "/topup", label: "Top Up" },
-      { to: "/tracking", label: "Lacak Pesanan" },
+      { to: "/tracking", label: "Track Order" },
     ];
   }
 
