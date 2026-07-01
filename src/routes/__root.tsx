@@ -190,25 +190,25 @@ function SiteFooter() {
             <div className="grid h-9 w-9 place-items-center rounded-lg btn-gold">💎</div>
             <span className="font-display text-lg font-bold">Diamond<span className="gold-text">Hub</span></span>
           </div>
-          <p className="text-sm text-muted-foreground">Top up diamond Mobile Legends termurah dan tercepat. Layanan 24 jam.</p>
+          <p className="text-sm text-muted-foreground">Cheapest and fastest Mobile Legends diamond top up. Available 24/7.</p>
         </div>
         <div>
-          <h4 className="font-semibold mb-3">Layanan</h4>
+          <h4 className="font-semibold mb-3">Services</h4>
           <ul className="space-y-2 text-sm text-muted-foreground">
-            <li><Link to="/topup">Top Up Diamond</Link></li>
-            <li><Link to="/tracking">Lacak Pesanan</Link></li>
+            <li><Link to="/topup">Diamond Top Up</Link></li>
+            <li><Link to="/tracking">Track Order</Link></li>
           </ul>
         </div>
         <div>
-          <h4 className="font-semibold mb-3">Bantuan</h4>
+          <h4 className="font-semibold mb-3">Support</h4>
           <ul className="space-y-2 text-sm text-muted-foreground">
             <li>FAQ</li>
-            <li>Kontak</li>
-            <li>Syarat & Ketentuan</li>
+            <li>Contact</li>
+            <li>Terms & Conditions</li>
           </ul>
         </div>
         <div>
-          <h4 className="font-semibold mb-3">Kontak</h4>
+          <h4 className="font-semibold mb-3">Contact</h4>
           <ul className="space-y-2 text-sm text-muted-foreground">
             <li>WhatsApp: 0812-0000-0000</li>
             <li>Email: cs@diamondhub.id</li>
@@ -216,7 +216,7 @@ function SiteFooter() {
         </div>
       </div>
       <div className="border-t border-border py-4 text-center text-xs text-muted-foreground">
-        © {new Date().getFullYear()} DiamondHub. Bukan afiliasi resmi Moonton.
+        © {new Date().getFullYear()} DiamondHub. Not affiliated with Moonton.
       </div>
     </footer>
   );
