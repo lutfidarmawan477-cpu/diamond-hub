@@ -84,18 +84,19 @@ function InvoicePage() {
   };
 
   const cancelOrder = async () => {
-    if (!confirm("Cancel this order? It will be marked as failed and cannot be paid.")) return;
+    if (isSuccess) return;
+    if (!confirm("Cancel this order? It will be permanently removed from your transaction history.")) return;
     setCancelling(true);
     const { error } = await supabase
       .from("orders")
-      .update({ status: "failed" })
-      .eq("invoice_no", order.invoice_no)
-      .eq("status", "pending");
+      .delete()
+      .eq("invoice_no", order.invoice_no);
     setCancelling(false);
     if (error) return toast.error(error.message);
-    toast.success("Order cancelled");
+    toast.success("Order cancelled and removed");
     await queryClient.invalidateQueries({ queryKey: ["order", invoice] });
-    refetch();
+    await queryClient.invalidateQueries({ queryKey: ["orders"] });
+    navigate({ to: "/dashboard", replace: true });
   };
 
   return (
@@ -169,7 +170,7 @@ function InvoicePage() {
         <div className="mt-6 flex flex-wrap gap-3 no-print">
           <button onClick={() => window.print()} className="rounded-md border border-border px-4 py-2 text-sm hover:border-primary transition">🖨 Print</button>
           <Link to="/dashboard" className="rounded-md border border-border px-4 py-2 text-sm hover:border-primary transition">Back to Dashboard</Link>
-          {isPending && remaining > 0 && (
+          {!isSuccess && (
             <button
               onClick={cancelOrder}
               disabled={cancelling}

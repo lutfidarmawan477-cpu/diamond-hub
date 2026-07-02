@@ -32,7 +32,7 @@ export function AdminSidebar() {
     <aside className="flex w-full flex-col border-b border-border p-4 md:min-h-screen md:w-60 md:border-b-0 md:border-r">
       <div className="flex items-center gap-2 mb-6">
         <div className="grid h-9 w-9 place-items-center rounded-lg btn-gold">💎</div>
-        <span className="font-display font-bold">Admin Panel</span>
+        <span className="font-display font-bold">Admin Page</span>
       </div>
       <nav className="flex flex-wrap gap-1 text-sm md:flex-1 md:flex-col md:flex-nowrap">
         {item("/admin", "Dashboard")}
