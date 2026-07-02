@@ -134,18 +134,18 @@ function SiteHeader({
   }
 
   // Determine which links to show based on role + current page.
-  let links: { to: string; label: string }[] = [];
+  let links: { to: string; label: string; icon: LucideIcon }[] = [];
   if (role === "customer") {
     if (pathname === "/dashboard") {
-      links = [{ to: "/tracking", label: "Track Order" }];
+      links = [{ to: "/tracking", label: "Track Order", icon: PackageSearch }];
     } else {
-      links = [{ to: "/dashboard", label: "Dashboard" }];
+      links = [{ to: "/dashboard", label: "Dashboard", icon: LayoutDashboard }];
     }
   } else if (!role) {
     links = [
-      { to: "/", label: "Home" },
-      { to: "/topup", label: "Top Up" },
-      { to: "/tracking", label: "Track Order" },
+      { to: "/", label: "Home", icon: Home },
+      { to: "/topup", label: "Top Up", icon: Zap },
+      { to: "/tracking", label: "Track Order", icon: PackageSearch },
     ];
   }
 
@@ -159,21 +159,26 @@ function SiteHeader({
           </span>
         </Link>
         <nav className="flex items-center gap-2 text-sm overflow-x-auto">
-          {/* Guest on mobile: only show "Masuk". Desktop shows full nav. */}
-          {links.map((l) => (
-            <Link
-              key={l.to}
-              to={l.to}
-              className={`${role === null ? "hidden sm:inline-flex" : "inline-flex"} items-center rounded-lg border border-primary/60 bg-primary/10 px-4 py-1.5 text-xs font-semibold text-foreground transition-all duration-200 hover:bg-primary/20 hover:border-primary active:scale-95 whitespace-nowrap`}
-            >
-              {l.label}
-            </Link>
-          ))}
+          {/* Guest on mobile: only show "Sign In". Desktop shows full nav. */}
+          {links.map((l) => {
+            const Icon = l.icon;
+            return (
+              <Link
+                key={l.to}
+                to={l.to}
+                className={`${role === null ? "hidden sm:inline-flex" : "inline-flex"} items-center gap-2 rounded-lg border border-primary/60 bg-primary/10 px-4 py-1.5 text-xs font-semibold text-foreground transition-all duration-200 hover:bg-primary/20 hover:border-primary active:scale-95 whitespace-nowrap`}
+              >
+                <Icon className="h-[18px] w-[18px]" strokeWidth={2} />
+                {l.label}
+              </Link>
+            );
+          })}
           {role === null && (
             <Link
               to="/auth"
-              className="inline-flex items-center rounded-lg border border-primary/60 bg-primary/10 px-4 py-1.5 text-xs font-semibold text-foreground transition-all duration-200 hover:bg-primary/20 hover:border-primary active:scale-95 whitespace-nowrap"
+              className="inline-flex items-center gap-2 rounded-lg border border-primary/60 bg-primary/10 px-4 py-1.5 text-xs font-semibold text-foreground transition-all duration-200 hover:bg-primary/20 hover:border-primary active:scale-95 whitespace-nowrap"
             >
+              <LogIn className="h-[18px] w-[18px]" strokeWidth={2} />
               Sign In
             </Link>
           )}
