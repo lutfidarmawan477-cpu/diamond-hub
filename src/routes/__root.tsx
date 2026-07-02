@@ -172,7 +172,7 @@ function SiteHeader({
               to="/auth"
               className="inline-flex items-center rounded-lg border border-primary/60 bg-primary/10 px-4 py-1.5 text-xs font-semibold text-foreground transition-all duration-200 hover:bg-primary/20 hover:border-primary active:scale-95 whitespace-nowrap"
             >
-              Masuk
+              Sign In
             </Link>
           )}
         </nav>
