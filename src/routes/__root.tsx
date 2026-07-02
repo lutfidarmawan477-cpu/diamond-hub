@@ -122,7 +122,7 @@ function SiteHeader({
           </Link>
           <Link
             to="/"
-            className="rounded-md px-3 py-2 text-xs border border-border hover:border-primary transition"
+            className="inline-flex items-center rounded-lg border border-primary/60 bg-primary/10 px-4 py-1.5 text-xs font-semibold text-foreground transition-all duration-200 hover:bg-primary/20 hover:border-primary active:scale-95 whitespace-nowrap"
           >
             ← Home
           </Link>
