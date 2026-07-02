@@ -123,9 +123,10 @@ function SiteHeader({
           </Link>
           <Link
             to="/"
-            className="inline-flex items-center rounded-lg border border-primary/60 bg-primary/10 px-4 py-1.5 text-xs font-semibold text-foreground transition-all duration-200 hover:bg-primary/20 hover:border-primary active:scale-95 whitespace-nowrap"
+            className="inline-flex items-center gap-2 rounded-lg border border-primary/60 bg-primary/10 px-4 py-1.5 text-xs font-semibold text-foreground transition-all duration-200 hover:bg-primary/20 hover:border-primary active:scale-95 whitespace-nowrap"
           >
-            ← Home
+            <ArrowLeft className="h-[18px] w-[18px]" strokeWidth={2} />
+            Home
           </Link>
         </div>
       </header>
