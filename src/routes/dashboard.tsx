@@ -40,11 +40,12 @@ function DashboardPage() {
         return;
       }
       const userEmail = s.session.user.email ?? "";
+      const userId = s.session.user.id;
       setEmail(userEmail);
       const { data, error } = await supabase
         .from("orders")
         .select("id,invoice_no,package_name,diamond_amount,total,status,created_at,payment_method_name,expires_at")
-        .eq("buyer_email", userEmail)
+        .or(`user_id.eq.${userId},and(user_id.is.null,buyer_email.eq.${userEmail})`)
         .order("created_at", { ascending: false })
         .limit(100);
       if (error) toast.error(error.message);
