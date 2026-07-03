@@ -79,7 +79,7 @@ function AdminPage() {
       <div className="flex flex-col md:flex-row">
         <AdminSidebar />
 
-        <main className="flex-1 p-6">
+        <main className="flex-1 p-4 sm:p-6 min-w-0">
           <h1 className="font-display text-2xl mb-6">Admin Dashboard</h1>
 
           <div className="grid gap-4 md:grid-cols-4 mb-6">
