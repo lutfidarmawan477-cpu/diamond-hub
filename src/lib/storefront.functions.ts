@@ -35,15 +35,16 @@ const orderSchema = z.object({
 });
 
 export const createOrder = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => orderSchema.parse(d))
-  .handler(async ({ data }) => {
-    const sb = publicClient();
+  .handler(async ({ data, context }) => {
+    const sb = context.supabase;
     const [pkg, pay] = await Promise.all([
       sb.from("diamond_packages").select("id,name,diamond_amount,price,active").eq("id", data.package_id).maybeSingle(),
       sb.from("payment_methods").select("id,name,fee,active").eq("id", data.payment_method_id).maybeSingle(),
     ]);
-    if (pkg.error || !pkg.data || !pkg.data.active) throw new Error("Paket tidak ditemukan");
-    if (pay.error || !pay.data || !pay.data.active) throw new Error("Metode pembayaran tidak ditemukan");
+    if (pkg.error || !pkg.data || !pkg.data.active) throw new Error("Package not found");
+    if (pay.error || !pay.data || !pay.data.active) throw new Error("Payment method not found");
 
     const subtotal = pkg.data.price;
     const fee = pay.data.fee;
@@ -52,6 +53,7 @@ export const createOrder = createServerFn({ method: "POST" })
 
     const insert = await sb.from("orders").insert({
       invoice_no,
+      user_id: context.userId,
       game_user_id: data.game_user_id,
       zone_id: data.zone_id,
       nickname: data.nickname ?? null,
