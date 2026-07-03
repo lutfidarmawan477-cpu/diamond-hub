@@ -58,6 +58,15 @@ function AdminPage() {
     !search || o.invoice_no.toLowerCase().includes(search.toLowerCase()) || o.buyer_email.toLowerCase().includes(search.toLowerCase())
   ));
 
+  const statusBadge = (s: string) => {
+    const st = s === "paid" ? "success" : s;
+    const color =
+      st === "success" ? "bg-success/20 text-success border-success/40"
+      : st === "pending" ? "bg-gold/20 text-gold border-gold/40"
+      : "bg-destructive/20 text-destructive border-destructive/40";
+    return <span className={`rounded-full border px-2 py-0.5 text-xs uppercase ${color}`}>{st}</span>;
+  };
+
   const stats = {
     total: orders.length,
     success: orders.filter((o) => o.status === "success" || o.status === "paid").length,
@@ -70,7 +79,7 @@ function AdminPage() {
       <div className="flex flex-col md:flex-row">
         <AdminSidebar />
 
-        <main className="flex-1 p-6">
+        <main className="flex-1 p-4 sm:p-6 min-w-0">
           <h1 className="font-display text-2xl mb-6">Admin Dashboard</h1>
 
           <div className="grid gap-4 md:grid-cols-4 mb-6">
@@ -94,26 +103,40 @@ function AdminPage() {
                 <option value="expired">Expired</option>
               </select>
             </div>
-            <div className="overflow-x-auto">
+            <div className="hidden md:block overflow-x-auto">
               <table className="w-full text-sm">
                 <thead className="text-left text-xs text-muted-foreground border-b border-border">
-                  <tr><th className="py-2">Invoice</th><th>Buyer</th><th>Package</th><th>Total</th><th>Status</th></tr>
+                  <tr><th className="py-2 pr-3">Invoice</th><th className="pr-3">Buyer</th><th className="pr-3">Package</th><th className="pr-3">Total</th><th>Status</th></tr>
                 </thead>
                 <tbody>
                   {filtered.map((o) => (
                     <tr key={o.id} className="border-b border-border/60">
-                      <td className="py-3 font-mono text-xs"><Link to="/invoice/$invoice" params={{ invoice: o.invoice_no }} className="text-gold underline">{o.invoice_no}</Link></td>
-                      <td>{o.buyer_name}<div className="text-xs text-muted-foreground">{o.buyer_email}</div></td>
-                      <td>{o.package_name}<div className="text-xs text-muted-foreground">ID: {o.game_user_id}</div></td>
-                      <td className="gold-text font-semibold">{formatIDR(o.total)}</td>
-                      <td>
-                        <span className="rounded-full border border-border px-2 py-0.5 text-xs uppercase">{o.status}</span>
-                      </td>
+                      <td className="py-3 pr-3 font-mono text-xs"><Link to="/invoice/$invoice" params={{ invoice: o.invoice_no }} className="text-gold underline">{o.invoice_no}</Link></td>
+                      <td className="pr-3">{o.buyer_name}<div className="text-xs text-muted-foreground">{o.buyer_email}</div></td>
+                      <td className="pr-3">{o.package_name}<div className="text-xs text-muted-foreground">ID: {o.game_user_id}</div></td>
+                      <td className="pr-3 gold-text font-semibold whitespace-nowrap">{formatIDR(o.total)}</td>
+                      <td>{statusBadge(o.status)}</td>
                     </tr>
                   ))}
                   {filtered.length === 0 && <tr><td colSpan={5} className="py-8 text-center text-sm text-muted-foreground">No data</td></tr>}
                 </tbody>
               </table>
+            </div>
+            {/* Mobile cards */}
+            <div className="grid gap-3 md:hidden">
+              {filtered.map((o) => (
+                <div key={o.id} className="rounded-lg border border-border/60 p-3">
+                  <div className="flex items-start justify-between gap-2">
+                    <Link to="/invoice/$invoice" params={{ invoice: o.invoice_no }} className="font-mono text-[11px] text-gold underline truncate">{o.invoice_no}</Link>
+                    {statusBadge(o.status)}
+                  </div>
+                  <div className="mt-1 text-sm font-medium truncate">{o.package_name}</div>
+                  <div className="text-xs text-muted-foreground truncate">{o.buyer_name} · {o.buyer_email}</div>
+                  <div className="text-xs text-muted-foreground">ID: {o.game_user_id}</div>
+                  <div className="mt-2 gold-text font-semibold">{formatIDR(o.total)}</div>
+                </div>
+              ))}
+              {filtered.length === 0 && <div className="py-8 text-center text-sm text-muted-foreground">No data</div>}
             </div>
           </div>
         </main>

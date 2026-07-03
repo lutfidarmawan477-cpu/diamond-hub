@@ -101,42 +101,74 @@ function DashboardPage() {
         <StatCard label="Member Level" value="Bronze" />
       </div>
 
-      <div className="mt-8 card-premium rounded-xl p-5">
-        <div className="flex justify-between items-center mb-4">
+      <div className="mt-8 card-premium rounded-xl p-4 sm:p-5">
+        <div className="flex justify-between items-center gap-3 mb-4 flex-wrap">
           <h2 className="font-display text-lg">Transaction History</h2>
-          <Link to="/topup" className="rounded-md btn-gold px-4 py-2 text-xs">+ Top Up</Link>
+          <Link to="/topup" className="inline-flex shrink-0 items-center whitespace-nowrap rounded-md btn-gold px-3 py-2 text-xs">+ Top Up</Link>
         </div>
         {loading && <div className="text-sm text-muted-foreground">Loading…</div>}
         {!loading && (orders?.length ?? 0) === 0 && <div className="text-sm text-muted-foreground">No transactions yet.</div>}
         {!loading && orders && orders.length > 0 && (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead className="text-left text-xs text-muted-foreground border-b border-border">
-                <tr><th className="py-2">Invoice</th><th>Package</th><th>Payment</th><th>Total</th><th>Status</th><th>Date</th><th></th></tr>
-              </thead>
-              <tbody>
-                {orders.map((o) => (
-                  <tr key={o.id} className="border-b border-border/60">
-                    <td className="py-3 font-mono text-xs">{o.invoice_no}</td>
-                    <td>{o.package_name}</td>
-                    <td>{o.payment_method_name}</td>
-                    <td className="gold-text font-semibold">{formatIDR(o.total)}</td>
-                    <td>{statusBadge(o.status)}</td>
-                    <td className="text-muted-foreground text-xs">{new Date(o.created_at).toLocaleDateString("en-US")}</td>
-                    <td>
-                      <Link
-                        to="/invoice/$invoice"
-                        params={{ invoice: o.invoice_no }}
-                        className="rounded-md border border-primary/60 bg-primary/10 px-3 py-1 text-xs font-semibold hover:bg-primary/20 transition"
-                      >
-                        View Details
-                      </Link>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <>
+            {/* Mobile card list */}
+            <div className="grid gap-3 md:hidden">
+              {orders.map((o) => (
+                <div key={o.id} className="rounded-lg border border-border/60 p-3">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="min-w-0">
+                      <div className="font-mono text-[11px] text-muted-foreground truncate">{o.invoice_no}</div>
+                      <div className="text-sm font-medium truncate">{o.package_name}</div>
+                    </div>
+                    {statusBadge(o.status)}
+                  </div>
+                  <div className="mt-2 grid grid-cols-2 gap-x-3 gap-y-1 text-xs">
+                    <div className="text-muted-foreground">Payment</div>
+                    <div className="text-right truncate">{o.payment_method_name}</div>
+                    <div className="text-muted-foreground">Total</div>
+                    <div className="text-right gold-text font-semibold">{formatIDR(o.total)}</div>
+                    <div className="text-muted-foreground">Date</div>
+                    <div className="text-right">{new Date(o.created_at).toLocaleDateString("en-US")}</div>
+                  </div>
+                  <Link
+                    to="/invoice/$invoice"
+                    params={{ invoice: o.invoice_no }}
+                    className="mt-3 block w-full rounded-md border border-primary/60 bg-primary/10 px-3 py-1.5 text-center text-xs font-semibold hover:bg-primary/20 transition"
+                  >
+                    View Details
+                  </Link>
+                </div>
+              ))}
+            </div>
+            {/* Desktop table */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead className="text-left text-xs text-muted-foreground border-b border-border">
+                  <tr><th className="py-2">Invoice</th><th>Package</th><th>Payment</th><th>Total</th><th>Status</th><th>Date</th><th></th></tr>
+                </thead>
+                <tbody>
+                  {orders.map((o) => (
+                    <tr key={o.id} className="border-b border-border/60">
+                      <td className="py-3 font-mono text-xs">{o.invoice_no}</td>
+                      <td>{o.package_name}</td>
+                      <td>{o.payment_method_name}</td>
+                      <td className="gold-text font-semibold">{formatIDR(o.total)}</td>
+                      <td>{statusBadge(o.status)}</td>
+                      <td className="text-muted-foreground text-xs">{new Date(o.created_at).toLocaleDateString("en-US")}</td>
+                      <td>
+                        <Link
+                          to="/invoice/$invoice"
+                          params={{ invoice: o.invoice_no }}
+                          className="rounded-md border border-primary/60 bg-primary/10 px-3 py-1 text-xs font-semibold hover:bg-primary/20 transition"
+                        >
+                          View Details
+                        </Link>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
         )}
       </div>
     </div>
