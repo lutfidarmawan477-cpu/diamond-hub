@@ -58,6 +58,15 @@ function AdminPage() {
     !search || o.invoice_no.toLowerCase().includes(search.toLowerCase()) || o.buyer_email.toLowerCase().includes(search.toLowerCase())
   ));
 
+  const statusBadge = (s: string) => {
+    const st = s === "paid" ? "success" : s;
+    const color =
+      st === "success" ? "bg-success/20 text-success border-success/40"
+      : st === "pending" ? "bg-gold/20 text-gold border-gold/40"
+      : "bg-destructive/20 text-destructive border-destructive/40";
+    return <span className={`rounded-full border px-2 py-0.5 text-xs uppercase ${color}`}>{st}</span>;
+  };
+
   const stats = {
     total: orders.length,
     success: orders.filter((o) => o.status === "success" || o.status === "paid").length,
