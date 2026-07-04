@@ -54,12 +54,18 @@ function AdminPage() {
     );
   }
 
-  const filtered = orders.filter((o) => (filter === "all" || o.status === filter) && (
+  const matchesStatus = (o: Order) => {
+    if (filter === "all") return true;
+    if (filter === "success") return o.status === "success" || o.status === "paid";
+    if (filter === "failed") return o.status === "failed" || o.status === "expired";
+    return o.status === filter;
+  };
+  const filtered = orders.filter((o) => matchesStatus(o) && (
     !search || o.invoice_no.toLowerCase().includes(search.toLowerCase()) || o.buyer_email.toLowerCase().includes(search.toLowerCase())
   ));
 
   const statusBadge = (s: string) => {
-    const st = s === "paid" ? "success" : s;
+    const st = s === "paid" ? "success" : s === "expired" ? "failed" : s;
     const color =
       st === "success" ? "bg-success/20 text-success border-success/40"
       : st === "pending" ? "bg-gold/20 text-gold border-gold/40"
@@ -71,6 +77,7 @@ function AdminPage() {
     total: orders.length,
     success: orders.filter((o) => o.status === "success" || o.status === "paid").length,
     pending: orders.filter((o) => o.status === "pending").length,
+    failed: orders.filter((o) => o.status === "failed" || o.status === "expired").length,
     revenue: orders.filter((o) => o.status === "success" || o.status === "paid").reduce((a, b) => a + b.total, 0),
   };
 
