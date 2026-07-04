@@ -2,7 +2,11 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { queryOptions, useSuspenseQuery, useMutation } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
+import PhoneInput, { isValidPhoneNumber } from "react-phone-number-input";
+import "react-phone-number-input/style.css";
 import { getStorefront, createOrder } from "@/lib/storefront.functions";
+import { validateMlAccount } from "@/lib/ml-validate.functions";
 import { formatIDR } from "@/lib/format";
 import { useSession } from "@/hooks/useSession";
 
@@ -23,6 +27,12 @@ export const Route = createFileRoute("/topup")({
   component: TopupPage,
 });
 
+type MlCheckState =
+  | { status: "idle" }
+  | { status: "loading" }
+  | { status: "valid"; nickname: string }
+  | { status: "invalid" };
+
 function TopupPage() {
   const { data } = useSuspenseQuery(storefrontQO);
   const navigate = useNavigate();
@@ -30,15 +40,21 @@ function TopupPage() {
   useEffect(() => {
     if (loggedIn === false) navigate({ to: "/auth", replace: true });
   }, [loggedIn, navigate]);
+
   const [userId, setUserId] = useState("");
   const [zoneId, setZoneId] = useState("");
-  const [nickname, setNickname] = useState<string | null>(null);
+  const [mlCheck, setMlCheck] = useState<MlCheckState>({ status: "idle" });
   const [pkgId, setPkgId] = useState<string | null>(null);
   const [payId, setPayId] = useState<string | null>(null);
   const [buyerName, setBuyerName] = useState("");
-  const [buyerWa, setBuyerWa] = useState("");
+  const [buyerWa, setBuyerWa] = useState<string | undefined>(undefined);
   const [buyerEmail, setBuyerEmail] = useState("");
   const [agree, setAgree] = useState(false);
+
+  // Reset ML check when inputs change
+  useEffect(() => {
+    setMlCheck({ status: "idle" });
+  }, [userId, zoneId]);
 
   const pkg = data.packages.find((p) => p.id === pkgId);
   const pay = data.payments.find((p) => p.id === payId);
@@ -46,10 +62,29 @@ function TopupPage() {
   const fee = pay?.fee ?? 0;
   const total = subtotal + fee;
 
-  const checkNick = () => {
+  const phoneValid = !!buyerWa && isValidPhoneNumber(buyerWa);
+  const phoneTouched = !!buyerWa && buyerWa.length > 3;
+  const mlValid = mlCheck.status === "valid";
+  const nickname = mlCheck.status === "valid" ? mlCheck.nickname : null;
+
+  const checkNick = async () => {
     if (!userId || !zoneId) { toast.error("Please enter both User ID and Zone ID first"); return; }
-    setNickname("Player" + userId.slice(-4));
-    toast.success("Nickname found!");
+    if (!/^\d+$/.test(userId) || !/^\d+$/.test(zoneId)) {
+      setMlCheck({ status: "invalid" });
+      return;
+    }
+    setMlCheck({ status: "loading" });
+    try {
+      const res = await validateMlAccount({ data: { userId, zoneId } });
+      if (res.valid) {
+        setMlCheck({ status: "valid", nickname: res.nickname });
+        toast.success("Mobile Legends account found successfully.");
+      } else {
+        setMlCheck({ status: "invalid" });
+      }
+    } catch {
+      setMlCheck({ status: "invalid" });
+    }
   };
 
   const mutation = useMutation({
@@ -62,7 +97,7 @@ function TopupPage() {
           package_id: pkgId!,
           payment_method_id: payId!,
           buyer_name: buyerName,
-          buyer_whatsapp: buyerWa,
+          buyer_whatsapp: buyerWa ?? "",
           buyer_email: buyerEmail,
         },
       }),
@@ -73,11 +108,19 @@ function TopupPage() {
     onError: (e: Error) => toast.error(e.message),
   });
 
+  const disabledReason = (() => {
+    if (!mlValid) return "Please verify your Mobile Legends account first.";
+    if (!phoneValid) return "Please enter a valid phone number.";
+    if (!pkgId) return "Please choose a diamond package.";
+    if (!payId) return "Please choose a payment method.";
+    if (!buyerName || !buyerEmail) return "Please complete buyer information.";
+    if (!agree) return "You must agree to the terms and conditions.";
+    return null;
+  })();
+
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!pkgId) return toast.error("Please choose a diamond package");
-    if (!payId) return toast.error("Please choose a payment method");
-    if (!agree) return toast.error("You must agree to the terms and conditions");
+    if (disabledReason) return toast.error(disabledReason);
     mutation.mutate();
   };
 
@@ -100,18 +143,52 @@ function TopupPage() {
           <Card step="1" title="Account Details">
             <div className="grid gap-3 sm:grid-cols-2">
               <Field label="User ID">
-                <input className={inputCls} value={userId} onChange={(e) => setUserId(e.target.value)} placeholder="e.g. 123456789" required />
+                <input
+                  className={inputCls}
+                  value={userId}
+                  onChange={(e) => setUserId(e.target.value.replace(/\D/g, ""))}
+                  inputMode="numeric"
+                  placeholder="e.g. 123456789"
+                  required
+                />
               </Field>
-              <Field label="Zone ID">
-                <input className={inputCls} value={zoneId} onChange={(e) => setZoneId(e.target.value)} placeholder="e.g. 1234" required />
+              <Field label="Server ID (Zone ID)">
+                <input
+                  className={inputCls}
+                  value={zoneId}
+                  onChange={(e) => setZoneId(e.target.value.replace(/\D/g, ""))}
+                  inputMode="numeric"
+                  placeholder="e.g. 1234"
+                  required
+                />
               </Field>
             </div>
-            <div className="mt-3 flex items-center gap-3">
-              <button type="button" onClick={checkNick} className="rounded-md border border-gold/50 bg-gold/10 text-gold px-4 py-2 text-sm hover:bg-gold/20 transition">
-                Check Nickname
+            <div className="mt-3 flex flex-wrap items-center gap-3">
+              <button
+                type="button"
+                onClick={checkNick}
+                disabled={mlCheck.status === "loading"}
+                className="rounded-md border border-gold/50 bg-gold/10 text-gold px-4 py-2 text-sm hover:bg-gold/20 transition disabled:opacity-50 inline-flex items-center gap-2"
+              >
+                {mlCheck.status === "loading" && <Loader2 className="h-4 w-4 animate-spin" />}
+                {mlCheck.status === "loading" ? "Loading..." : "Check Nickname"}
               </button>
-              {nickname && <span className="text-sm text-success">✓ {nickname}</span>}
             </div>
+            {mlCheck.status === "valid" && (
+              <div className="mt-3 flex items-start gap-2 rounded-md border border-success/40 bg-success/10 px-3 py-2 text-sm text-success">
+                <CheckCircle2 className="h-4 w-4 mt-0.5 shrink-0" />
+                <div>
+                  <div className="font-medium">Mobile Legends account found successfully.</div>
+                  <div className="text-xs opacity-90">Nickname: <span className="font-semibold">{mlCheck.nickname}</span></div>
+                </div>
+              </div>
+            )}
+            {mlCheck.status === "invalid" && (
+              <div className="mt-3 flex items-start gap-2 rounded-md border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+                <AlertCircle className="h-4 w-4 mt-0.5 shrink-0" />
+                <span>User ID or Server ID not found. Please double-check the data you entered.</span>
+              </div>
+            )}
           </Card>
 
           {/* 2. Package */}
@@ -159,9 +236,38 @@ function TopupPage() {
           {/* 4. Buyer */}
           <Card step="4" title="Buyer Information">
             <div className="grid gap-3 sm:grid-cols-2">
-              <Field label="Name"><input className={inputCls} value={buyerName} onChange={(e) => setBuyerName(e.target.value)} required minLength={2} /></Field>
-              <Field label="WhatsApp Number"><input className={inputCls} value={buyerWa} onChange={(e) => setBuyerWa(e.target.value)} placeholder="08xx" required /></Field>
-              <Field label="Email"><input type="email" className={inputCls} value={buyerEmail} onChange={(e) => setBuyerEmail(e.target.value)} required /></Field>
+              <Field label="Name">
+                <input className={inputCls} value={buyerName} onChange={(e) => setBuyerName(e.target.value)} required minLength={2} />
+              </Field>
+              <Field label="WhatsApp Number">
+                <PhoneInput
+                  international
+                  defaultCountry="ID"
+                  value={buyerWa}
+                  onChange={setBuyerWa}
+                  className="phone-input-custom"
+                  placeholder="81234567890"
+                />
+                {phoneTouched && (
+                  phoneValid ? (
+                    <p className="mt-1 flex items-center gap-1 text-xs text-success">
+                      <CheckCircle2 className="h-3.5 w-3.5" /> Phone number is valid.
+                    </p>
+                  ) : (
+                    <p className="mt-1 flex items-center gap-1 text-xs text-destructive">
+                      <AlertCircle className="h-3.5 w-3.5" />
+                      {!buyerWa || buyerWa.length < 6
+                        ? "Phone number is too short."
+                        : buyerWa.length > 18
+                          ? "Phone number is too long."
+                          : "Please enter a valid phone number."}
+                    </p>
+                  )
+                )}
+              </Field>
+              <Field label="Email">
+                <input type="email" className={inputCls} value={buyerEmail} onChange={(e) => setBuyerEmail(e.target.value)} required />
+              </Field>
               <Field label="Voucher Code (optional)"><input className={inputCls} placeholder="SAVE10" /></Field>
             </div>
             <label className="mt-4 flex items-start gap-2 text-sm">
@@ -188,10 +294,19 @@ function TopupPage() {
               <span>Total</span>
               <span className="gold-text">{formatIDR(total)}</span>
             </div>
-            <button type="submit" disabled={mutation.isPending}
-              className="mt-5 w-full rounded-md btn-gold py-3 text-sm disabled:opacity-50">
+            <button
+              type="submit"
+              disabled={mutation.isPending || !!disabledReason}
+              className="mt-5 w-full rounded-md btn-gold py-3 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+            >
               {mutation.isPending ? "Processing…" : "💎 Buy Now"}
             </button>
+            {disabledReason && (
+              <p className="mt-2 flex items-start gap-1 text-xs text-muted-foreground">
+                <AlertCircle className="h-3.5 w-3.5 mt-0.5 shrink-0" />
+                <span>{disabledReason}</span>
+              </p>
+            )}
           </div>
         </aside>
       </form>
