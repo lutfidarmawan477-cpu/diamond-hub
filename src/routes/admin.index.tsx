@@ -54,12 +54,18 @@ function AdminPage() {
     );
   }
 
-  const filtered = orders.filter((o) => (filter === "all" || o.status === filter) && (
+  const matchesStatus = (o: Order) => {
+    if (filter === "all") return true;
+    if (filter === "success") return o.status === "success" || o.status === "paid";
+    if (filter === "failed") return o.status === "failed" || o.status === "expired";
+    return o.status === filter;
+  };
+  const filtered = orders.filter((o) => matchesStatus(o) && (
     !search || o.invoice_no.toLowerCase().includes(search.toLowerCase()) || o.buyer_email.toLowerCase().includes(search.toLowerCase())
   ));
 
   const statusBadge = (s: string) => {
-    const st = s === "paid" ? "success" : s;
+    const st = s === "paid" ? "success" : s === "expired" ? "failed" : s;
     const color =
       st === "success" ? "bg-success/20 text-success border-success/40"
       : st === "pending" ? "bg-gold/20 text-gold border-gold/40"
@@ -71,6 +77,7 @@ function AdminPage() {
     total: orders.length,
     success: orders.filter((o) => o.status === "success" || o.status === "paid").length,
     pending: orders.filter((o) => o.status === "pending").length,
+    failed: orders.filter((o) => o.status === "failed" || o.status === "expired").length,
     revenue: orders.filter((o) => o.status === "success" || o.status === "paid").reduce((a, b) => a + b.total, 0),
   };
 
@@ -82,10 +89,11 @@ function AdminPage() {
         <main className="flex-1 p-4 sm:p-6 min-w-0">
           <h1 className="font-display text-2xl mb-6">Admin Dashboard</h1>
 
-          <div className="grid gap-4 md:grid-cols-4 mb-6">
+          <div className="grid gap-4 grid-cols-2 md:grid-cols-3 lg:grid-cols-5 mb-6">
             <Stat label="Total Orders" value={stats.total.toString()} />
             <Stat label="Successful" value={stats.success.toString()} />
             <Stat label="Pending" value={stats.pending.toString()} />
+            <Stat label="Failed" value={stats.failed.toString()} />
             <Stat label="Revenue" value={formatIDR(stats.revenue)} />
           </div>
 
@@ -95,12 +103,10 @@ function AdminPage() {
                 placeholder="Search invoice / email…" value={search} onChange={(e) => setSearch(e.target.value)} />
               <select className="rounded-md bg-input border border-border px-3 py-2 text-sm"
                 value={filter} onChange={(e) => setFilter(e.target.value)}>
-                <option value="all">All Statuses</option>
-                <option value="pending">Pending</option>
-                <option value="paid">Paid</option>
+                <option value="all">All Status</option>
                 <option value="success">Success</option>
+                <option value="pending">Pending</option>
                 <option value="failed">Failed</option>
-                <option value="expired">Expired</option>
               </select>
             </div>
             <div className="hidden md:block overflow-x-auto">
