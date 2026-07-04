@@ -44,25 +44,66 @@ function AdminPackages() {
   const save = async () => {
     if (!editing) return;
     const payload = { ...editing };
-    let err;
+    const newOrder = Number(payload.sort_order) || 0;
+
     if (payload.id) {
+      // Find previous sort_order for this row
+      const prev = list.find((p) => p.id === payload.id);
+      const oldOrder = prev ? Number(prev.sort_order) : newOrder;
+
+      if (newOrder !== oldOrder) {
+        // Move to a temp value first to avoid any transient collisions
+        const tempOrder = -Math.abs(Date.now());
+        const t = await supabase.from("diamond_packages").update({ sort_order: tempOrder }).eq("id", payload.id);
+        if (t.error) return toast.error(t.error.message);
+
+        if (newOrder < oldOrder) {
+          // shift [newOrder .. oldOrder-1] up by 1
+          const toShift = list.filter((p) => p.id !== payload.id && p.sort_order >= newOrder && p.sort_order < oldOrder);
+          for (const p of toShift.sort((a, b) => b.sort_order - a.sort_order)) {
+            const r = await supabase.from("diamond_packages").update({ sort_order: p.sort_order + 1 }).eq("id", p.id);
+            if (r.error) return toast.error(r.error.message);
+          }
+        } else {
+          // shift (oldOrder .. newOrder] down by 1
+          const toShift = list.filter((p) => p.id !== payload.id && p.sort_order > oldOrder && p.sort_order <= newOrder);
+          for (const p of toShift.sort((a, b) => a.sort_order - b.sort_order)) {
+            const r = await supabase.from("diamond_packages").update({ sort_order: p.sort_order - 1 }).eq("id", p.id);
+            if (r.error) return toast.error(r.error.message);
+          }
+        }
+      }
       const { id, ...rest } = payload;
-      const r = await supabase.from("diamond_packages").update(rest).eq("id", id);
-      err = r.error;
+      const r = await supabase.from("diamond_packages").update({ ...rest, sort_order: newOrder }).eq("id", id);
+      if (r.error) return toast.error(r.error.message);
     } else {
+      // Insert: shift all rows with sort_order >= newOrder up by 1
+      const toShift = list.filter((p) => p.sort_order >= newOrder);
+      for (const p of toShift.sort((a, b) => b.sort_order - a.sort_order)) {
+        const r = await supabase.from("diamond_packages").update({ sort_order: p.sort_order + 1 }).eq("id", p.id);
+        if (r.error) return toast.error(r.error.message);
+      }
       const { id: _id, ...rest } = payload;
-      const r = await supabase.from("diamond_packages").insert(rest);
-      err = r.error;
+      const r = await supabase.from("diamond_packages").insert({ ...rest, sort_order: newOrder });
+      if (r.error) return toast.error(r.error.message);
     }
-    if (err) return toast.error(err.message);
     toast.success("Saved");
     setEditing(null);
     await load();
   };
   const remove = async (id: string) => {
     if (!confirm("Delete this product?")) return;
+    const target = list.find((p) => p.id === id);
     const { error } = await supabase.from("diamond_packages").delete().eq("id", id);
     if (error) return toast.error(error.message);
+    if (target) {
+      // shift all rows with sort_order > target.sort_order down by 1
+      const toShift = list.filter((p) => p.id !== id && p.sort_order > target.sort_order);
+      for (const p of toShift.sort((a, b) => a.sort_order - b.sort_order)) {
+        const r = await supabase.from("diamond_packages").update({ sort_order: p.sort_order - 1 }).eq("id", p.id);
+        if (r.error) toast.error(r.error.message);
+      }
+    }
     await load();
   };
 
