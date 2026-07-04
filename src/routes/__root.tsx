@@ -217,8 +217,28 @@ function SiteFooter() {
         <div>
           <h4 className="font-semibold mb-3">Contact</h4>
           <ul className="space-y-2 text-sm text-muted-foreground">
-            <li>WhatsApp: 0812-0000-0000</li>
-            <li>Email: cs@diamondhub.id</li>
+            <li>
+              WhatsApp:{" "}
+              <a
+                href="https://wa.me/628989110355"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-gold transition-colors"
+              >
+                +62 8989110355
+              </a>
+            </li>
+            <li>
+              Instagram:{" "}
+              <a
+                href="https://www.instagram.com/pilll_23"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-gold transition-colors"
+              >
+                @pilll_23
+              </a>
+            </li>
           </ul>
         </div>
       </div>
