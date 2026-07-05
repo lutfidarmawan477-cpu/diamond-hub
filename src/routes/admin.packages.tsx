@@ -193,38 +193,36 @@ function AdminPackages() {
         </div>
 
         {editing && (
-          <div
-            className="fixed inset-0 z-50 bg-black/70 overflow-y-auto overscroll-contain"
-            onClick={() => setEditing(null)}
-          >
-            <div className="flex min-h-full items-center justify-center p-4">
-              <div
-                className="card-premium rounded-2xl w-full max-w-md max-h-[90vh] flex flex-col"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <div className="p-6 pb-3 shrink-0">
-                  <h2 className="font-display text-lg">{editing.id ? "Edit Product" : "Add Product"}</h2>
+          <>
+            <div
+              className="fixed inset-0 z-50 bg-black/70"
+              onClick={() => setEditing(null)}
+            />
+            <div
+              className="fixed left-1/2 top-1/2 z-50 w-[95%] max-w-[500px] max-h-[90vh] -translate-x-1/2 -translate-y-1/2 flex flex-col overflow-hidden card-premium rounded-2xl shadow-2xl"
+            >
+              <div className="p-6 pb-3 shrink-0">
+                <h2 className="font-display text-lg">{editing.id ? "Edit Product" : "Add Product"}</h2>
+              </div>
+              <div className="px-6 space-y-3 overflow-y-auto min-h-0">
+                <Field label="Name"><input className={ic} value={editing.name} onChange={(e) => setEditing({ ...editing, name: e.target.value })} /></Field>
+                <div className="grid grid-cols-2 gap-3">
+                  <Field label="Diamond Amount"><input type="number" className={ic} value={editing.diamond_amount} onChange={(e) => setEditing({ ...editing, diamond_amount: Number(e.target.value) })} /></Field>
+                  <Field label="Sort Order"><input type="number" className={ic} value={editing.sort_order} onChange={(e) => setEditing({ ...editing, sort_order: Number(e.target.value) })} /></Field>
+                  <Field label="Price"><input type="number" className={ic} value={editing.price} onChange={(e) => setEditing({ ...editing, price: Number(e.target.value) })} /></Field>
+                  <Field label="Original Price (optional)"><input type="number" className={ic} value={editing.original_price ?? ""} onChange={(e) => setEditing({ ...editing, original_price: e.target.value ? Number(e.target.value) : null })} /></Field>
                 </div>
-                <div className="px-6 space-y-3 overflow-y-auto">
-                  <Field label="Name"><input className={ic} value={editing.name} onChange={(e) => setEditing({ ...editing, name: e.target.value })} /></Field>
-                  <div className="grid grid-cols-2 gap-3">
-                    <Field label="Diamond Amount"><input type="number" className={ic} value={editing.diamond_amount} onChange={(e) => setEditing({ ...editing, diamond_amount: Number(e.target.value) })} /></Field>
-                    <Field label="Sort Order"><input type="number" className={ic} value={editing.sort_order} onChange={(e) => setEditing({ ...editing, sort_order: Number(e.target.value) })} /></Field>
-                    <Field label="Price"><input type="number" className={ic} value={editing.price} onChange={(e) => setEditing({ ...editing, price: Number(e.target.value) })} /></Field>
-                    <Field label="Original Price (optional)"><input type="number" className={ic} value={editing.original_price ?? ""} onChange={(e) => setEditing({ ...editing, original_price: e.target.value ? Number(e.target.value) : null })} /></Field>
-                  </div>
-                  <Field label="Badge (optional)"><input className={ic} value={editing.badge ?? ""} onChange={(e) => setEditing({ ...editing, badge: e.target.value || null })} /></Field>
-                  <label className="flex items-center gap-2 text-sm">
-                    <input type="checkbox" checked={editing.active} onChange={(e) => setEditing({ ...editing, active: e.target.checked })} /> Active
-                  </label>
-                </div>
-                <div className="p-6 pt-4 flex gap-2 justify-end shrink-0 border-t border-border/40 mt-3">
-                  <button onClick={() => setEditing(null)} className="rounded-md border border-border px-4 py-2 text-sm">Cancel</button>
-                  <button onClick={save} className="rounded-md btn-gold px-4 py-2 text-sm">Save</button>
-                </div>
+                <Field label="Badge (optional)"><input className={ic} value={editing.badge ?? ""} onChange={(e) => setEditing({ ...editing, badge: e.target.value || null })} /></Field>
+                <label className="flex items-center gap-2 text-sm">
+                  <input type="checkbox" checked={editing.active} onChange={(e) => setEditing({ ...editing, active: e.target.checked })} /> Active
+                </label>
+              </div>
+              <div className="p-6 pt-4 flex gap-2 justify-end shrink-0 border-t border-border/40 mt-3">
+                <button onClick={() => setEditing(null)} className="rounded-md border border-border px-4 py-2 text-sm">Cancel</button>
+                <button onClick={save} className="rounded-md btn-gold px-4 py-2 text-sm">Save</button>
               </div>
             </div>
-          </div>
+          </>
         )}
       </main>
     </div>
