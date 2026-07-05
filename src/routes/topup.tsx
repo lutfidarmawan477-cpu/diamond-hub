@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { queryOptions, useSuspenseQuery, useMutation } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -272,7 +272,7 @@ function TopupPage() {
             </div>
             <label className="mt-4 flex items-start gap-2 text-sm">
               <input type="checkbox" checked={agree} onChange={(e) => setAgree(e.target.checked)} className="mt-1" />
-              <span>I agree to the <span className="text-gold underline">Terms & Conditions</span> and confirm the User ID / Zone ID I entered are correct.</span>
+              <span>I agree to the <Link to="/terms" className="text-gold underline hover:opacity-80">Terms & Conditions</Link> and confirm the User ID / Zone ID I entered are correct.</span>
             </label>
           </Card>
         </div>

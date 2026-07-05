@@ -211,7 +211,7 @@ function SiteFooter() {
           <ul className="space-y-2 text-sm text-muted-foreground">
             <li>FAQ</li>
             <li>Contact</li>
-            <li>Terms & Conditions</li>
+            <li><Link to="/terms" className="hover:text-gold transition-colors">Terms & Conditions</Link></li>
           </ul>
         </div>
         <div>
