@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TrackingRouteImport } from './routes/tracking'
 import { Route as TopupRouteImport } from './routes/topup'
+import { Route as TermsRouteImport } from './routes/terms'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as IndexRouteImport } from './routes/index'
@@ -27,6 +28,11 @@ const TrackingRoute = TrackingRouteImport.update({
 const TopupRoute = TopupRouteImport.update({
   id: '/topup',
   path: '/topup',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DashboardRoute = DashboardRouteImport.update({
@@ -69,6 +75,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/dashboard': typeof DashboardRoute
+  '/terms': typeof TermsRoute
   '/topup': typeof TopupRoute
   '/tracking': typeof TrackingRoute
   '/admin/history': typeof AdminHistoryRoute
@@ -80,6 +87,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/dashboard': typeof DashboardRoute
+  '/terms': typeof TermsRoute
   '/topup': typeof TopupRoute
   '/tracking': typeof TrackingRoute
   '/admin/history': typeof AdminHistoryRoute
@@ -92,6 +100,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/dashboard': typeof DashboardRoute
+  '/terms': typeof TermsRoute
   '/topup': typeof TopupRoute
   '/tracking': typeof TrackingRoute
   '/admin/history': typeof AdminHistoryRoute
@@ -105,6 +114,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/dashboard'
+    | '/terms'
     | '/topup'
     | '/tracking'
     | '/admin/history'
@@ -116,6 +126,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/dashboard'
+    | '/terms'
     | '/topup'
     | '/tracking'
     | '/admin/history'
@@ -127,6 +138,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/dashboard'
+    | '/terms'
     | '/topup'
     | '/tracking'
     | '/admin/history'
@@ -139,6 +151,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthRoute: typeof AuthRoute
   DashboardRoute: typeof DashboardRoute
+  TermsRoute: typeof TermsRoute
   TopupRoute: typeof TopupRoute
   TrackingRoute: typeof TrackingRoute
   AdminHistoryRoute: typeof AdminHistoryRoute
@@ -161,6 +174,13 @@ declare module '@tanstack/react-router' {
       path: '/topup'
       fullPath: '/topup'
       preLoaderRoute: typeof TopupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/dashboard': {
@@ -219,6 +239,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthRoute: AuthRoute,
   DashboardRoute: DashboardRoute,
+  TermsRoute: TermsRoute,
   TopupRoute: TopupRoute,
   TrackingRoute: TrackingRoute,
   AdminHistoryRoute: AdminHistoryRoute,
