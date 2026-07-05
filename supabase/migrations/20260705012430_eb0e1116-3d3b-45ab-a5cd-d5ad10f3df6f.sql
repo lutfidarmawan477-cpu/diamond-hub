@@ -1,0 +1,1 @@
+CREATE POLICY "buyer can simulate pay own pending order" ON public.orders FOR UPDATE USING ((status = 'pending'::text) AND (has_role(auth.uid(), 'admin'::app_role) OR (user_id = auth.uid()) OR (buyer_email = (auth.jwt() ->> 'email'::text)))) WITH CHECK (status = 'paid'::text);
