@@ -41,6 +41,17 @@ function AdminPackages() {
     })();
   }, [navigate]);
 
+  useEffect(() => {
+    if (editing) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [editing]);
+
   const save = async () => {
     if (!editing) return;
     const payload = { ...editing };
