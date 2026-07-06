@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
 import PhoneInput, { isValidPhoneNumber } from "react-phone-number-input";
 import "react-phone-number-input/style.css";
-import { getStorefront, createOrder } from "@/lib/storefront.functions";
+import { getStorefront, createOrder, validateVoucher } from "@/lib/storefront.functions";
 import { validateMlAccount } from "@/lib/ml-validate.functions";
 import { formatIDR } from "@/lib/format";
 import { useSession } from "@/hooks/useSession";
@@ -50,22 +50,52 @@ function TopupPage() {
   const [buyerWa, setBuyerWa] = useState<string | undefined>(undefined);
   const [buyerEmail, setBuyerEmail] = useState("");
   const [agree, setAgree] = useState(false);
+  const [voucherCode, setVoucherCode] = useState("");
+  const [voucherState, setVoucherState] = useState<
+    | { status: "idle" }
+    | { status: "loading" }
+    | { status: "valid"; discount: number; name: string; percent: number }
+    | { status: "invalid"; message: string }
+  >({ status: "idle" });
 
   // Reset ML check when inputs change
   useEffect(() => {
     setMlCheck({ status: "idle" });
   }, [userId, zoneId]);
 
+  // Reset voucher when package changes
+  useEffect(() => {
+    setVoucherState({ status: "idle" });
+  }, [pkgId]);
+
   const pkg = data.packages.find((p) => p.id === pkgId);
   const pay = data.payments.find((p) => p.id === payId);
   const subtotal = pkg?.price ?? 0;
   const fee = pay?.fee ?? 0;
-  const total = subtotal + fee;
+  const discount = voucherState.status === "valid" ? voucherState.discount : 0;
+  const total = Math.max(0, subtotal + fee - discount);
+
+  const outOfStock = pkg ? (data.stock ?? 0) < pkg.diamond_amount : false;
 
   const phoneValid = !!buyerWa && isValidPhoneNumber(buyerWa);
   const phoneTouched = !!buyerWa && buyerWa.length > 3;
   const mlValid = mlCheck.status === "valid";
   const nickname = mlCheck.status === "valid" ? mlCheck.nickname : null;
+
+  const applyVoucher = async () => {
+    if (!voucherCode.trim()) return toast.error("Please enter a voucher code");
+    if (!pkgId) return toast.error("Please pick a package first");
+    setVoucherState({ status: "loading" });
+    try {
+      const r = await validateVoucher({ data: { code: voucherCode.trim(), subtotal } });
+      setVoucherState({ status: "valid", discount: r.discount, name: r.name, percent: r.percent });
+      toast.success(`Voucher applied — saving ${formatIDR(r.discount)}`);
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : "Invalid voucher";
+      setVoucherState({ status: "invalid", message: msg });
+      toast.error(msg);
+    }
+  };
 
   const checkNick = async () => {
     if (!userId || !zoneId) { toast.error("Please enter both User ID and Zone ID first"); return; }
@@ -99,6 +129,7 @@ function TopupPage() {
           buyer_name: buyerName,
           buyer_whatsapp: buyerWa ?? "",
           buyer_email: buyerEmail,
+          voucher_code: voucherState.status === "valid" ? voucherCode.trim() : null,
         },
       }),
     onSuccess: (res) => {
@@ -112,6 +143,7 @@ function TopupPage() {
     if (!mlValid) return "Please verify your Mobile Legends account first.";
     if (!phoneValid) return "Please enter a valid phone number.";
     if (!pkgId) return "Please choose a diamond package.";
+    if (outOfStock) return "Sorry, this product is currently out of stock.";
     if (!payId) return "Please choose a payment method.";
     if (!buyerName || !buyerEmail) return "Please complete buyer information.";
     if (!agree) return "You must agree to the terms and conditions.";
@@ -193,13 +225,17 @@ function TopupPage() {
 
           {/* 2. Package */}
           <Card step="2" title="Choose Diamond Amount">
+            <div className="mb-3 text-xs text-muted-foreground">Available stock: <span className="gold-text font-semibold">{(data.stock ?? 0).toLocaleString("en-US")}</span> Diamonds</div>
             <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3">
               {data.packages.map((p) => {
                 const selected = p.id === pkgId;
+                const oos = (data.stock ?? 0) < p.diamond_amount;
                 return (
-                  <button type="button" key={p.id} onClick={() => setPkgId(p.id)}
-                    className={`text-left rounded-xl p-4 border transition relative ${selected ? "border-gold glow-ring bg-primary/20" : "border-border card-premium hover:border-primary/60"}`}>
+                  <button type="button" key={p.id} onClick={() => !oos && setPkgId(p.id)}
+                    disabled={oos}
+                    className={`text-left rounded-xl p-4 border transition relative ${selected ? "border-gold glow-ring bg-primary/20" : "border-border card-premium hover:border-primary/60"} ${oos ? "opacity-50 cursor-not-allowed" : ""}`}>
                     {p.badge && <span className="absolute -top-2 right-3 rounded-full btn-gold px-2 py-0.5 text-[10px]">{p.badge}</span>}
+                    {oos && <span className="absolute -top-2 left-3 rounded-full bg-destructive px-2 py-0.5 text-[10px] text-destructive-foreground">Out of Stock</span>}
                     <div className="text-2xl">💎</div>
                     <div className="font-display mt-1">{p.name}</div>
                     <div className="gold-text font-bold mt-1">{formatIDR(p.price)}</div>
@@ -208,6 +244,12 @@ function TopupPage() {
                 );
               })}
             </div>
+            {outOfStock && (
+              <div className="mt-3 flex items-start gap-2 rounded-md border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+                <AlertCircle className="h-4 w-4 mt-0.5 shrink-0" />
+                <span>Sorry, this product is currently out of stock.</span>
+              </div>
+            )}
           </Card>
 
           {/* 3. Payment */}
@@ -268,7 +310,34 @@ function TopupPage() {
               <Field label="Email">
                 <input type="email" className={inputCls} value={buyerEmail} onChange={(e) => setBuyerEmail(e.target.value)} required />
               </Field>
-              <Field label="Voucher Code (optional)"><input className={inputCls} placeholder="SAVE10" /></Field>
+              <Field label="Voucher Code (optional)">
+                <div className="flex gap-2">
+                  <input
+                    className={inputCls}
+                    placeholder="SAVE10"
+                    value={voucherCode}
+                    onChange={(e) => { setVoucherCode(e.target.value.toUpperCase()); setVoucherState({ status: "idle" }); }}
+                  />
+                  <button
+                    type="button"
+                    onClick={applyVoucher}
+                    disabled={voucherState.status === "loading"}
+                    className="shrink-0 rounded-md border border-gold/50 bg-gold/10 text-gold px-3 text-xs hover:bg-gold/20 transition disabled:opacity-50"
+                  >
+                    {voucherState.status === "loading" ? "…" : "Apply"}
+                  </button>
+                </div>
+                {voucherState.status === "valid" && (
+                  <p className="mt-1 flex items-center gap-1 text-xs text-success">
+                    <CheckCircle2 className="h-3.5 w-3.5" /> {voucherState.name} — {voucherState.percent}% off
+                  </p>
+                )}
+                {voucherState.status === "invalid" && (
+                  <p className="mt-1 flex items-center gap-1 text-xs text-destructive">
+                    <AlertCircle className="h-3.5 w-3.5" /> {voucherState.message}
+                  </p>
+                )}
+              </Field>
             </div>
             <label className="mt-4 flex items-start gap-2 text-sm">
               <input type="checkbox" checked={agree} onChange={(e) => setAgree(e.target.checked)} className="mt-1" />
@@ -290,6 +359,7 @@ function TopupPage() {
             <hr className="my-3 border-border" />
             <SumRow label="Subtotal" value={formatIDR(subtotal)} />
             <SumRow label="Fee" value={formatIDR(fee)} />
+            {discount > 0 && <SumRow label="Discount" value={`- ${formatIDR(discount)}`} />}
             <div className="mt-3 flex justify-between font-display text-lg">
               <span>Total</span>
               <span className="gold-text">{formatIDR(total)}</span>

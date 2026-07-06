@@ -4,11 +4,25 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { formatIDR } from "@/lib/format";
 import { toast } from "sonner";
+import { computeLevel, LEVEL_META, nextLevelInfo, type MemberLevel } from "@/lib/member";
+import { Copy, Ticket } from "lucide-react";
 
 type Order = {
   id: string; invoice_no: string; package_name: string; diamond_amount: number;
   total: number; status: string; created_at: string; payment_method_name: string;
   expires_at: string;
+};
+
+type MyVoucher = {
+  id: string;
+  name: string;
+  code: string;
+  discount_percent: number;
+  max_discount: number | null;
+  usage_per_customer: number;
+  member_level: string | null;
+  end_date: string;
+  used: number;
 };
 
 const ALLOWED_STATUSES = ["success", "paid", "pending", "failed"] as const;
@@ -28,6 +42,9 @@ function DashboardPage() {
   const queryClient = useQueryClient();
   const [email, setEmail] = useState<string | null>(null);
   const [orders, setOrders] = useState<Order[] | null>(null);
+  const [totalSpentDb, setTotalSpentDb] = useState<number>(0);
+  const [level, setLevel] = useState<MemberLevel>("bronze");
+  const [myVouchers, setMyVouchers] = useState<MyVoucher[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -42,17 +59,21 @@ function DashboardPage() {
       const userEmail = s.session.user.email ?? "";
       const userId = s.session.user.id;
       setEmail(userEmail);
-      const { data, error } = await supabase
-        .from("orders")
-        .select("id,invoice_no,package_name,diamond_amount,total,status,created_at,payment_method_name,expires_at")
-        .or(`user_id.eq.${userId},and(user_id.is.null,buyer_email.eq.${userEmail})`)
-        .order("created_at", { ascending: false })
-        .limit(100);
-      if (error) toast.error(error.message);
+
+      const [ordersRes, profRes] = await Promise.all([
+        supabase
+          .from("orders")
+          .select("id,invoice_no,package_name,diamond_amount,total,status,created_at,payment_method_name,expires_at")
+          .or(`user_id.eq.${userId},and(user_id.is.null,buyer_email.eq.${userEmail})`)
+          .order("created_at", { ascending: false })
+          .limit(100),
+        supabase.from("profiles").select("total_spent,member_level").eq("id", userId).maybeSingle(),
+      ]);
+      if (ordersRes.error) toast.error(ordersRes.error.message);
 
       // Auto-expire any pending orders whose countdown has passed.
       const now = Date.now();
-      const rows = (data as Order[]) ?? [];
+      const rows = (ordersRes.data as Order[]) ?? [];
       const expired = rows.filter((o) => o.status === "pending" && new Date(o.expires_at).getTime() <= now);
       if (expired.length > 0) {
         await Promise.all(
@@ -63,6 +84,32 @@ function DashboardPage() {
         expired.forEach((o) => (o.status = "failed"));
       }
       setOrders(rows.filter((o) => ALLOWED_STATUSES.includes(o.status as typeof ALLOWED_STATUSES[number])));
+
+      const spent = profRes.data?.total_spent ?? 0;
+      setTotalSpentDb(spent);
+      const derivedLevel = (profRes.data?.member_level as MemberLevel) ?? computeLevel(spent);
+      setLevel(derivedLevel);
+
+      // Load member vouchers for this level
+      const nowIso = new Date().toISOString();
+      const [vRes, redRes] = await Promise.all([
+        supabase
+          .from("vouchers")
+          .select("*")
+          .eq("active", true)
+          .eq("voucher_type", "member")
+          .eq("member_level", derivedLevel)
+          .lte("start_date", nowIso)
+          .gte("end_date", nowIso),
+        supabase.from("voucher_redemptions").select("voucher_id").eq("user_id", userId),
+      ]);
+      const counts: Record<string, number> = {};
+      (redRes.data ?? []).forEach((r) => { counts[r.voucher_id] = (counts[r.voucher_id] ?? 0) + 1; });
+      const mv: MyVoucher[] = ((vRes.data ?? []) as unknown as Omit<MyVoucher, "used">[])
+        .map((v) => ({ ...v, used: counts[v.id] ?? 0 }))
+        .filter((v) => v.used < v.usage_per_customer);
+      setMyVouchers(mv);
+
       setLoading(false);
     })();
   }, [navigate]);
@@ -74,8 +121,11 @@ function DashboardPage() {
     navigate({ to: "/auth", replace: true });
   };
 
-  const totalSpent = orders?.filter((o) => o.status === "success" || o.status === "paid").reduce((a, b) => a + b.total, 0) ?? 0;
   const totalOrders = orders?.length ?? 0;
+  const paidTotal = orders?.filter((o) => o.status === "success" || o.status === "paid").reduce((a, b) => a + b.total, 0) ?? 0;
+  const totalSpent = Math.max(totalSpentDb, paidTotal);
+  const meta = LEVEL_META[level];
+  const next = nextLevelInfo(level, totalSpent);
 
   const statusBadge = (s: string) => {
     const st = displayStatus(s);
@@ -84,6 +134,11 @@ function DashboardPage() {
       : st === "pending" ? "bg-gold/20 text-gold border-gold/40"
       : "bg-destructive/20 text-destructive border-destructive/40";
     return <span className={`rounded-full border px-2 py-0.5 text-xs uppercase ${color}`}>{st}</span>;
+  };
+
+  const copyCode = (code: string) => {
+    navigator.clipboard.writeText(code);
+    toast.success("Voucher code copied");
   };
 
   return (
@@ -99,7 +154,54 @@ function DashboardPage() {
       <div className="mt-6 grid gap-4 md:grid-cols-3">
         <StatCard label="Total Transactions" value={totalOrders.toString()} />
         <StatCard label="Total Spent" value={formatIDR(totalSpent)} />
-        <StatCard label="Member Level" value="Bronze" />
+        <div className="card-premium rounded-xl p-5">
+          <div className="text-xs text-muted-foreground">Member Level</div>
+          <div className={`font-display text-2xl mt-1 ${meta.color}`}>{meta.icon} {meta.label}</div>
+          {next ? (
+            <div className="mt-3">
+              <div className="h-2 rounded-full bg-primary/20 overflow-hidden">
+                <div className="h-full bg-gradient-to-r from-gold to-primary transition-all" style={{ width: `${next.progress}%` }} />
+              </div>
+              <div className="mt-2 text-[11px] text-muted-foreground">
+                {formatIDR(totalSpent)} / {formatIDR(next.target)} to {LEVEL_META[next.next].label}
+              </div>
+            </div>
+          ) : (
+            <div className="mt-3 text-xs text-gold">🎉 You've reached the highest membership level.</div>
+          )}
+        </div>
+      </div>
+
+      {/* MY VOUCHERS */}
+      <div className="mt-8 card-premium rounded-xl p-4 sm:p-5">
+        <div className="flex justify-between items-center gap-3 mb-4 flex-wrap">
+          <h2 className="font-display text-lg inline-flex items-center gap-2"><Ticket className="h-5 w-5 text-gold" /> My Vouchers</h2>
+          <Link to="/vouchers" className="text-xs text-gold underline">Browse all</Link>
+        </div>
+        {myVouchers.length === 0 ? (
+          <div className="text-sm text-muted-foreground py-6 text-center">No member vouchers available for your level yet.</div>
+        ) : (
+          <div className="grid gap-3 md:grid-cols-2">
+            {myVouchers.map((v) => (
+              <div key={v.id} className="rounded-lg border border-gold/30 bg-gold/5 p-3 flex items-center gap-3">
+                <div className="text-center px-2">
+                  <div className="gold-text font-display text-xl leading-none">{v.discount_percent}%</div>
+                  <div className="text-[10px] text-muted-foreground uppercase">Off</div>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="font-medium text-sm truncate">{v.name}</div>
+                  <div className="font-mono text-xs text-gold">{v.code}</div>
+                  <div className="text-[11px] text-muted-foreground">
+                    Remaining {v.usage_per_customer - v.used}/{v.usage_per_customer} • Expires {new Date(v.end_date).toLocaleDateString("en-US")}
+                  </div>
+                </div>
+                <button onClick={() => copyCode(v.code)} className="rounded-md btn-gold px-2 py-1 text-xs inline-flex items-center gap-1">
+                  <Copy className="h-3 w-3" />
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       <div className="mt-8 card-premium rounded-xl p-4 sm:p-5">

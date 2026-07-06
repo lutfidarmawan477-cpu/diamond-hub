@@ -27,7 +27,7 @@ export const Route = createFileRoute("/")({
 
 function Home() {
   const { data } = useSuspenseQuery(storefrontQO);
-  const popular = data.packages.filter((p) => p.badge).slice(0, 4);
+  const popular = data.packages.filter((p) => (p as { best_seller?: boolean }).best_seller).slice(0, 8);
   const loggedIn = useSession();
   const topupHref = loggedIn ? "/topup" : "/auth";
 
@@ -65,27 +65,29 @@ function Home() {
       </section>
 
       {/* POPULAR PACKAGES */}
-      <section className="container mx-auto px-4 py-16">
-        <SectionHead title="Best Sellers" subtitle="Player favorites" />
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {popular.map((p) => (
-            <div key={p.id} className="card-premium rounded-xl p-5 group hover:-translate-y-1 transition">
-              <div className="flex items-start justify-between">
-                <div className="text-4xl">💎</div>
-                {p.badge && <span className="rounded-full btn-gold px-2 py-0.5 text-[10px]">{p.badge}</span>}
+      {popular.length > 0 && (
+        <section className="container mx-auto px-4 py-16">
+          <SectionHead title="Best Sellers" subtitle="Player favorites" />
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {popular.map((p) => (
+              <div key={p.id} className="card-premium rounded-xl p-5 group hover:-translate-y-1 transition">
+                <div className="flex items-start justify-between">
+                  <div className="text-4xl">💎</div>
+                  <span className="rounded-full btn-gold px-2 py-0.5 text-[10px]">🔥 Best Seller</span>
+                </div>
+                <div className="mt-4 font-display text-lg">{p.name}</div>
+                <div className="mt-2 gold-text font-bold text-xl">{formatIDR(p.price)}</div>
+                {p.original_price && (
+                  <div className="text-xs text-muted-foreground line-through">{formatIDR(p.original_price)}</div>
+                )}
+                <Link to={topupHref} className="mt-4 block rounded-md bg-primary/80 hover:bg-primary py-2 text-center text-sm transition">
+                  Buy
+                </Link>
               </div>
-              <div className="mt-4 font-display text-lg">{p.name}</div>
-              <div className="mt-2 gold-text font-bold text-xl">{formatIDR(p.price)}</div>
-              {p.original_price && (
-                <div className="text-xs text-muted-foreground line-through">{formatIDR(p.original_price)}</div>
-              )}
-              <Link to={topupHref} className="mt-4 block rounded-md bg-primary/80 hover:bg-primary py-2 text-center text-sm transition">
-                Buy
-              </Link>
-            </div>
-          ))}
-        </div>
-      </section>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* FEATURES */}
       <section className="container mx-auto px-4 py-16">
