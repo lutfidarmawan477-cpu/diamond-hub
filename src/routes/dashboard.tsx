@@ -105,7 +105,7 @@ function DashboardPage() {
       ]);
       const counts: Record<string, number> = {};
       (redRes.data ?? []).forEach((r) => { counts[r.voucher_id] = (counts[r.voucher_id] ?? 0) + 1; });
-      const mv: MyVoucher[] = ((vRes.data ?? []) as MyVoucher[])
+      const mv: MyVoucher[] = ((vRes.data ?? []) as unknown as Omit<MyVoucher, "used">[])
         .map((v) => ({ ...v, used: counts[v.id] ?? 0 }))
         .filter((v) => v.used < v.usage_per_customer);
       setMyVouchers(mv);
