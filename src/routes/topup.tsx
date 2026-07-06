@@ -359,6 +359,7 @@ function TopupPage() {
             <hr className="my-3 border-border" />
             <SumRow label="Subtotal" value={formatIDR(subtotal)} />
             <SumRow label="Fee" value={formatIDR(fee)} />
+            {discount > 0 && <SumRow label="Discount" value={`- ${formatIDR(discount)}`} />}
             <div className="mt-3 flex justify-between font-display text-lg">
               <span>Total</span>
               <span className="gold-text">{formatIDR(total)}</span>
