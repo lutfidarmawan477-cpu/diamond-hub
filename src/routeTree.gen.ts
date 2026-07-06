@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as VouchersRouteImport } from './routes/vouchers'
 import { Route as TrackingRouteImport } from './routes/tracking'
 import { Route as TopupRouteImport } from './routes/topup'
 import { Route as TermsRouteImport } from './routes/terms'
@@ -17,9 +18,16 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as InvoiceInvoiceRouteImport } from './routes/invoice.$invoice'
+import { Route as AdminVouchersRouteImport } from './routes/admin.vouchers'
+import { Route as AdminStockRouteImport } from './routes/admin.stock'
 import { Route as AdminPackagesRouteImport } from './routes/admin.packages'
 import { Route as AdminHistoryRouteImport } from './routes/admin.history'
 
+const VouchersRoute = VouchersRouteImport.update({
+  id: '/vouchers',
+  path: '/vouchers',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TrackingRoute = TrackingRouteImport.update({
   id: '/tracking',
   path: '/tracking',
@@ -60,6 +68,16 @@ const InvoiceInvoiceRoute = InvoiceInvoiceRouteImport.update({
   path: '/invoice/$invoice',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminVouchersRoute = AdminVouchersRouteImport.update({
+  id: '/admin/vouchers',
+  path: '/admin/vouchers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminStockRoute = AdminStockRouteImport.update({
+  id: '/admin/stock',
+  path: '/admin/stock',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminPackagesRoute = AdminPackagesRouteImport.update({
   id: '/admin/packages',
   path: '/admin/packages',
@@ -78,8 +96,11 @@ export interface FileRoutesByFullPath {
   '/terms': typeof TermsRoute
   '/topup': typeof TopupRoute
   '/tracking': typeof TrackingRoute
+  '/vouchers': typeof VouchersRoute
   '/admin/history': typeof AdminHistoryRoute
   '/admin/packages': typeof AdminPackagesRoute
+  '/admin/stock': typeof AdminStockRoute
+  '/admin/vouchers': typeof AdminVouchersRoute
   '/invoice/$invoice': typeof InvoiceInvoiceRoute
   '/admin/': typeof AdminIndexRoute
 }
@@ -90,8 +111,11 @@ export interface FileRoutesByTo {
   '/terms': typeof TermsRoute
   '/topup': typeof TopupRoute
   '/tracking': typeof TrackingRoute
+  '/vouchers': typeof VouchersRoute
   '/admin/history': typeof AdminHistoryRoute
   '/admin/packages': typeof AdminPackagesRoute
+  '/admin/stock': typeof AdminStockRoute
+  '/admin/vouchers': typeof AdminVouchersRoute
   '/invoice/$invoice': typeof InvoiceInvoiceRoute
   '/admin': typeof AdminIndexRoute
 }
@@ -103,8 +127,11 @@ export interface FileRoutesById {
   '/terms': typeof TermsRoute
   '/topup': typeof TopupRoute
   '/tracking': typeof TrackingRoute
+  '/vouchers': typeof VouchersRoute
   '/admin/history': typeof AdminHistoryRoute
   '/admin/packages': typeof AdminPackagesRoute
+  '/admin/stock': typeof AdminStockRoute
+  '/admin/vouchers': typeof AdminVouchersRoute
   '/invoice/$invoice': typeof InvoiceInvoiceRoute
   '/admin/': typeof AdminIndexRoute
 }
@@ -117,8 +144,11 @@ export interface FileRouteTypes {
     | '/terms'
     | '/topup'
     | '/tracking'
+    | '/vouchers'
     | '/admin/history'
     | '/admin/packages'
+    | '/admin/stock'
+    | '/admin/vouchers'
     | '/invoice/$invoice'
     | '/admin/'
   fileRoutesByTo: FileRoutesByTo
@@ -129,8 +159,11 @@ export interface FileRouteTypes {
     | '/terms'
     | '/topup'
     | '/tracking'
+    | '/vouchers'
     | '/admin/history'
     | '/admin/packages'
+    | '/admin/stock'
+    | '/admin/vouchers'
     | '/invoice/$invoice'
     | '/admin'
   id:
@@ -141,8 +174,11 @@ export interface FileRouteTypes {
     | '/terms'
     | '/topup'
     | '/tracking'
+    | '/vouchers'
     | '/admin/history'
     | '/admin/packages'
+    | '/admin/stock'
+    | '/admin/vouchers'
     | '/invoice/$invoice'
     | '/admin/'
   fileRoutesById: FileRoutesById
@@ -154,14 +190,24 @@ export interface RootRouteChildren {
   TermsRoute: typeof TermsRoute
   TopupRoute: typeof TopupRoute
   TrackingRoute: typeof TrackingRoute
+  VouchersRoute: typeof VouchersRoute
   AdminHistoryRoute: typeof AdminHistoryRoute
   AdminPackagesRoute: typeof AdminPackagesRoute
+  AdminStockRoute: typeof AdminStockRoute
+  AdminVouchersRoute: typeof AdminVouchersRoute
   InvoiceInvoiceRoute: typeof InvoiceInvoiceRoute
   AdminIndexRoute: typeof AdminIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/vouchers': {
+      id: '/vouchers'
+      path: '/vouchers'
+      fullPath: '/vouchers'
+      preLoaderRoute: typeof VouchersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/tracking': {
       id: '/tracking'
       path: '/tracking'
@@ -218,6 +264,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof InvoiceInvoiceRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/vouchers': {
+      id: '/admin/vouchers'
+      path: '/admin/vouchers'
+      fullPath: '/admin/vouchers'
+      preLoaderRoute: typeof AdminVouchersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/stock': {
+      id: '/admin/stock'
+      path: '/admin/stock'
+      fullPath: '/admin/stock'
+      preLoaderRoute: typeof AdminStockRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/packages': {
       id: '/admin/packages'
       path: '/admin/packages'
@@ -242,8 +302,11 @@ const rootRouteChildren: RootRouteChildren = {
   TermsRoute: TermsRoute,
   TopupRoute: TopupRoute,
   TrackingRoute: TrackingRoute,
+  VouchersRoute: VouchersRoute,
   AdminHistoryRoute: AdminHistoryRoute,
   AdminPackagesRoute: AdminPackagesRoute,
+  AdminStockRoute: AdminStockRoute,
+  AdminVouchersRoute: AdminVouchersRoute,
   InvoiceInvoiceRoute: InvoiceInvoiceRoute,
   AdminIndexRoute: AdminIndexRoute,
 }

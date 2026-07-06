@@ -55,7 +55,7 @@ function AdminStock() {
     const n = Number(amount);
     if (!Number.isFinite(n) || n <= 0) return toast.error("Enter a positive amount");
     setSaving(true);
-    const { data, error } = await supabase.rpc("admin_add_stock", { _amount: n, _note: note || null });
+    const { data, error } = await supabase.rpc("admin_add_stock", { _amount: n, _note: note || undefined });
     setSaving(false);
     if (error) return toast.error(error.message);
     toast.success(`Stock added. New total: ${data}`);
