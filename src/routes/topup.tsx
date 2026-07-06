@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
 import PhoneInput, { isValidPhoneNumber } from "react-phone-number-input";
 import "react-phone-number-input/style.css";
-import { getStorefront, createOrder } from "@/lib/storefront.functions";
+import { getStorefront, createOrder, validateVoucher } from "@/lib/storefront.functions";
 import { validateMlAccount } from "@/lib/ml-validate.functions";
 import { formatIDR } from "@/lib/format";
 import { useSession } from "@/hooks/useSession";
@@ -50,22 +50,52 @@ function TopupPage() {
   const [buyerWa, setBuyerWa] = useState<string | undefined>(undefined);
   const [buyerEmail, setBuyerEmail] = useState("");
   const [agree, setAgree] = useState(false);
+  const [voucherCode, setVoucherCode] = useState("");
+  const [voucherState, setVoucherState] = useState<
+    | { status: "idle" }
+    | { status: "loading" }
+    | { status: "valid"; discount: number; name: string; percent: number }
+    | { status: "invalid"; message: string }
+  >({ status: "idle" });
 
   // Reset ML check when inputs change
   useEffect(() => {
     setMlCheck({ status: "idle" });
   }, [userId, zoneId]);
 
+  // Reset voucher when package changes
+  useEffect(() => {
+    setVoucherState({ status: "idle" });
+  }, [pkgId]);
+
   const pkg = data.packages.find((p) => p.id === pkgId);
   const pay = data.payments.find((p) => p.id === payId);
   const subtotal = pkg?.price ?? 0;
   const fee = pay?.fee ?? 0;
-  const total = subtotal + fee;
+  const discount = voucherState.status === "valid" ? voucherState.discount : 0;
+  const total = Math.max(0, subtotal + fee - discount);
+
+  const outOfStock = pkg ? (data.stock ?? 0) < pkg.diamond_amount : false;
 
   const phoneValid = !!buyerWa && isValidPhoneNumber(buyerWa);
   const phoneTouched = !!buyerWa && buyerWa.length > 3;
   const mlValid = mlCheck.status === "valid";
   const nickname = mlCheck.status === "valid" ? mlCheck.nickname : null;
+
+  const applyVoucher = async () => {
+    if (!voucherCode.trim()) return toast.error("Please enter a voucher code");
+    if (!pkgId) return toast.error("Please pick a package first");
+    setVoucherState({ status: "loading" });
+    try {
+      const r = await validateVoucher({ data: { code: voucherCode.trim(), subtotal } });
+      setVoucherState({ status: "valid", discount: r.discount, name: r.name, percent: r.percent });
+      toast.success(`Voucher applied — saving ${formatIDR(r.discount)}`);
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : "Invalid voucher";
+      setVoucherState({ status: "invalid", message: msg });
+      toast.error(msg);
+    }
+  };
 
   const checkNick = async () => {
     if (!userId || !zoneId) { toast.error("Please enter both User ID and Zone ID first"); return; }
