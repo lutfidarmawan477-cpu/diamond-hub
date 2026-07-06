@@ -27,7 +27,7 @@ export const Route = createFileRoute("/")({
 
 function Home() {
   const { data } = useSuspenseQuery(storefrontQO);
-  const popular = data.packages.filter((p) => p.badge).slice(0, 4);
+  const popular = data.packages.filter((p) => (p as { best_seller?: boolean }).best_seller).slice(0, 8);
   const loggedIn = useSession();
   const topupHref = loggedIn ? "/topup" : "/auth";
 
