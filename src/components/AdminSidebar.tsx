@@ -2,7 +2,7 @@ import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { LayoutDashboard, Package, History, LogOut, type LucideIcon } from "lucide-react";
+import { LayoutDashboard, Package, History, LogOut, Boxes, Ticket, type LucideIcon } from "lucide-react";
 
 export function AdminSidebar() {
   const navigate = useNavigate();
@@ -39,6 +39,8 @@ export function AdminSidebar() {
       <nav className="flex flex-wrap gap-1 text-sm md:flex-1 md:flex-col md:flex-nowrap">
         {item("/admin", "Dashboard", LayoutDashboard)}
         {item("/admin/packages", "Manage Products", Package)}
+        {item("/admin/stock", "Diamond Stock", Boxes)}
+        {item("/admin/vouchers", "Vouchers", Ticket)}
         {item("/admin/history", "Login History", History)}
       </nav>
       <button

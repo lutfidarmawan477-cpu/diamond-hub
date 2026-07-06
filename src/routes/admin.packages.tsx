@@ -8,6 +8,7 @@ import { AdminSidebar } from "@/components/AdminSidebar";
 type Pkg = {
   id: string; name: string; diamond_amount: number; price: number;
   original_price: number | null; badge: string | null; sort_order: number; active: boolean;
+  best_seller: boolean;
 };
 
 export const Route = createFileRoute("/admin/packages")({
@@ -15,7 +16,7 @@ export const Route = createFileRoute("/admin/packages")({
   component: AdminPackages,
 });
 
-const empty: Pkg = { id: "", name: "", diamond_amount: 0, price: 0, original_price: null, badge: null, sort_order: 0, active: true };
+const empty: Pkg = { id: "", name: "", diamond_amount: 0, price: 0, original_price: null, badge: null, sort_order: 0, active: true, best_seller: false };
 
 function AdminPackages() {
   const navigate = useNavigate();
@@ -213,9 +214,15 @@ function AdminPackages() {
                   <Field label="Original Price (optional)"><input type="number" className={ic} value={editing.original_price ?? ""} onChange={(e) => setEditing({ ...editing, original_price: e.target.value ? Number(e.target.value) : null })} /></Field>
                 </div>
                 <Field label="Badge (optional)"><input className={ic} value={editing.badge ?? ""} onChange={(e) => setEditing({ ...editing, badge: e.target.value || null })} /></Field>
-                <label className="flex items-center gap-2 text-sm">
-                  <input type="checkbox" checked={editing.active} onChange={(e) => setEditing({ ...editing, active: e.target.checked })} /> Active
-                </label>
+                <div className="flex flex-wrap gap-4 pt-1">
+                  <label className="flex items-center gap-2 text-sm">
+                    <input type="checkbox" checked={editing.active} onChange={(e) => setEditing({ ...editing, active: e.target.checked })} /> Active
+                  </label>
+                  <label className="flex items-center gap-2 text-sm">
+                    <input type="checkbox" checked={editing.best_seller} onChange={(e) => setEditing({ ...editing, best_seller: e.target.checked })} />
+                    <span>Best Seller <span className="text-xs text-muted-foreground">(shown on Home)</span></span>
+                  </label>
+                </div>
               </div>
               <div className="p-6 pt-4 flex gap-2 justify-end shrink-0 border-t border-border/40 mt-3">
                 <button onClick={() => setEditing(null)} className="rounded-md border border-border px-4 py-2 text-sm">Cancel</button>
