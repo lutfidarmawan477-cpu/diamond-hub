@@ -18,6 +18,7 @@ export type Database = {
         Row: {
           active: boolean
           badge: string | null
+          best_seller: boolean
           created_at: string
           diamond_amount: number
           id: string
@@ -29,6 +30,7 @@ export type Database = {
         Insert: {
           active?: boolean
           badge?: string | null
+          best_seller?: boolean
           created_at?: string
           diamond_amount: number
           id?: string
@@ -40,6 +42,7 @@ export type Database = {
         Update: {
           active?: boolean
           badge?: string | null
+          best_seller?: boolean
           created_at?: string
           diamond_amount?: number
           id?: string
@@ -47,6 +50,54 @@ export type Database = {
           original_price?: number | null
           price?: number
           sort_order?: number
+        }
+        Relationships: []
+      }
+      diamond_stock: {
+        Row: {
+          current_stock: number
+          id: number
+          updated_at: string
+        }
+        Insert: {
+          current_stock?: number
+          id?: number
+          updated_at?: string
+        }
+        Update: {
+          current_stock?: number
+          id?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      diamond_stock_history: {
+        Row: {
+          activity_type: string
+          admin_id: string | null
+          amount: number
+          created_at: string
+          id: string
+          note: string | null
+          order_id: string | null
+        }
+        Insert: {
+          activity_type: string
+          admin_id?: string | null
+          amount: number
+          created_at?: string
+          id?: string
+          note?: string | null
+          order_id?: string | null
+        }
+        Update: {
+          activity_type?: string
+          admin_id?: string | null
+          amount?: number
+          created_at?: string
+          id?: string
+          note?: string | null
+          order_id?: string | null
         }
         Relationships: []
       }
@@ -81,6 +132,7 @@ export type Database = {
           buyer_whatsapp: string
           created_at: string
           diamond_amount: number
+          discount: number
           expires_at: string
           fee: number
           game_user_id: string
@@ -96,6 +148,7 @@ export type Database = {
           total: number
           updated_at: string
           user_id: string | null
+          voucher_id: string | null
           zone_id: string
         }
         Insert: {
@@ -104,6 +157,7 @@ export type Database = {
           buyer_whatsapp: string
           created_at?: string
           diamond_amount: number
+          discount?: number
           expires_at?: string
           fee?: number
           game_user_id: string
@@ -119,6 +173,7 @@ export type Database = {
           total: number
           updated_at?: string
           user_id?: string | null
+          voucher_id?: string | null
           zone_id: string
         }
         Update: {
@@ -127,6 +182,7 @@ export type Database = {
           buyer_whatsapp?: string
           created_at?: string
           diamond_amount?: number
+          discount?: number
           expires_at?: string
           fee?: number
           game_user_id?: string
@@ -142,6 +198,7 @@ export type Database = {
           total?: number
           updated_at?: string
           user_id?: string | null
+          voucher_id?: string | null
           zone_id?: string
         }
         Relationships: [
@@ -157,6 +214,13 @@ export type Database = {
             columns: ["payment_method_id"]
             isOneToOne: false
             referencedRelation: "payment_methods"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "orders_voucher_id_fkey"
+            columns: ["voucher_id"]
+            isOneToOne: false
+            referencedRelation: "vouchers"
             referencedColumns: ["id"]
           },
         ]
@@ -196,7 +260,9 @@ export type Database = {
           created_at: string
           full_name: string | null
           id: string
+          member_level: string
           phone: string | null
+          total_spent: number
           updated_at: string
           whatsapp: string | null
         }
@@ -204,7 +270,9 @@ export type Database = {
           created_at?: string
           full_name?: string | null
           id: string
+          member_level?: string
           phone?: string | null
+          total_spent?: number
           updated_at?: string
           whatsapp?: string | null
         }
@@ -212,7 +280,9 @@ export type Database = {
           created_at?: string
           full_name?: string | null
           id?: string
+          member_level?: string
           phone?: string | null
+          total_spent?: number
           updated_at?: string
           whatsapp?: string | null
         }
@@ -239,11 +309,101 @@ export type Database = {
         }
         Relationships: []
       }
+      voucher_redemptions: {
+        Row: {
+          created_at: string
+          discount_applied: number
+          id: string
+          order_id: string | null
+          user_id: string
+          voucher_id: string
+        }
+        Insert: {
+          created_at?: string
+          discount_applied?: number
+          id?: string
+          order_id?: string | null
+          user_id: string
+          voucher_id: string
+        }
+        Update: {
+          created_at?: string
+          discount_applied?: number
+          id?: string
+          order_id?: string | null
+          user_id?: string
+          voucher_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "voucher_redemptions_voucher_id_fkey"
+            columns: ["voucher_id"]
+            isOneToOne: false
+            referencedRelation: "vouchers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      vouchers: {
+        Row: {
+          active: boolean
+          code: string
+          created_at: string
+          description: string | null
+          discount_percent: number
+          end_date: string
+          id: string
+          max_discount: number | null
+          member_level: string | null
+          name: string
+          start_date: string
+          updated_at: string
+          usage_per_customer: number
+          voucher_type: string
+        }
+        Insert: {
+          active?: boolean
+          code: string
+          created_at?: string
+          description?: string | null
+          discount_percent: number
+          end_date: string
+          id?: string
+          max_discount?: number | null
+          member_level?: string | null
+          name: string
+          start_date: string
+          updated_at?: string
+          usage_per_customer?: number
+          voucher_type: string
+        }
+        Update: {
+          active?: boolean
+          code?: string
+          created_at?: string
+          description?: string | null
+          discount_percent?: number
+          end_date?: string
+          id?: string
+          max_discount?: number | null
+          member_level?: string | null
+          name?: string
+          start_date?: string
+          updated_at?: string
+          usage_per_customer?: number
+          voucher_type?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
+      admin_add_stock: {
+        Args: { _amount: number; _note?: string }
+        Returns: number
+      }
       admin_list_customers: {
         Args: never
         Returns: {
