@@ -225,13 +225,17 @@ function TopupPage() {
 
           {/* 2. Package */}
           <Card step="2" title="Choose Diamond Amount">
+            <div className="mb-3 text-xs text-muted-foreground">Available stock: <span className="gold-text font-semibold">{(data.stock ?? 0).toLocaleString("en-US")}</span> Diamonds</div>
             <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3">
               {data.packages.map((p) => {
                 const selected = p.id === pkgId;
+                const oos = (data.stock ?? 0) < p.diamond_amount;
                 return (
-                  <button type="button" key={p.id} onClick={() => setPkgId(p.id)}
-                    className={`text-left rounded-xl p-4 border transition relative ${selected ? "border-gold glow-ring bg-primary/20" : "border-border card-premium hover:border-primary/60"}`}>
+                  <button type="button" key={p.id} onClick={() => !oos && setPkgId(p.id)}
+                    disabled={oos}
+                    className={`text-left rounded-xl p-4 border transition relative ${selected ? "border-gold glow-ring bg-primary/20" : "border-border card-premium hover:border-primary/60"} ${oos ? "opacity-50 cursor-not-allowed" : ""}`}>
                     {p.badge && <span className="absolute -top-2 right-3 rounded-full btn-gold px-2 py-0.5 text-[10px]">{p.badge}</span>}
+                    {oos && <span className="absolute -top-2 left-3 rounded-full bg-destructive px-2 py-0.5 text-[10px] text-destructive-foreground">Out of Stock</span>}
                     <div className="text-2xl">💎</div>
                     <div className="font-display mt-1">{p.name}</div>
                     <div className="gold-text font-bold mt-1">{formatIDR(p.price)}</div>
@@ -240,6 +244,12 @@ function TopupPage() {
                 );
               })}
             </div>
+            {outOfStock && (
+              <div className="mt-3 flex items-start gap-2 rounded-md border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+                <AlertCircle className="h-4 w-4 mt-0.5 shrink-0" />
+                <span>Sorry, this product is currently out of stock.</span>
+              </div>
+            )}
           </Card>
 
           {/* 3. Payment */}
