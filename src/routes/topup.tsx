@@ -129,6 +129,7 @@ function TopupPage() {
           buyer_name: buyerName,
           buyer_whatsapp: buyerWa ?? "",
           buyer_email: buyerEmail,
+          voucher_code: voucherState.status === "valid" ? voucherCode.trim() : null,
         },
       }),
     onSuccess: (res) => {
@@ -142,6 +143,7 @@ function TopupPage() {
     if (!mlValid) return "Please verify your Mobile Legends account first.";
     if (!phoneValid) return "Please enter a valid phone number.";
     if (!pkgId) return "Please choose a diamond package.";
+    if (outOfStock) return "Sorry, this product is currently out of stock.";
     if (!payId) return "Please choose a payment method.";
     if (!buyerName || !buyerEmail) return "Please complete buyer information.";
     if (!agree) return "You must agree to the terms and conditions.";
