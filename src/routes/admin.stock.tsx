@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { AdminSidebar } from "@/components/AdminSidebar";
+import { usePolling } from "@/hooks/usePolling";
 
 type HistoryRow = {
   id: string;
@@ -27,14 +28,13 @@ function AdminStock() {
   const [amount, setAmount] = useState<string>("");
   const [note, setNote] = useState<string>("");
   const [saving, setSaving] = useState(false);
+  const [filter, setFilter] = useState<"all" | "add" | "deduct">("all");
 
   const load = async () => {
     const [s, h] = await Promise.all([
       supabase.from("diamond_stock").select("current_stock").eq("id", 1).maybeSingle(),
       supabase.from("diamond_stock_history").select("*").order("created_at", { ascending: false }).limit(100),
     ]);
-    if (s.error) toast.error(s.error.message);
-    if (h.error) toast.error(h.error.message);
     setStock(s.data?.current_stock ?? 0);
     setHistory((h.data as HistoryRow[]) ?? []);
   };
@@ -51,6 +51,8 @@ function AdminStock() {
     })();
   }, [navigate]);
 
+  usePolling(() => { if (isAdmin) void load(); }, 8000);
+
   const addStock = async () => {
     const n = Number(amount);
     if (!Number.isFinite(n) || n <= 0) return toast.error("Enter a positive amount");
@@ -66,24 +68,26 @@ function AdminStock() {
 
   if (isAdmin === null) return <div className="container mx-auto p-10 text-center">Loading…</div>;
 
+  const filtered = history.filter((h) => filter === "all" || h.activity_type === filter);
+
   return (
     <div className="min-h-screen flex flex-col md:flex-row">
       <AdminSidebar />
       <main className="flex-1 p-4 sm:p-6 min-w-0">
         <h1 className="font-display text-2xl mb-6">Diamond Stock</h1>
 
-        <div className="grid gap-4 md:grid-cols-2 mb-6">
-          <div className="card-premium rounded-xl p-6">
+        <div className="grid gap-4 md:grid-cols-2 mb-6 items-stretch">
+          <div className="card-premium rounded-xl p-4 sm:p-5 flex h-full flex-col">
             <div className="text-xs text-muted-foreground uppercase tracking-wider">Current Stock</div>
-            <div className="mt-2 flex items-baseline gap-2">
-              <span className="text-4xl">💎</span>
-              <span className="font-display text-4xl gold-text">{(stock ?? 0).toLocaleString("en-US")}</span>
+            <div className="mt-3 flex flex-1 flex-wrap items-baseline gap-2">
+              <span className="text-3xl">💎</span>
+              <span className="font-display text-3xl sm:text-4xl gold-text">{(stock ?? 0).toLocaleString("en-US")}</span>
               <span className="text-sm text-muted-foreground">Diamonds</span>
             </div>
           </div>
-          <div className="card-premium rounded-xl p-6">
-            <div className="text-xs text-muted-foreground uppercase tracking-wider mb-3">Add Stock</div>
-            <div className="grid gap-2">
+          <div className="card-premium rounded-xl p-4 sm:p-5 flex h-full flex-col">
+            <div className="text-xs text-muted-foreground uppercase tracking-wider">Add Diamond</div>
+            <div className="mt-3 grid flex-1 content-start gap-2">
               <input
                 type="number"
                 min={1}
@@ -101,7 +105,7 @@ function AdminStock() {
               <button
                 onClick={addStock}
                 disabled={saving}
-                className="mt-1 rounded-md btn-gold px-4 py-2 text-sm disabled:opacity-50"
+                className="mt-1 rounded-md btn-gold px-4 py-2 text-sm disabled:opacity-50 active:scale-95 transition"
               >
                 {saving ? "Saving…" : "+ Add Stock"}
               </button>
@@ -110,7 +114,18 @@ function AdminStock() {
         </div>
 
         <div className="card-premium rounded-xl p-4 sm:p-5">
-          <h2 className="font-display text-lg mb-4">Stock History</h2>
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+            <h2 className="font-display text-lg">Stock History</h2>
+            <select
+              className="rounded-md bg-input border border-border px-3 py-2 text-sm"
+              value={filter}
+              onChange={(e) => setFilter(e.target.value as "all" | "add" | "deduct")}
+            >
+              <option value="all">All</option>
+              <option value="add">Add</option>
+              <option value="deduct">Deduct</option>
+            </select>
+          </div>
           {/* Desktop */}
           <div className="hidden md:block overflow-x-auto">
             <table className="w-full text-sm">
@@ -123,7 +138,7 @@ function AdminStock() {
                 </tr>
               </thead>
               <tbody>
-                {history.map((h) => (
+                {filtered.map((h) => (
                   <tr key={h.id} className="border-b border-border/60">
                     <td className="py-3 pr-3 text-xs">{new Date(h.created_at).toLocaleString("en-US")}</td>
                     <td className="pr-3">
@@ -135,13 +150,13 @@ function AdminStock() {
                     <td className="pr-3 text-xs text-muted-foreground truncate max-w-[280px]">{h.note ?? "—"}</td>
                   </tr>
                 ))}
-                {history.length === 0 && <tr><td colSpan={4} className="py-8 text-center text-muted-foreground">No history yet</td></tr>}
+                {filtered.length === 0 && <tr><td colSpan={4} className="py-8 text-center text-muted-foreground">No history yet</td></tr>}
               </tbody>
             </table>
           </div>
           {/* Mobile */}
           <div className="grid gap-3 md:hidden">
-            {history.map((h) => (
+            {filtered.map((h) => (
               <div key={h.id} className="rounded-lg border border-border/60 p-3">
                 <div className="flex items-start justify-between gap-2">
                   <span className={`rounded-full border px-2 py-0.5 text-xs uppercase ${h.activity_type === "add" ? "bg-success/20 text-success border-success/40" : "bg-destructive/20 text-destructive border-destructive/40"}`}>
@@ -153,7 +168,7 @@ function AdminStock() {
                 {h.note && <div className="mt-1 text-xs">{h.note}</div>}
               </div>
             ))}
-            {history.length === 0 && <div className="py-8 text-center text-sm text-muted-foreground">No history yet</div>}
+            {filtered.length === 0 && <div className="py-8 text-center text-sm text-muted-foreground">No history yet</div>}
           </div>
         </div>
       </main>

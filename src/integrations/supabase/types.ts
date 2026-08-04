@@ -411,8 +411,10 @@ export type Database = {
           full_name: string
           id: string
           last_login: string
+          member_level: string
           registered_at: string
           status: string
+          total_spent: number
         }[]
       }
       has_role: {

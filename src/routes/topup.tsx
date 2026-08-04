@@ -8,6 +8,7 @@ import "react-phone-number-input/style.css";
 import { getStorefront, createOrder, validateVoucher } from "@/lib/storefront.functions";
 import { validateMlAccount } from "@/lib/ml-validate.functions";
 import { formatIDR } from "@/lib/format";
+import { computeFee } from "@/lib/fee";
 import { useSession } from "@/hooks/useSession";
 
 const storefrontQO = queryOptions({ queryKey: ["storefront"], queryFn: () => getStorefront() });
@@ -71,7 +72,7 @@ function TopupPage() {
   const pkg = data.packages.find((p) => p.id === pkgId);
   const pay = data.payments.find((p) => p.id === payId);
   const subtotal = pkg?.price ?? 0;
-  const fee = pay?.fee ?? 0;
+  const fee = pay && pkg ? computeFee(pay.type, pkg.diamond_amount) : 0;
   const discount = voucherState.status === "valid" ? voucherState.discount : 0;
   const total = Math.max(0, subtotal + fee - discount);
 
@@ -225,7 +226,7 @@ function TopupPage() {
 
           {/* 2. Package */}
           <Card step="2" title="Choose Diamond Amount">
-            <div className="mb-3 text-xs text-muted-foreground">Available stock: <span className="gold-text font-semibold">{(data.stock ?? 0).toLocaleString("en-US")}</span> Diamonds</div>
+            
             <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3">
               {data.packages.map((p) => {
                 const selected = p.id === pkgId;
@@ -265,7 +266,7 @@ function TopupPage() {
                         <button type="button" key={p.id} onClick={() => setPayId(p.id)}
                           className={`rounded-lg px-3 py-3 text-left border text-sm transition ${selected ? "border-gold bg-primary/20" : "border-border card-premium hover:border-primary/60"}`}>
                           <div className="font-medium">{p.name}</div>
-                          <div className="text-xs text-muted-foreground">Fee {formatIDR(p.fee)}</div>
+                          <div className="text-xs text-muted-foreground">Fee {formatIDR(computeFee(p.type, pkg?.diamond_amount ?? 0))}</div>
                         </button>
                       );
                     })}

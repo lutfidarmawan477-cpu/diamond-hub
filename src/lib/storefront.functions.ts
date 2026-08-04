@@ -3,6 +3,7 @@ import { z } from "zod";
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "@/integrations/supabase/types";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { computeFee } from "@/lib/fee";
 
 function publicClient() {
   return createClient<Database>(
@@ -106,7 +107,7 @@ export const createOrder = createServerFn({ method: "POST" })
     const sb = context.supabase;
     const [pkg, pay, stock] = await Promise.all([
       sb.from("diamond_packages").select("id,name,diamond_amount,price,active").eq("id", data.package_id).maybeSingle(),
-      sb.from("payment_methods").select("id,name,fee,active").eq("id", data.payment_method_id).maybeSingle(),
+      sb.from("payment_methods").select("id,name,type,fee,active").eq("id", data.payment_method_id).maybeSingle(),
       sb.from("diamond_stock").select("current_stock").eq("id", 1).maybeSingle(),
     ]);
     if (pkg.error || !pkg.data || !pkg.data.active) throw new Error("Package not found");
@@ -118,7 +119,7 @@ export const createOrder = createServerFn({ method: "POST" })
     }
 
     const subtotal = pkg.data.price;
-    const fee = pay.data.fee;
+    const fee = computeFee(pay.data.type, pkg.data.diamond_amount);
 
     let voucherId: string | null = null;
     let discount = 0;
