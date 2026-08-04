@@ -118,7 +118,7 @@ export const createOrder = createServerFn({ method: "POST" })
     }
 
     const subtotal = pkg.data.price;
-    const fee = pay.data.fee;
+    const fee = computeFee(pay.data.type, pkg.data.diamond_amount);
 
     let voucherId: string | null = null;
     let discount = 0;
