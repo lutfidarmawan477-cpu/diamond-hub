@@ -230,7 +230,8 @@ function AdminVouchers() {
                 <button onClick={save} className="rounded-md btn-gold px-4 py-2 text-sm">Save</button>
               </div>
             </div>
-          </>
+          </>,
+          document.body,
         )}
       </main>
     </div>
