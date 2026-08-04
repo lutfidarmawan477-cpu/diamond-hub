@@ -1,5 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { formatIDR } from "@/lib/format";
 import { toast } from "sonner";
@@ -229,7 +230,8 @@ function AdminPackages() {
                 <button onClick={save} className="rounded-md btn-gold px-4 py-2 text-sm">Save</button>
               </div>
             </div>
-          </>
+          </>,
+          document.body,
         )}
       </main>
     </div>
