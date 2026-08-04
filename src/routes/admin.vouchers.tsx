@@ -185,7 +185,7 @@ function AdminVouchers() {
         {editing && typeof document !== "undefined" && createPortal(
           <>
             <div className="fixed inset-0 z-[100] bg-black/70" onClick={() => setEditing(null)} />
-            <div className="fixed left-1/2 top-1/2 z-50 w-[95%] max-w-[560px] max-h-[90vh] -translate-x-1/2 -translate-y-1/2 flex flex-col overflow-hidden card-premium rounded-2xl shadow-2xl">
+            <div className="fixed left-1/2 top-1/2 z-[101] w-[95%] max-w-[560px] max-h-[90vh] -translate-x-1/2 -translate-y-1/2 flex flex-col overflow-hidden card-premium rounded-2xl shadow-2xl">
               <div className="p-6 pb-3 shrink-0">
                 <h2 className="font-display text-lg">{editing.id ? "Edit Voucher" : "Add Voucher"}</h2>
               </div>
