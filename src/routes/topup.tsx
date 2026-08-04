@@ -266,7 +266,7 @@ function TopupPage() {
                         <button type="button" key={p.id} onClick={() => setPayId(p.id)}
                           className={`rounded-lg px-3 py-3 text-left border text-sm transition ${selected ? "border-gold bg-primary/20" : "border-border card-premium hover:border-primary/60"}`}>
                           <div className="font-medium">{p.name}</div>
-                          <div className="text-xs text-muted-foreground">Fee {formatIDR(p.fee)}</div>
+                          <div className="text-xs text-muted-foreground">Fee {formatIDR(computeFee(p.type, pkg?.diamond_amount ?? 0))}</div>
                         </button>
                       );
                     })}
