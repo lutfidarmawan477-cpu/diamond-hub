@@ -1,5 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { formatIDR } from "@/lib/format";
 import { toast } from "sonner";
@@ -193,14 +194,14 @@ function AdminPackages() {
           </div>
         </div>
 
-        {editing && (
+        {editing && typeof document !== "undefined" && createPortal(
           <>
             <div
-              className="fixed inset-0 z-50 bg-black/70"
+              className="fixed inset-0 z-[100] bg-black/70"
               onClick={() => setEditing(null)}
             />
             <div
-              className="fixed left-1/2 top-1/2 z-50 w-[95%] max-w-[500px] max-h-[90vh] -translate-x-1/2 -translate-y-1/2 flex flex-col overflow-hidden card-premium rounded-2xl shadow-2xl"
+              className="fixed left-1/2 top-1/2 z-[101] w-[95%] max-w-[500px] max-h-[90vh] -translate-x-1/2 -translate-y-1/2 flex flex-col overflow-hidden card-premium rounded-2xl shadow-2xl"
             >
               <div className="p-6 pb-3 shrink-0">
                 <h2 className="font-display text-lg">{editing.id ? "Edit Product" : "Add Product"}</h2>
@@ -229,7 +230,8 @@ function AdminPackages() {
                 <button onClick={save} className="rounded-md btn-gold px-4 py-2 text-sm">Save</button>
               </div>
             </div>
-          </>
+          </>,
+          document.body,
         )}
       </main>
     </div>
