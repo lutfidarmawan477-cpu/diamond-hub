@@ -106,7 +106,7 @@ export const createOrder = createServerFn({ method: "POST" })
     const sb = context.supabase;
     const [pkg, pay, stock] = await Promise.all([
       sb.from("diamond_packages").select("id,name,diamond_amount,price,active").eq("id", data.package_id).maybeSingle(),
-      sb.from("payment_methods").select("id,name,fee,active").eq("id", data.payment_method_id).maybeSingle(),
+      sb.from("payment_methods").select("id,name,type,fee,active").eq("id", data.payment_method_id).maybeSingle(),
       sb.from("diamond_stock").select("current_stock").eq("id", 1).maybeSingle(),
     ]);
     if (pkg.error || !pkg.data || !pkg.data.active) throw new Error("Package not found");
