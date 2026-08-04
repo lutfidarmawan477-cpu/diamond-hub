@@ -226,7 +226,7 @@ function TopupPage() {
 
           {/* 2. Package */}
           <Card step="2" title="Choose Diamond Amount">
-            <div className="mb-3 text-xs text-muted-foreground">Available stock: <span className="gold-text font-semibold">{(data.stock ?? 0).toLocaleString("en-US")}</span> Diamonds</div>
+            
             <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3">
               {data.packages.map((p) => {
                 const selected = p.id === pkgId;
