@@ -4,6 +4,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { formatIDR } from "@/lib/format";
 import { Copy, Check, Ticket } from "lucide-react";
 import { toast } from "sonner";
+import { usePolling } from "@/hooks/usePolling";
+
 
 type Voucher = {
   id: string;
