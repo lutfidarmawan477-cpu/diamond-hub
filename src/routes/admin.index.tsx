@@ -95,16 +95,15 @@ function AdminPage() {
         <main className="flex-1 p-4 sm:p-6 min-w-0">
           <h1 className="font-display text-2xl mb-6">Admin Dashboard</h1>
 
-          {/* Horizontal stat row — scrolls on narrow screens */}
-          <div className="mb-6 -mx-4 px-4 sm:mx-0 sm:px-0 overflow-x-auto">
-            <div className="flex gap-4 min-w-max lg:min-w-0">
-              <Stat label="Total Orders" value={stats.total.toString()} />
-              <Stat label="Successful" value={stats.success.toString()} />
-              <Stat label="Pending" value={stats.pending.toString()} />
-              <Stat label="Failed" value={stats.failed.toString()} />
-              <Stat label="Revenue" value={formatIDR(stats.revenue)} />
-            </div>
+          {/* Statistics cards — same design language as the customer dashboard */}
+          <div className="mb-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
+            <Stat label="Total Orders" value={stats.total.toString()} />
+            <Stat label="Successful" value={stats.success.toString()} />
+            <Stat label="Pending" value={stats.pending.toString()} />
+            <Stat label="Failed" value={stats.failed.toString()} />
+            <Stat label="Revenue" value={formatIDR(stats.revenue)} />
           </div>
+
 
           <div className="card-premium rounded-xl p-5">
             <h2 className="font-display text-lg mb-4">Purchase History</h2>
