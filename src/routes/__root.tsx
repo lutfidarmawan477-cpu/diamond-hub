@@ -137,24 +137,18 @@ function SiteHeader({
   let links: { to: string; label: string; icon: LucideIcon }[] = [];
   if (role === "customer") {
     if (pathname === "/dashboard") {
-      links = [
-        { to: "/vouchers", label: "Vouchers", icon: Ticket },
-        { to: "/tracking", label: "Track Order", icon: PackageSearch },
-      ];
+      links = [{ to: "/tracking", label: "Track Order", icon: PackageSearch }];
     } else {
-      links = [
-        { to: "/vouchers", label: "Vouchers", icon: Ticket },
-        { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-      ];
+      links = [{ to: "/dashboard", label: "Dashboard", icon: LayoutDashboard }];
     }
   } else if (!role) {
     links = [
       { to: "/", label: "Home", icon: Home },
       { to: "/topup", label: "Top Up", icon: Zap },
-      { to: "/vouchers", label: "Vouchers", icon: Ticket },
       { to: "/tracking", label: "Track Order", icon: PackageSearch },
     ];
   }
+
 
   return (
     <header className="sticky top-0 z-50 backdrop-blur-md bg-background/70 border-b border-border no-print animate-fade-in">
