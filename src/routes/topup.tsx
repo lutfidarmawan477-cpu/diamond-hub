@@ -69,6 +69,16 @@ function TopupPage() {
     setVoucherState({ status: "idle" });
   }, [pkgId]);
 
+  // Virtual Account / bank transfer only for orders above Rp50.000
+  useEffect(() => {
+    const selected = data.payments.find((p) => p.id === payId);
+    const price = data.packages.find((p) => p.id === pkgId)?.price ?? 0;
+    if (selected && (selected.type === "va" || selected.type === "bank") && price <= VA_MIN_AMOUNT) {
+      setPayId(null);
+    }
+  }, [pkgId, payId, data.payments, data.packages]);
+
+
   const pkg = data.packages.find((p) => p.id === pkgId);
   const pay = data.payments.find((p) => p.id === payId);
   const subtotal = pkg?.price ?? 0;
