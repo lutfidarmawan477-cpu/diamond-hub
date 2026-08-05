@@ -214,7 +214,7 @@ function DashboardPage() {
         {!loading && orders && orders.length > 0 && (
           <>
             {/* Mobile card list */}
-            <div className="grid gap-3 md:hidden">
+            <div className="grid gap-3 md:hidden table-scroll">
               {orders.map((o) => (
                 <div key={o.id} className="rounded-lg border border-border/60 p-3">
                   <div className="flex items-start justify-between gap-2">
