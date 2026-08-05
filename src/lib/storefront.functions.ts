@@ -119,7 +119,11 @@ export const createOrder = createServerFn({ method: "POST" })
     }
 
     const subtotal = pkg.data.price;
+    if ((pay.data.type === "va" || pay.data.type === "bank") && subtotal <= VA_MIN_AMOUNT) {
+      throw new Error("Virtual Account is only available for orders above Rp50.000");
+    }
     const fee = computeFee(pay.data.type, subtotal);
+
 
 
     let voucherId: string | null = null;
