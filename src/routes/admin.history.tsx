@@ -91,7 +91,7 @@ function AdminHistory() {
             </select>
           </div>
           {/* Desktop table */}
-          <div className="hidden md:block overflow-x-auto">
+          <div className="hidden md:block table-scroll">
             <table className="w-full text-sm">
               <thead className="text-left text-xs text-muted-foreground border-b border-border">
                 <tr>
@@ -124,7 +124,7 @@ function AdminHistory() {
             </table>
           </div>
           {/* Mobile cards */}
-          <div className="grid gap-3 md:hidden">
+          <div className="grid gap-3 md:hidden table-scroll">
             {filtered.map((r) => (
               <div key={r.id} className="rounded-lg border border-border/60 p-3">
                 <div className="flex items-start justify-between gap-2">

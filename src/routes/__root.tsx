@@ -10,7 +10,7 @@ import {
 } from "@tanstack/react-router";
 import { useEffect, useState, type ReactNode } from "react";
 import { Toaster } from "sonner";
-import { Home, Zap, PackageSearch, LayoutDashboard, LogIn, ArrowLeft, Ticket, type LucideIcon } from "lucide-react";
+import { Home, Zap, PackageSearch, LayoutDashboard, LogIn, ArrowLeft, type LucideIcon } from "lucide-react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
@@ -137,24 +137,18 @@ function SiteHeader({
   let links: { to: string; label: string; icon: LucideIcon }[] = [];
   if (role === "customer") {
     if (pathname === "/dashboard") {
-      links = [
-        { to: "/vouchers", label: "Vouchers", icon: Ticket },
-        { to: "/tracking", label: "Track Order", icon: PackageSearch },
-      ];
+      links = [{ to: "/tracking", label: "Track Order", icon: PackageSearch }];
     } else {
-      links = [
-        { to: "/vouchers", label: "Vouchers", icon: Ticket },
-        { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-      ];
+      links = [{ to: "/dashboard", label: "Dashboard", icon: LayoutDashboard }];
     }
   } else if (!role) {
     links = [
       { to: "/", label: "Home", icon: Home },
       { to: "/topup", label: "Top Up", icon: Zap },
-      { to: "/vouchers", label: "Vouchers", icon: Ticket },
       { to: "/tracking", label: "Track Order", icon: PackageSearch },
     ];
   }
+
 
   return (
     <header className="sticky top-0 z-50 backdrop-blur-md bg-background/70 border-b border-border no-print animate-fade-in">
@@ -210,7 +204,7 @@ function SiteFooter() {
           <h4 className="font-semibold mb-3">Services</h4>
           <ul className="space-y-2 text-sm text-muted-foreground">
             <li><Link to="/topup">Diamond Top Up</Link></li>
-            <li><Link to="/vouchers">Vouchers</Link></li>
+            
             <li><Link to="/tracking">Track Order</Link></li>
           </ul>
         </div>

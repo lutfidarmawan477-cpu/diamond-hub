@@ -214,7 +214,7 @@ function DashboardPage() {
         {!loading && orders && orders.length > 0 && (
           <>
             {/* Mobile card list */}
-            <div className="grid gap-3 md:hidden">
+            <div className="grid gap-3 md:hidden table-scroll">
               {orders.map((o) => (
                 <div key={o.id} className="rounded-lg border border-border/60 p-3">
                   <div className="flex items-start justify-between gap-2">
@@ -243,7 +243,7 @@ function DashboardPage() {
               ))}
             </div>
             {/* Desktop table */}
-            <div className="hidden md:block overflow-x-auto">
+            <div className="hidden md:block table-scroll">
               <table className="w-full text-sm">
                 <thead className="text-left text-xs text-muted-foreground border-b border-border">
                   <tr><th className="py-2">Invoice</th><th>Package</th><th>Payment</th><th>Total</th><th>Status</th><th>Date</th><th></th></tr>

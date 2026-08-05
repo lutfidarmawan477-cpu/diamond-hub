@@ -3,7 +3,7 @@ import { z } from "zod";
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "@/integrations/supabase/types";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import { computeFee } from "@/lib/fee";
+import { computeFee, VA_MIN_AMOUNT } from "@/lib/fee";
 
 function publicClient() {
   return createClient<Database>(
@@ -119,7 +119,12 @@ export const createOrder = createServerFn({ method: "POST" })
     }
 
     const subtotal = pkg.data.price;
-    const fee = computeFee(pay.data.type, pkg.data.diamond_amount);
+    if ((pay.data.type === "va" || pay.data.type === "bank") && subtotal <= VA_MIN_AMOUNT) {
+      throw new Error("Virtual Account is only available for orders above Rp50.000");
+    }
+    const fee = computeFee(pay.data.type, subtotal);
+
+
 
     let voucherId: string | null = null;
     let discount = 0;

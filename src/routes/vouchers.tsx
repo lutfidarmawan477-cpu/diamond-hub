@@ -4,6 +4,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { formatIDR } from "@/lib/format";
 import { Copy, Check, Ticket } from "lucide-react";
 import { toast } from "sonner";
+import { usePolling } from "@/hooks/usePolling";
+
 
 type Voucher = {
   id: string;
@@ -98,55 +100,72 @@ function VoucherCard({ v, used }: { v: Voucher; used: boolean }) {
   );
 }
 
+type VFilter = "all" | "public" | "member" | "used" | "unused";
+
 function VouchersPage() {
   const [vouchers, setVouchers] = useState<Voucher[]>([]);
   const [usedIds, setUsedIds] = useState<Set<string>>(new Set());
   const [level, setLevel] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState<VFilter>("all");
 
-  useEffect(() => {
-    (async () => {
-      const nowIso = new Date().toISOString();
-      const [v, s] = await Promise.all([
-        supabase.from("vouchers").select("*").eq("active", true).lte("start_date", nowIso).gte("end_date", nowIso).order("end_date"),
-        supabase.auth.getSession(),
+  const load = async () => {
+    const nowIso = new Date().toISOString();
+    const [v, s] = await Promise.all([
+      supabase.from("vouchers").select("*").eq("active", true).lte("start_date", nowIso).gte("end_date", nowIso).order("end_date"),
+      supabase.auth.getSession(),
+    ]);
+    const list = (v.data as Voucher[]) ?? [];
+
+    let filtered = list;
+    let usedSet = new Set<string>();
+    let userLevel: string | null = null;
+
+    if (s.data.session) {
+      const uid = s.data.session.user.id;
+      const [prof, redemp] = await Promise.all([
+        supabase.from("profiles").select("member_level").eq("id", uid).maybeSingle(),
+        supabase.from("voucher_redemptions").select("voucher_id").eq("user_id", uid),
       ]);
-      const list = (v.data as Voucher[]) ?? [];
+      userLevel = prof.data?.member_level ?? "bronze";
+      const counts: Record<string, number> = {};
+      (redemp.data ?? []).forEach((r) => { counts[r.voucher_id] = (counts[r.voucher_id] ?? 0) + 1; });
+      // member vouchers are limited to the user's level; public vouchers are for everyone
+      filtered = list.filter((it) => it.voucher_type === "public" || it.member_level === userLevel);
+      usedSet = new Set(
+        filtered
+          .filter((it) => (counts[it.id] ?? 0) >= (it.voucher_type === "public" ? 1 : it.usage_per_customer))
+          .map((it) => it.id),
+      );
+    } else {
+      // guests only see public vouchers
+      filtered = list.filter((it) => it.voucher_type === "public");
+    }
 
-      let filtered = list;
-      let usedSet = new Set<string>();
-      let userLevel: string | null = null;
+    setLevel(userLevel);
+    setVouchers(filtered);
+    setUsedIds(usedSet);
+    setLoading(false);
+  };
 
-      if (s.data.session) {
-        const uid = s.data.session.user.id;
-        const [prof, redemp] = await Promise.all([
-          supabase.from("profiles").select("member_level").eq("id", uid).maybeSingle(),
-          supabase.from("voucher_redemptions").select("voucher_id").eq("user_id", uid),
-        ]);
-        userLevel = prof.data?.member_level ?? "bronze";
-        const counts: Record<string, number> = {};
-        (redemp.data ?? []).forEach((r) => { counts[r.voucher_id] = (counts[r.voucher_id] ?? 0) + 1; });
-        // filter member vouchers to user level; keep public
-        filtered = list.filter((it) => it.voucher_type === "public" || it.member_level === userLevel);
-        // hide member vouchers already fully used
-        filtered = filtered.filter((it) => {
-          const limit = it.voucher_type === "public" ? 1 : it.usage_per_customer;
-          const used = counts[it.id] ?? 0;
-          if (it.voucher_type === "member" && used >= limit) return false;
-          return true;
-        });
-        usedSet = new Set(filtered.filter((it) => (counts[it.id] ?? 0) >= 1).map((it) => it.id));
-      } else {
-        // guests only see public vouchers
-        filtered = list.filter((it) => it.voucher_type === "public");
-      }
+  useEffect(() => { void load(); }, []);
+  usePolling(() => { void load(); }, 8000);
 
-      setLevel(userLevel);
-      setVouchers(filtered);
-      setUsedIds(usedSet);
-      setLoading(false);
-    })();
-  }, []);
+  const visible = vouchers.filter((v) => {
+    if (filter === "public") return v.voucher_type === "public";
+    if (filter === "member") return v.voucher_type === "member";
+    if (filter === "used") return usedIds.has(v.id);
+    if (filter === "unused") return !usedIds.has(v.id);
+    return true;
+  });
+
+  const filters: { key: VFilter; label: string }[] = [
+    { key: "all", label: "All" },
+    { key: "public", label: "Public" },
+    { key: "member", label: "Member" },
+    { key: "used", label: "Used" },
+    { key: "unused", label: "Unused" },
+  ];
 
   return (
     <div className="container mx-auto px-4 py-10">
@@ -158,15 +177,31 @@ function VouchersPage() {
         )}
       </div>
 
+      <div className="mb-6 flex flex-wrap items-center justify-center gap-2">
+        {filters.map((f) => (
+          <button
+            key={f.key}
+            onClick={() => setFilter(f.key)}
+            className={`rounded-lg border px-4 py-1.5 text-xs font-semibold transition-all duration-200 active:scale-95 ${
+              filter === f.key
+                ? "border-gold bg-gold/15 text-gold"
+                : "border-primary/60 bg-primary/10 text-foreground hover:bg-primary/20"
+            }`}
+          >
+            {f.label}
+          </button>
+        ))}
+      </div>
+
       {loading && <div className="text-center text-sm text-muted-foreground">Loading vouchers…</div>}
-      {!loading && vouchers.length === 0 && (
+      {!loading && visible.length === 0 && (
         <div className="card-premium rounded-xl p-10 text-center">
           <Ticket className="mx-auto h-10 w-10 text-muted-foreground mb-3" />
-          <p className="text-sm text-muted-foreground">No active vouchers right now. Check back soon!</p>
+          <p className="text-sm text-muted-foreground">No vouchers match this filter right now.</p>
         </div>
       )}
       <div className="grid gap-4 md:grid-cols-2">
-        {vouchers.map((v) => <VoucherCard key={v.id} v={v} used={usedIds.has(v.id)} />)}
+        {visible.map((v) => <VoucherCard key={v.id} v={v} used={usedIds.has(v.id)} />)}
       </div>
 
       <div className="mt-10 text-center">
@@ -175,3 +210,4 @@ function VouchersPage() {
     </div>
   );
 }
+
