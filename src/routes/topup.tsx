@@ -256,23 +256,35 @@ function TopupPage() {
           {/* 3. Payment */}
           <Card step="3" title="Payment Method">
             <div className="space-y-4">
-              {Object.entries(groupedPay).map(([type, list]) => (
-                <div key={type}>
-                  <div className="mb-2 text-sm font-semibold text-muted-foreground">{typeLabel[type] ?? type}</div>
-                  <div className="grid gap-2 sm:grid-cols-2 md:grid-cols-3">
-                    {list.map((p) => {
-                      const selected = p.id === payId;
-                      return (
-                        <button type="button" key={p.id} onClick={() => setPayId(p.id)}
-                          className={`rounded-lg px-3 py-3 text-left border text-sm transition ${selected ? "border-gold bg-primary/20" : "border-border card-premium hover:border-primary/60"}`}>
-                          <div className="font-medium">{p.name}</div>
-                          <div className="text-xs text-muted-foreground">Fee {formatIDR(computeFee(p.type, pkg?.diamond_amount ?? 0))}</div>
-                        </button>
-                      );
-                    })}
+              {Object.entries(groupedPay).map(([type, list]) => {
+                const locked = (type === "va" || type === "bank") && subtotal <= VA_MIN_AMOUNT;
+                return (
+                  <div key={type}>
+                    <div className="mb-2 flex flex-wrap items-center gap-2 text-sm font-semibold text-muted-foreground">
+                      <span>{typeLabel[type] ?? type}</span>
+                      {locked && (
+                        <span className="rounded-full border border-border px-2 py-0.5 text-[10px] font-normal uppercase">
+                          Min. order above {formatIDR(VA_MIN_AMOUNT)}
+                        </span>
+                      )}
+                    </div>
+                    <div className="grid gap-2 sm:grid-cols-2 md:grid-cols-3">
+                      {list.map((p) => {
+                        const selected = p.id === payId;
+                        return (
+                          <button type="button" key={p.id} onClick={() => !locked && setPayId(p.id)}
+                            disabled={locked}
+                            className={`rounded-lg px-3 py-3 text-left border text-sm transition ${selected ? "border-gold bg-primary/20" : "border-border card-premium hover:border-primary/60"} ${locked ? "opacity-50 cursor-not-allowed" : ""}`}>
+                            <div className="font-medium">{p.name}</div>
+                            <div className="text-xs text-muted-foreground">Fee {formatIDR(computeFee(p.type, subtotal))}</div>
+                          </button>
+                        );
+                      })}
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
+
             </div>
           </Card>
 
