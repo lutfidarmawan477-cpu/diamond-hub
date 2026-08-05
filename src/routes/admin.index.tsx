@@ -118,7 +118,7 @@ function AdminPage() {
                 <option value="failed">Failed</option>
               </select>
             </div>
-            <div className="hidden md:block overflow-x-auto">
+            <div className="hidden md:block table-scroll">
               <table className="w-full text-sm">
                 <thead className="text-left text-xs text-muted-foreground border-b border-border">
                   <tr>
@@ -128,6 +128,7 @@ function AdminPage() {
                     <th className="pr-3">ID</th>
                     <th className="pr-3">Server</th>
                     <th className="pr-3">Total</th>
+                    <th className="pr-3">Date &amp; Time</th>
                     <th>Status</th>
                   </tr>
                 </thead>
@@ -140,15 +141,16 @@ function AdminPage() {
                       <td className="pr-3 font-mono text-xs">{o.game_user_id}</td>
                       <td className="pr-3 font-mono text-xs">{o.zone_id}</td>
                       <td className="pr-3 gold-text font-semibold whitespace-nowrap">{formatIDR(o.total)}</td>
+                      <td className="pr-3 text-xs whitespace-nowrap">{formatWib(o.created_at)}</td>
                       <td>{statusBadge(o.status)}</td>
                     </tr>
                   ))}
-                  {filtered.length === 0 && <tr><td colSpan={7} className="py-8 text-center text-sm text-muted-foreground">No data</td></tr>}
+                  {filtered.length === 0 && <tr><td colSpan={8} className="py-8 text-center text-sm text-muted-foreground">No data</td></tr>}
                 </tbody>
               </table>
             </div>
             {/* Mobile cards */}
-            <div className="grid gap-3 md:hidden">
+            <div className="grid gap-3 md:hidden table-scroll">
               {filtered.map((o) => (
                 <div key={o.id} className="rounded-lg border border-border/60 p-3">
                   <div className="flex items-start justify-between gap-2">
@@ -162,6 +164,8 @@ function AdminPage() {
                     <div className="text-right font-mono">{o.game_user_id}</div>
                     <div className="text-muted-foreground">Server</div>
                     <div className="text-right font-mono">{o.zone_id}</div>
+                    <div className="text-muted-foreground">Date &amp; Time</div>
+                    <div className="text-right">{formatWib(o.created_at)}</div>
                   </div>
                   <div className="mt-2 gold-text font-semibold">{formatIDR(o.total)}</div>
                 </div>
@@ -175,11 +179,23 @@ function AdminPage() {
   );
 }
 
+/** DD/MM/YYYY HH:mm WIB */
+function formatWib(iso: string) {
+  const parts = new Intl.DateTimeFormat("en-GB", {
+    timeZone: "Asia/Jakarta",
+    day: "2-digit", month: "2-digit", year: "numeric",
+    hour: "2-digit", minute: "2-digit", hour12: false,
+  }).formatToParts(new Date(iso));
+  const get = (t: string) => parts.find((p) => p.type === t)?.value ?? "";
+  return `${get("day")}/${get("month")}/${get("year")} ${get("hour")}:${get("minute")} WIB`;
+}
+
 function Stat({ label, value }: { label: string; value: string }) {
   return (
-    <div className="card-premium rounded-xl p-5 w-[180px] shrink-0 lg:flex-1 lg:w-auto">
-      <div className="text-xs text-muted-foreground whitespace-nowrap">{label}</div>
-      <div className="font-display text-2xl gold-text mt-1 whitespace-nowrap">{value}</div>
+    <div className="card-premium rounded-xl p-5">
+      <div className="text-xs text-muted-foreground">{label}</div>
+      <div className="font-display text-2xl gold-text mt-1">{value}</div>
     </div>
   );
+
 }
