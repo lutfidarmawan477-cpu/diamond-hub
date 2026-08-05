@@ -127,7 +127,7 @@ function AdminStock() {
             </select>
           </div>
           {/* Desktop */}
-          <div className="hidden md:block overflow-x-auto">
+          <div className="hidden md:block table-scroll">
             <table className="w-full text-sm">
               <thead className="text-left text-xs text-muted-foreground border-b border-border">
                 <tr>
