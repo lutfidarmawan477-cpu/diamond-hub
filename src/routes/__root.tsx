@@ -204,7 +204,7 @@ function SiteFooter() {
           <h4 className="font-semibold mb-3">Services</h4>
           <ul className="space-y-2 text-sm text-muted-foreground">
             <li><Link to="/topup">Diamond Top Up</Link></li>
-            <li><Link to="/vouchers">Vouchers</Link></li>
+            
             <li><Link to="/tracking">Track Order</Link></li>
           </ul>
         </div>
