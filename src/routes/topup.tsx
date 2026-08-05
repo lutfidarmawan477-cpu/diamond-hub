@@ -72,7 +72,7 @@ function TopupPage() {
   const pkg = data.packages.find((p) => p.id === pkgId);
   const pay = data.payments.find((p) => p.id === payId);
   const subtotal = pkg?.price ?? 0;
-  const fee = pay && pkg ? computeFee(pay.type, pkg.diamond_amount) : 0;
+  const fee = pay && pkg ? computeFee(pay.type, subtotal) : 0;
   const discount = voucherState.status === "valid" ? voucherState.discount : 0;
   const total = Math.max(0, subtotal + fee - discount);
 
