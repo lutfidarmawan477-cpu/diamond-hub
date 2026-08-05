@@ -3,7 +3,7 @@ import { z } from "zod";
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "@/integrations/supabase/types";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import { computeFee } from "@/lib/fee";
+import { computeFee, VA_MIN_AMOUNT } from "@/lib/fee";
 
 function publicClient() {
   return createClient<Database>(
