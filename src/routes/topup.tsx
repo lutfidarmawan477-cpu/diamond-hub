@@ -8,7 +8,7 @@ import "react-phone-number-input/style.css";
 import { getStorefront, createOrder, validateVoucher } from "@/lib/storefront.functions";
 import { validateMlAccount } from "@/lib/ml-validate.functions";
 import { formatIDR } from "@/lib/format";
-import { computeFee } from "@/lib/fee";
+import { computeFee, VA_MIN_AMOUNT } from "@/lib/fee";
 import { useSession } from "@/hooks/useSession";
 
 const storefrontQO = queryOptions({ queryKey: ["storefront"], queryFn: () => getStorefront() });
