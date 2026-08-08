@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ShieldCheck } from "lucide-react";
+import { useSession } from "@/hooks/useSession";
 
 export const Route = createFileRoute("/terms")({
   head: () => ({
