@@ -19,10 +19,12 @@ type Mode = "login" | "signup" | "forgot";
 function AuthPage() {
   const navigate = useNavigate();
   const [mode, setMode] = useState<Mode>("login");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  // Sign In, Sign Up and Forgot Password each keep their own isolated state so
+  // typing in one form never leaks into another.
+  const [signIn, setSignIn] = useState({ email: "", password: "" });
+  const [signUp, setSignUp] = useState({ name: "", email: "", password: "" });
+  const [forgotEmail, setForgotEmail] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
   const [checkingSession, setCheckingSession] = useState(true);
   const [sentTo, setSentTo] = useState<string | null>(null);
@@ -56,6 +58,31 @@ function AuthPage() {
     } catch { /* ignore */ }
   };
 
+  const email = mode === "login" ? signIn.email : mode === "signup" ? signUp.email : forgotEmail;
+  const password = mode === "login" ? signIn.password : signUp.password;
+  const name = signUp.name;
+  const setEmail = (v: string) => {
+    if (mode === "login") setSignIn((f) => ({ ...f, email: v }));
+    else if (mode === "signup") setSignUp((f) => ({ ...f, email: v }));
+    else setForgotEmail(v);
+  };
+  const setPassword = (v: string) => {
+    if (mode === "login") setSignIn((f) => ({ ...f, password: v }));
+    else setSignUp((f) => ({ ...f, password: v }));
+  };
+  const setName = (v: string) => setSignUp((f) => ({ ...f, name: v }));
+
+  const switchMode = (next: Mode) => {
+    setMode(next);
+    setShowPassword(false);
+  };
+
+  const clearAuthForms = () => {
+    setSignIn({ email: "", password: "" });
+    setSignUp({ name: "", email: "", password: "" });
+    setForgotEmail("");
+  };
+
   const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email.trim());
   const passwordValid = password.length >= 8 && /[A-Za-z]/.test(password) && /\d/.test(password);
 
@@ -86,6 +113,7 @@ function AuthPage() {
           await redirectByRole(data.session.user.id);
         } else {
           setSentTo(email.trim());
+          setSignUp({ name: "", email: "", password: "" });
           toast.success("Verification email sent. Please confirm your email before signing in.");
         }
       } else {
@@ -97,6 +125,7 @@ function AuthPage() {
           throw error;
         }
         toast.success("Welcome back!");
+        clearAuthForms();
         await trackLogin(data.user.id, data.user.email ?? email);
         await redirectByRole(data.user.id);
       }
@@ -142,7 +171,7 @@ function AuthPage() {
             {loading ? "Sending…" : "Resend verification email"}
           </button>
           <button
-            onClick={() => { setSentTo(null); setMode("login"); setPassword(""); }}
+            onClick={() => { setSentTo(null); clearAuthForms(); switchMode("login"); }}
             className="mt-3 w-full rounded-md btn-gold py-2.5 text-sm active:scale-95 transition"
           >
             Back to Sign In
@@ -161,8 +190,8 @@ function AuthPage() {
 
         {mode !== "forgot" && (
           <div className="mt-4 flex rounded-lg border border-border p-1 text-sm">
-            <button onClick={() => setMode("login")} className={`flex-1 rounded-md py-2 transition ${mode === "login" ? "btn-gold" : ""}`}>Sign In</button>
-            <button onClick={() => setMode("signup")} className={`flex-1 rounded-md py-2 transition ${mode === "signup" ? "btn-gold" : ""}`}>Sign Up</button>
+            <button onClick={() => switchMode("login")} className={`flex-1 rounded-md py-2 transition ${mode === "login" ? "btn-gold" : ""}`}>Sign In</button>
+            <button onClick={() => switchMode("signup")} className={`flex-1 rounded-md py-2 transition ${mode === "signup" ? "btn-gold" : ""}`}>Sign Up</button>
           </div>
         )}
 
@@ -173,7 +202,7 @@ function AuthPage() {
               A password reset link has been sent to <span className="text-gold">{email}</span>. Open it to set a new password.
             </p>
             <button
-              onClick={() => { setResetSent(false); setMode("login"); }}
+              onClick={() => { setResetSent(false); clearAuthForms(); switchMode("login"); }}
               className="mt-5 w-full rounded-md btn-gold py-2.5 text-sm active:scale-95 transition"
             >
               Back to Sign In
@@ -231,12 +260,12 @@ function AuthPage() {
             </button>
 
             {mode === "login" && (
-              <button type="button" onClick={() => setMode("forgot")} className="w-full text-center text-xs text-gold underline">
+              <button type="button" onClick={() => switchMode("forgot")} className="w-full text-center text-xs text-gold underline">
                 Forgot your password?
               </button>
             )}
             {mode === "forgot" && (
-              <button type="button" onClick={() => setMode("login")} className="w-full text-center text-xs text-gold underline">
+              <button type="button" onClick={() => switchMode("login")} className="w-full text-center text-xs text-gold underline">
                 Back to Sign In
               </button>
             )}
