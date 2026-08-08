@@ -193,10 +193,10 @@ function formatWib(iso: string) {
 
 function Stat({ label, value }: { label: string; value: string }) {
   return (
-    <div className="card-premium rounded-xl p-5">
+    <div className="card-premium rounded-xl p-5 min-w-[170px] flex-1 shrink-0 snap-start">
       <div className="text-xs text-muted-foreground">{label}</div>
-      <div className="font-display text-2xl gold-text mt-1">{value}</div>
+      <div className="font-display text-2xl gold-text mt-1 whitespace-nowrap">{value}</div>
     </div>
   );
-
 }
+
