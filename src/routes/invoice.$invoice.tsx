@@ -7,6 +7,7 @@ import { formatIDR } from "@/lib/format";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import dummyQr from "@/assets/dummy-qr.png";
+import { useSession } from "@/hooks/useSession";
 
 const orderQO = (invoice: string) =>
   queryOptions({
