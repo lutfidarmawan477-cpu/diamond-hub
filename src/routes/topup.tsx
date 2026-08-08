@@ -37,10 +37,9 @@ type MlCheckState =
 function TopupPage() {
   const { data } = useSuspenseQuery(storefrontQO);
   const navigate = useNavigate();
+  // Guests can top up. Signed-in users additionally get vouchers + history.
   const loggedIn = useSession();
-  useEffect(() => {
-    if (loggedIn === false) navigate({ to: "/auth", replace: true });
-  }, [loggedIn, navigate]);
+
 
   const [userId, setUserId] = useState("");
   const [zoneId, setZoneId] = useState("");
