@@ -142,7 +142,7 @@ function InvoicePage() {
     toast.success("Order cancelled and removed");
     await queryClient.invalidateQueries({ queryKey: ["order", invoice] });
     await queryClient.invalidateQueries({ queryKey: ["orders"] });
-    navigate({ to: "/dashboard", replace: true });
+    navigate({ to: loggedIn ? "/dashboard" : "/", replace: true });
   };
 
   const paidDate = new Date(order.updated_at ?? order.created_at).toLocaleString("en-US");
