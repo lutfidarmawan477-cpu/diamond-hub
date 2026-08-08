@@ -100,11 +100,39 @@ const orderSchema = z.object({
   voucher_code: z.string().trim().max(40).optional().nullable(),
 });
 
+/**
+ * Guest-friendly checkout. When a valid bearer token is present the order is
+ * linked to that account (member level / totals / history apply); otherwise the
+ * order is created as a guest order (user_id = null).
+ */
 export const createOrder = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => orderSchema.parse(d))
-  .handler(async ({ data, context }) => {
-    const sb = context.supabase;
+  .handler(async ({ data }) => {
+    const authHeader = getRequestHeader("authorization");
+    const token =
+      authHeader && authHeader.startsWith("Bearer ")
+        ? authHeader.slice("Bearer ".length)
+        : null;
+
+    let userId: string | null = null;
+    let sb = publicClient();
+
+    if (token && token.split(".").length === 3) {
+      const authed = createClient<Database>(
+        process.env.SUPABASE_URL!,
+        process.env.SUPABASE_PUBLISHABLE_KEY!,
+        {
+          global: { headers: { Authorization: `Bearer ${token}` } },
+          auth: { storage: undefined, persistSession: false, autoRefreshToken: false },
+        },
+      );
+      const { data: claims } = await authed.auth.getClaims(token);
+      if (claims?.claims?.sub) {
+        userId = claims.claims.sub as string;
+        sb = authed;
+      }
+    }
+
     const [pkg, pay, stock] = await Promise.all([
       sb.from("diamond_packages").select("id,name,diamond_amount,price,active").eq("id", data.package_id).maybeSingle(),
       sb.from("payment_methods").select("id,name,type,fee,active").eq("id", data.payment_method_id).maybeSingle(),
