@@ -231,7 +231,11 @@ function InvoicePage() {
           <button onClick={() => window.print()} className="inline-flex items-center gap-2 rounded-md border border-border px-4 py-2 text-sm hover:border-primary transition">
             <Printer className="h-4 w-4" /> Print
           </button>
-          <Link to="/dashboard" className="rounded-md border border-border px-4 py-2 text-sm hover:border-primary transition">Back to Dashboard</Link>
+          {loggedIn ? (
+            <Link to="/dashboard" className="rounded-md border border-border px-4 py-2 text-sm hover:border-primary transition">Back to Dashboard</Link>
+          ) : (
+            <Link to="/" className="rounded-md border border-border px-4 py-2 text-sm hover:border-primary transition">Back to Home</Link>
+          )}
           {!isSuccess && (
             <button
               onClick={cancelOrder}
@@ -248,6 +252,7 @@ function InvoicePage() {
             <Link to="/topup" className="rounded-md btn-gold px-4 py-2 text-sm">Create New Order</Link>
           )}
         </div>
+
       </div>
 
       {showSuccess && (
