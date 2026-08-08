@@ -306,11 +306,12 @@ function InvoicePage() {
                 Close
               </button>
               <Link
-                to="/dashboard"
+                to={loggedIn ? "/dashboard" : "/"}
                 className="rounded-md btn-gold px-4 py-2 text-sm text-center"
               >
-                Back to Dashboard
+                {loggedIn ? "Back to Dashboard" : "Back to Home"}
               </Link>
+
             </div>
           </div>
         </>
