@@ -100,7 +100,7 @@ function VoucherCard({ v, used }: { v: Voucher; used: boolean }) {
   );
 }
 
-type VFilter = "all" | "public" | "member" | "used" | "unused";
+type VFilter = "all" | "public" | "member" | "used";
 
 function VouchersPage() {
   const [vouchers, setVouchers] = useState<Voucher[]>([]);
