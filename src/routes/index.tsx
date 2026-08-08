@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
 import { getStorefront } from "@/lib/storefront.functions";
 import { formatIDR } from "@/lib/format";
-import { useSession } from "@/hooks/useSession";
+
 import heroImg from "@/assets/hero-ml.jpg";
 
 const storefrontQO = queryOptions({
