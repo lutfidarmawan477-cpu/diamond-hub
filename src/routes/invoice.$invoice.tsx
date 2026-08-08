@@ -52,10 +52,12 @@ function InvoicePage() {
   const { data: order, refetch } = useSuspenseQuery(orderQO(invoice));
   const queryClient = useQueryClient();
   const navigate = useNavigate();
+  const loggedIn = useSession();
   const [cancelling, setCancelling] = useState(false);
   const [paying, setPaying] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const autoExpiredRef = useRef(false);
+
 
   if (!order) {
     return (
