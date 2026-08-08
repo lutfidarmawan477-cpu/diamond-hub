@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
 import { getStorefront } from "@/lib/storefront.functions";
 import { formatIDR } from "@/lib/format";
-import { useSession } from "@/hooks/useSession";
+
 import heroImg from "@/assets/hero-ml.jpg";
 
 const storefrontQO = queryOptions({
@@ -28,8 +28,9 @@ export const Route = createFileRoute("/")({
 function Home() {
   const { data } = useSuspenseQuery(storefrontQO);
   const popular = data.packages.filter((p) => (p as { best_seller?: boolean }).best_seller).slice(0, 8);
-  const loggedIn = useSession();
-  const topupHref = loggedIn ? "/topup" : "/auth";
+  // Top up is open to guests — no sign-in detour.
+  const topupHref = "/topup";
+
 
   return (
     <div>

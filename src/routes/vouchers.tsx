@@ -100,7 +100,7 @@ function VoucherCard({ v, used }: { v: Voucher; used: boolean }) {
   );
 }
 
-type VFilter = "all" | "public" | "member" | "used" | "unused";
+type VFilter = "all" | "public" | "member" | "used";
 
 function VouchersPage() {
   const [vouchers, setVouchers] = useState<Voucher[]>([]);
@@ -155,7 +155,7 @@ function VouchersPage() {
     if (filter === "public") return v.voucher_type === "public";
     if (filter === "member") return v.voucher_type === "member";
     if (filter === "used") return usedIds.has(v.id);
-    if (filter === "unused") return !usedIds.has(v.id);
+    
     return true;
   });
 
@@ -164,7 +164,7 @@ function VouchersPage() {
     { key: "public", label: "Public" },
     { key: "member", label: "Member" },
     { key: "used", label: "Used" },
-    { key: "unused", label: "Unused" },
+    
   ];
 
   return (

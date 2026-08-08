@@ -133,6 +133,9 @@ function SiteHeader({
     );
   }
 
+  // Guests browsing the checkout flow only get a way back Home.
+  const guestCheckout = !role && (pathname === "/topup" || pathname.startsWith("/invoice"));
+
   // Determine which links to show based on role + current page.
   let links: { to: string; label: string; icon: LucideIcon }[] = [];
   if (role === "customer") {
@@ -142,13 +145,17 @@ function SiteHeader({
       links = [{ to: "/dashboard", label: "Dashboard", icon: LayoutDashboard }];
     }
   } else if (!role) {
-    links = [
-      { to: "/", label: "Home", icon: Home },
-      { to: "/topup", label: "Top Up", icon: Zap },
-      { to: "/tracking", label: "Track Order", icon: PackageSearch },
-    ];
+    links = guestCheckout
+      ? [{ to: "/", label: "Home", icon: Home }]
+      : [
+          { to: "/", label: "Home", icon: Home },
+          { to: "/topup", label: "Top Up", icon: Zap },
+          { to: "/tracking", label: "Track Order", icon: PackageSearch },
+        ];
   }
 
+  const linkCls =
+    "items-center gap-2 rounded-lg border border-primary/60 bg-primary/10 px-4 py-1.5 text-xs font-semibold text-foreground transition-all duration-200 hover:bg-primary/20 hover:border-primary active:scale-95 whitespace-nowrap";
 
   return (
     <header className="sticky top-0 z-50 backdrop-blur-md bg-background/70 border-b border-border no-print animate-fade-in">
@@ -160,30 +167,28 @@ function SiteHeader({
           </span>
         </Link>
         <nav className="flex items-center gap-2 text-sm overflow-x-auto">
-          {/* Guest on mobile: only show "Sign In". Desktop shows full nav. */}
+          {/* Guest on mobile: only "Sign In" (checkout pages: only "Home"). Desktop/tablet shows full nav. */}
           {links.map((l) => {
             const Icon = l.icon;
             return (
               <Link
                 key={l.to}
                 to={l.to}
-                className={`${role === null ? "hidden sm:inline-flex" : "inline-flex"} items-center gap-2 rounded-lg border border-primary/60 bg-primary/10 px-4 py-1.5 text-xs font-semibold text-foreground transition-all duration-200 hover:bg-primary/20 hover:border-primary active:scale-95 whitespace-nowrap`}
+                className={`${role === null && !guestCheckout ? "hidden sm:inline-flex" : "inline-flex"} ${linkCls}`}
               >
                 <Icon className="h-[18px] w-[18px]" strokeWidth={2} />
                 {l.label}
               </Link>
             );
           })}
-          {role === null && (
-            <Link
-              to="/auth"
-              className="inline-flex items-center gap-2 rounded-lg border border-primary/60 bg-primary/10 px-4 py-1.5 text-xs font-semibold text-foreground transition-all duration-200 hover:bg-primary/20 hover:border-primary active:scale-95 whitespace-nowrap"
-            >
+          {role === null && !guestCheckout && (
+            <Link to="/auth" className={`inline-flex ${linkCls}`}>
               <LogIn className="h-[18px] w-[18px]" strokeWidth={2} />
               Sign In
             </Link>
           )}
         </nav>
+
       </div>
     </header>
   );

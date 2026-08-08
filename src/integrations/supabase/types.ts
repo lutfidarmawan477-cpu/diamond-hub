@@ -148,6 +148,7 @@ export type Database = {
           total: number
           updated_at: string
           user_id: string | null
+          voucher_code: string | null
           voucher_id: string | null
           zone_id: string
         }
@@ -173,6 +174,7 @@ export type Database = {
           total: number
           updated_at?: string
           user_id?: string | null
+          voucher_code?: string | null
           voucher_id?: string | null
           zone_id: string
         }
@@ -198,6 +200,7 @@ export type Database = {
           total?: number
           updated_at?: string
           user_id?: string | null
+          voucher_code?: string | null
           voucher_id?: string | null
           zone_id?: string
         }

@@ -1,9 +1,11 @@
 import { createServerFn } from "@tanstack/react-start";
+import { getRequestHeader } from "@tanstack/react-start/server";
 import { z } from "zod";
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "@/integrations/supabase/types";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { computeFee, VA_MIN_AMOUNT } from "@/lib/fee";
+
 
 function publicClient() {
   return createClient<Database>(
@@ -100,11 +102,39 @@ const orderSchema = z.object({
   voucher_code: z.string().trim().max(40).optional().nullable(),
 });
 
+/**
+ * Guest-friendly checkout. When a valid bearer token is present the order is
+ * linked to that account (member level / totals / history apply); otherwise the
+ * order is created as a guest order (user_id = null).
+ */
 export const createOrder = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => orderSchema.parse(d))
-  .handler(async ({ data, context }) => {
-    const sb = context.supabase;
+  .handler(async ({ data }) => {
+    const authHeader = getRequestHeader("authorization");
+    const token =
+      authHeader && authHeader.startsWith("Bearer ")
+        ? authHeader.slice("Bearer ".length)
+        : null;
+
+    let userId: string | null = null;
+    let sb = publicClient();
+
+    if (token && token.split(".").length === 3) {
+      const authed = createClient<Database>(
+        process.env.SUPABASE_URL!,
+        process.env.SUPABASE_PUBLISHABLE_KEY!,
+        {
+          global: { headers: { Authorization: `Bearer ${token}` } },
+          auth: { storage: undefined, persistSession: false, autoRefreshToken: false },
+        },
+      );
+      const { data: claims } = await authed.auth.getClaims(token);
+      if (claims?.claims?.sub) {
+        userId = claims.claims.sub as string;
+        sb = authed;
+      }
+    }
+
     const [pkg, pay, stock] = await Promise.all([
       sb.from("diamond_packages").select("id,name,diamond_amount,price,active").eq("id", data.package_id).maybeSingle(),
       sb.from("payment_methods").select("id,name,type,fee,active").eq("id", data.payment_method_id).maybeSingle(),
@@ -127,15 +157,18 @@ export const createOrder = createServerFn({ method: "POST" })
 
 
     let voucherId: string | null = null;
+    let voucherCode: string | null = null;
     let discount = 0;
-    if (data.voucher_code && data.voucher_code.trim().length > 0) {
+    // Vouchers are an account benefit — guests check out without one.
+    if (userId && data.voucher_code && data.voucher_code.trim().length > 0) {
       const r = await validateVoucherInternal(
         sb as ReturnType<typeof publicClient>,
-        context.userId,
+        userId,
         data.voucher_code,
         subtotal,
       );
       voucherId = r.voucher.id;
+      voucherCode = r.voucher.code;
       discount = r.discount;
     }
 
@@ -144,7 +177,7 @@ export const createOrder = createServerFn({ method: "POST" })
 
     const insert = await sb.from("orders").insert({
       invoice_no,
-      user_id: context.userId,
+      user_id: userId,
       game_user_id: data.game_user_id,
       zone_id: data.zone_id,
       nickname: data.nickname ?? null,
@@ -155,6 +188,7 @@ export const createOrder = createServerFn({ method: "POST" })
       payment_method_name: pay.data.name,
       subtotal, fee, total,
       voucher_id: voucherId,
+      voucher_code: voucherCode,
       discount,
       buyer_name: data.buyer_name,
       buyer_whatsapp: data.buyer_whatsapp,
@@ -163,16 +197,17 @@ export const createOrder = createServerFn({ method: "POST" })
     }).select("id,invoice_no").single();
     if (insert.error) throw new Error(insert.error.message);
 
-    if (voucherId) {
+    if (voucherId && userId) {
       await sb.from("voucher_redemptions").insert({
         voucher_id: voucherId,
-        user_id: context.userId,
+        user_id: userId,
         order_id: insert.data.id,
         discount_applied: discount,
       });
     }
     return { invoice_no: insert.data.invoice_no };
   });
+
 
 export const getOrderByInvoice = createServerFn({ method: "GET" })
   .inputValidator((d: unknown) => z.object({ invoice_no: z.string().trim().min(4).max(40) }).parse(d))

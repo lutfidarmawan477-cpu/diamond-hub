@@ -64,7 +64,7 @@ function DashboardPage() {
         supabase
           .from("orders")
           .select("id,invoice_no,package_name,diamond_amount,total,status,created_at,payment_method_name,expires_at")
-          .or(`user_id.eq.${userId},and(user_id.is.null,buyer_email.eq.${userEmail})`)
+          .eq("user_id", userId)
           .order("created_at", { ascending: false })
           .limit(100),
         supabase.from("profiles").select("total_spent,member_level").eq("id", userId).maybeSingle(),
