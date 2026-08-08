@@ -332,34 +332,43 @@ function TopupPage() {
               <Field label="Email">
                 <input type="email" className={inputCls} value={buyerEmail} onChange={(e) => setBuyerEmail(e.target.value)} required />
               </Field>
-              <Field label="Voucher Code (optional)">
-                <div className="flex gap-2">
-                  <input
-                    className={inputCls}
-                    placeholder="SAVE10"
-                    value={voucherCode}
-                    onChange={(e) => { setVoucherCode(e.target.value.toUpperCase()); setVoucherState({ status: "idle" }); }}
-                  />
-                  <button
-                    type="button"
-                    onClick={applyVoucher}
-                    disabled={voucherState.status === "loading"}
-                    className="shrink-0 rounded-md border border-gold/50 bg-gold/10 text-gold px-3 text-xs hover:bg-gold/20 transition disabled:opacity-50"
-                  >
-                    {voucherState.status === "loading" ? "…" : "Apply"}
-                  </button>
-                </div>
-                {voucherState.status === "valid" && (
-                  <p className="mt-1 flex items-center gap-1 text-xs text-success">
-                    <CheckCircle2 className="h-3.5 w-3.5" /> {voucherState.name} — {voucherState.percent}% off
+              {loggedIn ? (
+                <Field label="Voucher Code (optional)">
+                  <div className="flex gap-2">
+                    <input
+                      className={inputCls}
+                      placeholder="SAVE10"
+                      value={voucherCode}
+                      onChange={(e) => { setVoucherCode(e.target.value.toUpperCase()); setVoucherState({ status: "idle" }); }}
+                    />
+                    <button
+                      type="button"
+                      onClick={applyVoucher}
+                      disabled={voucherState.status === "loading"}
+                      className="shrink-0 rounded-md border border-gold/50 bg-gold/10 text-gold px-3 text-xs hover:bg-gold/20 transition disabled:opacity-50"
+                    >
+                      {voucherState.status === "loading" ? "…" : "Apply"}
+                    </button>
+                  </div>
+                  {voucherState.status === "valid" && (
+                    <p className="mt-1 flex items-center gap-1 text-xs text-success">
+                      <CheckCircle2 className="h-3.5 w-3.5" /> {voucherState.name} — {voucherState.percent}% off
+                    </p>
+                  )}
+                  {voucherState.status === "invalid" && (
+                    <p className="mt-1 flex items-center gap-1 text-xs text-destructive">
+                      <AlertCircle className="h-3.5 w-3.5" /> {voucherState.message}
+                    </p>
+                  )}
+                </Field>
+              ) : (
+                <Field label="Voucher Code">
+                  <p className="text-xs text-muted-foreground">
+                    <Link to="/auth" className="text-gold underline">Sign in</Link> to use vouchers and track this order in your dashboard.
                   </p>
-                )}
-                {voucherState.status === "invalid" && (
-                  <p className="mt-1 flex items-center gap-1 text-xs text-destructive">
-                    <AlertCircle className="h-3.5 w-3.5" /> {voucherState.message}
-                  </p>
-                )}
-              </Field>
+                </Field>
+              )}
+
             </div>
             <label className="mt-4 flex items-start gap-2 text-sm">
               <input type="checkbox" checked={agree} onChange={(e) => setAgree(e.target.checked)} className="mt-1" />
