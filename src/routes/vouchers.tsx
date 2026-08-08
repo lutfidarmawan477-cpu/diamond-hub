@@ -164,7 +164,7 @@ function VouchersPage() {
     { key: "public", label: "Public" },
     { key: "member", label: "Member" },
     { key: "used", label: "Used" },
-    { key: "unused", label: "Unused" },
+    
   ];
 
   return (
