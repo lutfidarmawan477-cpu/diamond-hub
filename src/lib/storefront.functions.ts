@@ -157,15 +157,18 @@ export const createOrder = createServerFn({ method: "POST" })
 
 
     let voucherId: string | null = null;
+    let voucherCode: string | null = null;
     let discount = 0;
-    if (data.voucher_code && data.voucher_code.trim().length > 0) {
+    // Vouchers are an account benefit — guests check out without one.
+    if (userId && data.voucher_code && data.voucher_code.trim().length > 0) {
       const r = await validateVoucherInternal(
         sb as ReturnType<typeof publicClient>,
-        context.userId,
+        userId,
         data.voucher_code,
         subtotal,
       );
       voucherId = r.voucher.id;
+      voucherCode = r.voucher.code;
       discount = r.discount;
     }
 
@@ -174,7 +177,7 @@ export const createOrder = createServerFn({ method: "POST" })
 
     const insert = await sb.from("orders").insert({
       invoice_no,
-      user_id: context.userId,
+      user_id: userId,
       game_user_id: data.game_user_id,
       zone_id: data.zone_id,
       nickname: data.nickname ?? null,
@@ -185,6 +188,7 @@ export const createOrder = createServerFn({ method: "POST" })
       payment_method_name: pay.data.name,
       subtotal, fee, total,
       voucher_id: voucherId,
+      voucher_code: voucherCode,
       discount,
       buyer_name: data.buyer_name,
       buyer_whatsapp: data.buyer_whatsapp,
@@ -193,16 +197,17 @@ export const createOrder = createServerFn({ method: "POST" })
     }).select("id,invoice_no").single();
     if (insert.error) throw new Error(insert.error.message);
 
-    if (voucherId) {
+    if (voucherId && userId) {
       await sb.from("voucher_redemptions").insert({
         voucher_id: voucherId,
-        user_id: context.userId,
+        user_id: userId,
         order_id: insert.data.id,
         discount_applied: discount,
       });
     }
     return { invoice_no: insert.data.invoice_no };
   });
+
 
 export const getOrderByInvoice = createServerFn({ method: "GET" })
   .inputValidator((d: unknown) => z.object({ invoice_no: z.string().trim().min(4).max(40) }).parse(d))
