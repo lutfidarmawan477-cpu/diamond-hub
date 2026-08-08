@@ -155,7 +155,7 @@ function VouchersPage() {
     if (filter === "public") return v.voucher_type === "public";
     if (filter === "member") return v.voucher_type === "member";
     if (filter === "used") return usedIds.has(v.id);
-    if (filter === "unused") return !usedIds.has(v.id);
+    
     return true;
   });
 
