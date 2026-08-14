@@ -187,34 +187,30 @@ function InvoicePage() {
             <div className="text-sm text-muted-foreground">Complete payment within</div>
             <div className="font-display text-4xl gold-text mt-1">{mm}:{ss}</div>
             <div className="mt-3 text-sm">Total: <span className="font-bold gold-text">{formatIDR(order.total)}</span></div>
-            <div className="mt-4 mx-auto w-40 h-40 sm:w-48 sm:h-48 rounded-lg bg-white p-2 border border-border">
+            <div className="mt-4 mx-auto w-36 h-36 sm:w-44 sm:h-44 grid place-items-center">
               <img
-                src={dummyQr}
-                alt="Payment QR Code (demo)"
+                src={diamondLogo}
+                alt="DiamondHub diamond logo"
                 width={512}
                 height={512}
                 loading="lazy"
-                className="h-full w-full object-contain"
+                className="h-full w-full object-contain animate-float drop-shadow-[0_0_25px_hsl(var(--primary)/0.45)]"
               />
             </div>
-            <div className="mt-2 text-xs text-muted-foreground">Scan or Pay with {order.payment_method_name}</div>
-            <div className="mt-1 text-[10px] uppercase tracking-wider text-muted-foreground">Demo — no real payment</div>
+            <div className="mt-2 text-xs text-muted-foreground">Pay with {order.payment_method_name}</div>
             <button
               type="button"
-              className="mt-4 inline-flex items-center gap-2 rounded-md btn-gold px-6 py-2.5 text-sm disabled:opacity-70 disabled:cursor-not-allowed"
+              className="mt-4 inline-flex items-center gap-2 rounded-md btn-gold px-6 py-2.5 text-sm"
               onClick={handlePay}
-              disabled={paying}
             >
-              {paying && <Loader2 className="h-4 w-4 animate-spin" />}
-              {paying ? "Processing your payment..." : "Pay Now"}
+              Pay Now
             </button>
-            {paying && (
-              <div className="mt-2 text-xs text-muted-foreground">
-                Please wait while we verify your payment...
-              </div>
-            )}
+            <div className="mt-2 text-xs text-muted-foreground">
+              You will be redirected to our admin on WhatsApp to confirm this payment.
+            </div>
           </div>
         )}
+
 
         {isFailed && (
           <div className="mt-6 rounded-xl bg-destructive/10 border border-destructive/30 p-4 text-center text-sm text-destructive">
