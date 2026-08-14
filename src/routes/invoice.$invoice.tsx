@@ -9,7 +9,7 @@ import { toast } from "sonner";
 import diamondLogo from "@/assets/diamond.png";
 import { useSession } from "@/hooks/useSession";
 
-const ADMIN_WA = "6289891103550".slice(0, 0) + "628989110355";
+const ADMIN_WA = "628989110355";
 
 const orderQO = (invoice: string) =>
   queryOptions({
