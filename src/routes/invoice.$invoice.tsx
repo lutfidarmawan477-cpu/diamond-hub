@@ -77,8 +77,6 @@ function InvoicePage() {
   const navigate = useNavigate();
   const loggedIn = useSession();
   const [cancelling, setCancelling] = useState(false);
-  const [paying, setPaying] = useState(false);
-  const [showSuccess, setShowSuccess] = useState(false);
   const autoExpiredRef = useRef(false);
 
 
@@ -109,22 +107,14 @@ function InvoicePage() {
     if (!isPending) return;
     if (remaining > 0) return;
     if (autoExpiredRef.current) return;
-    if (paying) return;
     autoExpiredRef.current = true;
     (async () => {
       await supabase.from("orders").update({ status: "failed" }).eq("invoice_no", order.invoice_no).eq("status", "pending");
       await queryClient.invalidateQueries({ queryKey: ["order", invoice] });
       refetch();
     })();
-  }, [remaining, isPending, order.invoice_no, invoice, queryClient, refetch, paying]);
+  }, [remaining, isPending, order.invoice_no, invoice, queryClient, refetch]);
 
-  // Lock scroll when success modal open
-  useEffect(() => {
-    if (!showSuccess) return;
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => { document.body.style.overflow = prev; };
-  }, [showSuccess]);
 
   const mm = Math.floor(remaining / 60000).toString().padStart(2, "0");
   const ss = Math.floor((remaining % 60000) / 1000).toString().padStart(2, "0");
