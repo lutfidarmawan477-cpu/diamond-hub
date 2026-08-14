@@ -280,65 +280,8 @@ function InvoicePage() {
 
       </div>
 
-      {showSuccess && (
-        <>
-          <div
-            className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm"
-            onClick={() => setShowSuccess(false)}
-          />
-          <div className="fixed left-1/2 top-1/2 z-50 w-[95%] max-w-[500px] max-h-[90vh] -translate-x-1/2 -translate-y-1/2 flex flex-col overflow-hidden card-premium rounded-2xl shadow-2xl">
-            <button
-              type="button"
-              onClick={() => setShowSuccess(false)}
-              aria-label="Close"
-              className="absolute right-3 top-3 rounded-md p-1.5 text-muted-foreground hover:bg-muted/50 hover:text-foreground transition"
-            >
-              <X className="h-4 w-4" />
-            </button>
-            <div className="p-6 pt-8 text-center shrink-0">
-              <div className="mx-auto grid h-16 w-16 place-items-center rounded-full bg-success/15 border border-success/40 mb-3">
-                <CheckCircle2 className="h-9 w-9 text-success" />
-              </div>
-              <h2 className="font-display text-2xl font-bold">Payment Successful</h2>
-              <p className="mt-2 text-sm text-muted-foreground">
-                Thank you for your purchase. Your payment has been successfully processed.
-              </p>
-            </div>
-            <div className="px-6 pb-2 overflow-y-auto min-h-0">
-              <div className="rounded-xl border border-border p-4 space-y-1">
-                <Row label="Invoice" value={order.invoice_no} />
-                <Row label="Product" value={order.package_name} />
-                <Row label="User ID" value={order.game_user_id} />
-                <Row label="Server ID" value={order.zone_id} />
-                <Row label="Payment Method" value={order.payment_method_name} />
-                <Row label="Payment Date" value={paidDate} />
-                <Row label="Total Payment" value={formatIDR(order.total)} highlight />
-                <div className="flex justify-between py-1 text-sm">
-                  <span className="text-muted-foreground">Status</span>
-                  <span className="rounded-full border border-success/40 bg-success/15 text-success px-2 py-0.5 text-[10px] uppercase font-semibold">Success</span>
-                </div>
-              </div>
-            </div>
-            <div className="p-6 pt-4 flex flex-col-reverse sm:flex-row gap-2 sm:justify-end shrink-0 border-t border-border/40 mt-3">
-              <button
-                type="button"
-                onClick={() => setShowSuccess(false)}
-                className="rounded-md border border-border px-4 py-2 text-sm hover:border-primary transition"
-              >
-                Close
-              </button>
-              <Link
-                to={loggedIn ? "/dashboard" : "/"}
-                className="rounded-md btn-gold px-4 py-2 text-sm text-center"
-              >
-                {loggedIn ? "Back to Dashboard" : "Back to Home"}
-              </Link>
-
-            </div>
-          </div>
-        </>
-      )}
     </div>
+
   );
 }
 
