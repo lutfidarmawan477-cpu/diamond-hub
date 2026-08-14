@@ -1,13 +1,15 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { queryOptions, useSuspenseQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
-import { CheckCircle2, Loader2, Printer, X } from "lucide-react";
+import { Printer } from "lucide-react";
 import { getOrderByInvoice } from "@/lib/storefront.functions";
 import { formatIDR } from "@/lib/format";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import dummyQr from "@/assets/dummy-qr.png";
+import diamondLogo from "@/assets/diamond.png";
 import { useSession } from "@/hooks/useSession";
+
+const ADMIN_WA = "6289891103550".slice(0, 0) + "628989110355";
 
 const orderQO = (invoice: string) =>
   queryOptions({
@@ -34,19 +36,39 @@ function displayStatus(s: string) {
   return s;
 }
 
-/**
- * Simulated payment processor. Kept as a single async boundary so it can be
- * swapped for a real payment gateway (Midtrans/Xendit) without touching the UI.
- */
-async function simulatePayment(invoiceNo: string) {
-  await new Promise((r) => setTimeout(r, 2500));
-  const { error } = await supabase
-    .from("orders")
-    .update({ status: "paid" })
-    .eq("invoice_no", invoiceNo)
-    .eq("status", "pending");
-  if (error) throw new Error(error.message);
+/** WhatsApp confirmation message built from the current order. */
+function buildWaMessage(o: {
+  game_user_id: string;
+  zone_id: string;
+  nickname: string | null;
+  package_name: string;
+  payment_method_name: string;
+  subtotal: number;
+  fee: number;
+  total: number;
+  invoice_no: string;
+}) {
+  return [
+    `INVOICE  : ${o.invoice_no}`,
+    "",
+    "DATA CUSTOMER",
+    "-------------",
+    `USER ID  : ${o.game_user_id}`,
+    `ZONE ID  : ${o.zone_id}`,
+    `NICKNAME : ${o.nickname ?? "-"}`,
+    "-------------",
+    "",
+    "ORDER DETAILS",
+    "-------------",
+    `PACKAGE  : ${o.package_name}`,
+    `PAYMENT  : ${o.payment_method_name}`,
+    `SUBTOTAL : ${formatIDR(o.subtotal)}`,
+    `FEE      : ${formatIDR(o.fee)}`,
+    `TOTAL    : ${formatIDR(o.total)}`,
+    "-------------",
+  ].join("\n");
 }
+
 
 function InvoicePage() {
   const { invoice } = Route.useParams();
