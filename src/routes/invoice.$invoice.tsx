@@ -135,20 +135,9 @@ function InvoicePage() {
     failed: "bg-destructive/20 text-destructive border-destructive/40",
   };
 
-  const handlePay = async () => {
-    if (paying || isSuccess) return;
-    setPaying(true);
-    try {
-      await simulatePayment(order.invoice_no);
-      await queryClient.invalidateQueries({ queryKey: ["order", invoice] });
-      await queryClient.invalidateQueries({ queryKey: ["orders"] });
-      await refetch();
-      setShowSuccess(true);
-    } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Payment failed");
-    } finally {
-      setPaying(false);
-    }
+  const handlePay = () => {
+    const url = `https://wa.me/${ADMIN_WA}?text=${encodeURIComponent(buildWaMessage(order))}`;
+    window.open(url, "_blank", "noopener,noreferrer");
   };
 
   const cancelOrder = async () => {
@@ -167,7 +156,6 @@ function InvoicePage() {
     navigate({ to: loggedIn ? "/dashboard" : "/", replace: true });
   };
 
-  const paidDate = new Date(order.updated_at ?? order.created_at).toLocaleString("en-US");
 
   return (
     <div className="container mx-auto max-w-3xl px-4 py-10">
