@@ -248,7 +248,7 @@ function InvoicePage() {
           {!isSuccess && (
             <button
               onClick={cancelOrder}
-              disabled={cancelling || paying}
+              disabled={cancelling}
               className="rounded-md border border-destructive/60 text-destructive px-4 py-2 text-sm hover:bg-destructive/10 transition disabled:opacity-50"
             >
               {cancelling ? "Cancelling…" : "Cancel Order"}
