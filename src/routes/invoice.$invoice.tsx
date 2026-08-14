@@ -1,13 +1,15 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { queryOptions, useSuspenseQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
-import { CheckCircle2, Loader2, Printer, X } from "lucide-react";
+import { Printer } from "lucide-react";
 import { getOrderByInvoice } from "@/lib/storefront.functions";
 import { formatIDR } from "@/lib/format";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import dummyQr from "@/assets/dummy-qr.png";
+import diamondLogo from "@/assets/diamond.png";
 import { useSession } from "@/hooks/useSession";
+
+const ADMIN_WA = "628989110355";
 
 const orderQO = (invoice: string) =>
   queryOptions({
@@ -34,19 +36,39 @@ function displayStatus(s: string) {
   return s;
 }
 
-/**
- * Simulated payment processor. Kept as a single async boundary so it can be
- * swapped for a real payment gateway (Midtrans/Xendit) without touching the UI.
- */
-async function simulatePayment(invoiceNo: string) {
-  await new Promise((r) => setTimeout(r, 2500));
-  const { error } = await supabase
-    .from("orders")
-    .update({ status: "paid" })
-    .eq("invoice_no", invoiceNo)
-    .eq("status", "pending");
-  if (error) throw new Error(error.message);
+/** WhatsApp confirmation message built from the current order. */
+function buildWaMessage(o: {
+  game_user_id: string;
+  zone_id: string;
+  nickname: string | null;
+  package_name: string;
+  payment_method_name: string;
+  subtotal: number;
+  fee: number;
+  total: number;
+  invoice_no: string;
+}) {
+  return [
+    `INVOICE  : ${o.invoice_no}`,
+    "",
+    "DATA CUSTOMER",
+    "-------------",
+    `USER ID  : ${o.game_user_id}`,
+    `ZONE ID  : ${o.zone_id}`,
+    `NICKNAME : ${o.nickname ?? "-"}`,
+    "-------------",
+    "",
+    "ORDER DETAILS",
+    "-------------",
+    `PACKAGE  : ${o.package_name}`,
+    `PAYMENT  : ${o.payment_method_name}`,
+    `SUBTOTAL : ${formatIDR(o.subtotal)}`,
+    `FEE      : ${formatIDR(o.fee)}`,
+    `TOTAL    : ${formatIDR(o.total)}`,
+    "-------------",
+  ].join("\n");
 }
+
 
 function InvoicePage() {
   const { invoice } = Route.useParams();
@@ -55,8 +77,6 @@ function InvoicePage() {
   const navigate = useNavigate();
   const loggedIn = useSession();
   const [cancelling, setCancelling] = useState(false);
-  const [paying, setPaying] = useState(false);
-  const [showSuccess, setShowSuccess] = useState(false);
   const autoExpiredRef = useRef(false);
 
 
@@ -87,22 +107,14 @@ function InvoicePage() {
     if (!isPending) return;
     if (remaining > 0) return;
     if (autoExpiredRef.current) return;
-    if (paying) return;
     autoExpiredRef.current = true;
     (async () => {
       await supabase.from("orders").update({ status: "failed" }).eq("invoice_no", order.invoice_no).eq("status", "pending");
       await queryClient.invalidateQueries({ queryKey: ["order", invoice] });
       refetch();
     })();
-  }, [remaining, isPending, order.invoice_no, invoice, queryClient, refetch, paying]);
+  }, [remaining, isPending, order.invoice_no, invoice, queryClient, refetch]);
 
-  // Lock scroll when success modal open
-  useEffect(() => {
-    if (!showSuccess) return;
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => { document.body.style.overflow = prev; };
-  }, [showSuccess]);
 
   const mm = Math.floor(remaining / 60000).toString().padStart(2, "0");
   const ss = Math.floor((remaining % 60000) / 1000).toString().padStart(2, "0");
@@ -113,20 +125,9 @@ function InvoicePage() {
     failed: "bg-destructive/20 text-destructive border-destructive/40",
   };
 
-  const handlePay = async () => {
-    if (paying || isSuccess) return;
-    setPaying(true);
-    try {
-      await simulatePayment(order.invoice_no);
-      await queryClient.invalidateQueries({ queryKey: ["order", invoice] });
-      await queryClient.invalidateQueries({ queryKey: ["orders"] });
-      await refetch();
-      setShowSuccess(true);
-    } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Payment failed");
-    } finally {
-      setPaying(false);
-    }
+  const handlePay = () => {
+    const url = `https://wa.me/${ADMIN_WA}?text=${encodeURIComponent(buildWaMessage(order))}`;
+    window.open(url, "_blank", "noopener,noreferrer");
   };
 
   const cancelOrder = async () => {
@@ -145,7 +146,6 @@ function InvoicePage() {
     navigate({ to: loggedIn ? "/dashboard" : "/", replace: true });
   };
 
-  const paidDate = new Date(order.updated_at ?? order.created_at).toLocaleString("en-US");
 
   return (
     <div className="container mx-auto max-w-3xl px-4 py-10">
@@ -165,34 +165,30 @@ function InvoicePage() {
             <div className="text-sm text-muted-foreground">Complete payment within</div>
             <div className="font-display text-4xl gold-text mt-1">{mm}:{ss}</div>
             <div className="mt-3 text-sm">Total: <span className="font-bold gold-text">{formatIDR(order.total)}</span></div>
-            <div className="mt-4 mx-auto w-40 h-40 sm:w-48 sm:h-48 rounded-lg bg-white p-2 border border-border">
+            <div className="mt-4 mx-auto w-36 h-36 sm:w-44 sm:h-44 grid place-items-center">
               <img
-                src={dummyQr}
-                alt="Payment QR Code (demo)"
+                src={diamondLogo}
+                alt="DiamondHub diamond logo"
                 width={512}
                 height={512}
                 loading="lazy"
-                className="h-full w-full object-contain"
+                className="h-full w-full object-contain animate-float drop-shadow-[0_0_25px_hsl(var(--primary)/0.45)]"
               />
             </div>
-            <div className="mt-2 text-xs text-muted-foreground">Scan or Pay with {order.payment_method_name}</div>
-            <div className="mt-1 text-[10px] uppercase tracking-wider text-muted-foreground">Demo — no real payment</div>
+            <div className="mt-2 text-xs text-muted-foreground">Pay with {order.payment_method_name}</div>
             <button
               type="button"
-              className="mt-4 inline-flex items-center gap-2 rounded-md btn-gold px-6 py-2.5 text-sm disabled:opacity-70 disabled:cursor-not-allowed"
+              className="mt-4 inline-flex items-center gap-2 rounded-md btn-gold px-6 py-2.5 text-sm"
               onClick={handlePay}
-              disabled={paying}
             >
-              {paying && <Loader2 className="h-4 w-4 animate-spin" />}
-              {paying ? "Processing your payment..." : "Pay Now"}
+              Pay Now
             </button>
-            {paying && (
-              <div className="mt-2 text-xs text-muted-foreground">
-                Please wait while we verify your payment...
-              </div>
-            )}
+            <div className="mt-2 text-xs text-muted-foreground">
+              You will be redirected to our admin on WhatsApp to confirm this payment.
+            </div>
           </div>
         )}
+
 
         {isFailed && (
           <div className="mt-6 rounded-xl bg-destructive/10 border border-destructive/30 p-4 text-center text-sm text-destructive">
@@ -242,7 +238,7 @@ function InvoicePage() {
           {!isSuccess && (
             <button
               onClick={cancelOrder}
-              disabled={cancelling || paying}
+              disabled={cancelling}
               className="rounded-md border border-destructive/60 text-destructive px-4 py-2 text-sm hover:bg-destructive/10 transition disabled:opacity-50"
             >
               {cancelling ? "Cancelling…" : "Cancel Order"}
@@ -258,65 +254,8 @@ function InvoicePage() {
 
       </div>
 
-      {showSuccess && (
-        <>
-          <div
-            className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm"
-            onClick={() => setShowSuccess(false)}
-          />
-          <div className="fixed left-1/2 top-1/2 z-50 w-[95%] max-w-[500px] max-h-[90vh] -translate-x-1/2 -translate-y-1/2 flex flex-col overflow-hidden card-premium rounded-2xl shadow-2xl">
-            <button
-              type="button"
-              onClick={() => setShowSuccess(false)}
-              aria-label="Close"
-              className="absolute right-3 top-3 rounded-md p-1.5 text-muted-foreground hover:bg-muted/50 hover:text-foreground transition"
-            >
-              <X className="h-4 w-4" />
-            </button>
-            <div className="p-6 pt-8 text-center shrink-0">
-              <div className="mx-auto grid h-16 w-16 place-items-center rounded-full bg-success/15 border border-success/40 mb-3">
-                <CheckCircle2 className="h-9 w-9 text-success" />
-              </div>
-              <h2 className="font-display text-2xl font-bold">Payment Successful</h2>
-              <p className="mt-2 text-sm text-muted-foreground">
-                Thank you for your purchase. Your payment has been successfully processed.
-              </p>
-            </div>
-            <div className="px-6 pb-2 overflow-y-auto min-h-0">
-              <div className="rounded-xl border border-border p-4 space-y-1">
-                <Row label="Invoice" value={order.invoice_no} />
-                <Row label="Product" value={order.package_name} />
-                <Row label="User ID" value={order.game_user_id} />
-                <Row label="Server ID" value={order.zone_id} />
-                <Row label="Payment Method" value={order.payment_method_name} />
-                <Row label="Payment Date" value={paidDate} />
-                <Row label="Total Payment" value={formatIDR(order.total)} highlight />
-                <div className="flex justify-between py-1 text-sm">
-                  <span className="text-muted-foreground">Status</span>
-                  <span className="rounded-full border border-success/40 bg-success/15 text-success px-2 py-0.5 text-[10px] uppercase font-semibold">Success</span>
-                </div>
-              </div>
-            </div>
-            <div className="p-6 pt-4 flex flex-col-reverse sm:flex-row gap-2 sm:justify-end shrink-0 border-t border-border/40 mt-3">
-              <button
-                type="button"
-                onClick={() => setShowSuccess(false)}
-                className="rounded-md border border-border px-4 py-2 text-sm hover:border-primary transition"
-              >
-                Close
-              </button>
-              <Link
-                to={loggedIn ? "/dashboard" : "/"}
-                className="rounded-md btn-gold px-4 py-2 text-sm text-center"
-              >
-                {loggedIn ? "Back to Dashboard" : "Back to Home"}
-              </Link>
-
-            </div>
-          </div>
-        </>
-      )}
     </div>
+
   );
 }
 
