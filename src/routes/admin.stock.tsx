@@ -80,9 +80,40 @@ function AdminStock() {
     await load();
   };
 
+  const periodHistory = useMemo(
+    () => history.filter((h) => inPeriod(h.created_at, period)),
+    [history, period],
+  );
+
+  const chart = useMemo(() => {
+    const { keys, keyOf } = periodBuckets(period, history.map((h) => h.created_at));
+    const map = new Map(keys.map((k) => [k, { name: k, added: 0, deducted: 0 }]));
+    for (const h of periodHistory) {
+      const row = map.get(keyOf(new Date(h.created_at)));
+      if (!row) continue;
+      if (h.activity_type === "add") row.added += h.amount;
+      else row.deducted += h.amount;
+    }
+    return Array.from(map.values());
+  }, [periodHistory, history, period]);
+
   if (isAdmin === null) return <div className="container mx-auto p-10 text-center">Loading…</div>;
 
-  const filtered = history.filter((h) => filter === "all" || h.activity_type === filter);
+  const filtered = periodHistory.filter((h) => filter === "all" || h.activity_type === filter);
+
+  const exportHistory = () => {
+    exportCsv(
+      `diamond-stock-history-${period}.csv`,
+      ["Date", "Activity", "Amount", "Note"],
+      filtered.map((h) => [
+        new Date(h.created_at).toLocaleString("en-US"),
+        h.activity_type === "add" ? "Add" : "Deduct",
+        (h.activity_type === "add" ? "+" : "-") + h.amount,
+        h.note ?? "",
+      ]),
+    );
+  };
+
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row">
