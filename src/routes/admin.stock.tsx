@@ -168,19 +168,44 @@ function AdminStock() {
           </div>
         </div>
 
+        <div className="card-premium rounded-xl p-4 sm:p-5 mb-6">
+          <h2 className="font-display text-lg mb-3">Stock Movement</h2>
+          <div className="h-[240px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={chart} margin={{ left: 4, right: 8, top: 8, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+                <XAxis dataKey="name" tick={{ fontSize: 11, fill: "var(--muted-foreground)" }} interval="preserveStartEnd" />
+                <YAxis tick={{ fontSize: 11, fill: "var(--muted-foreground)" }} width={48}
+                  tickFormatter={(v: number) => (v >= 1000 ? `${Math.round(v / 1000)}k` : String(v))} />
+                <Tooltip contentStyle={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 8, fontSize: 12 }} />
+                <Legend wrapperStyle={{ fontSize: 12 }} />
+                <Bar name="Added" dataKey="added" fill="var(--gold)" radius={[4, 4, 0, 0]} />
+                <Bar name="Deducted" dataKey="deducted" fill="var(--primary)" radius={[4, 4, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
         <div className="card-premium rounded-xl p-4 sm:p-5">
           <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
             <h2 className="font-display text-lg">Stock History</h2>
-            <select
-              className="rounded-md bg-input border border-border px-3 py-2 text-sm"
-              value={filter}
-              onChange={(e) => setFilter(e.target.value as "all" | "add" | "deduct")}
-            >
-              <option value="all">All</option>
-              <option value="add">Add</option>
-              <option value="deduct">Deduct</option>
-            </select>
+            <div className="flex flex-wrap items-center gap-2">
+              <select
+                className="rounded-md bg-input border border-border px-3 py-2 text-sm"
+                value={filter}
+                onChange={(e) => setFilter(e.target.value as "all" | "add" | "deduct")}
+              >
+                <option value="all">All</option>
+                <option value="add">Add</option>
+                <option value="deduct">Deduct</option>
+              </select>
+              <button onClick={exportHistory}
+                className="rounded-md btn-gold px-4 py-2 text-sm active:scale-95 transition">
+                Export Excel
+              </button>
+            </div>
           </div>
+
           {/* Desktop */}
           <div className="hidden md:block table-scroll">
             <table className="w-full text-sm">
