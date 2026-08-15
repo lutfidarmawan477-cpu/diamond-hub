@@ -119,7 +119,17 @@ function AdminStock() {
     <div className="min-h-screen flex flex-col md:flex-row">
       <AdminSidebar />
       <main className="flex-1 p-4 sm:p-6 min-w-0">
-        <h1 className="font-display text-2xl mb-6">Diamond Stock</h1>
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+          <h1 className="font-display text-2xl">Diamond Stock</h1>
+          <select
+            className="rounded-md bg-input border border-border px-3 py-2 text-sm"
+            value={period}
+            onChange={(e) => setPeriod(e.target.value as Period)}
+          >
+            {PERIOD_OPTIONS.map((p) => <option key={p.value} value={p.value}>{p.label}</option>)}
+          </select>
+        </div>
+
 
         <div className="grid gap-4 md:grid-cols-2 mb-6 items-stretch">
           <div className="card-premium rounded-xl p-4 sm:p-5 flex h-full flex-col">
