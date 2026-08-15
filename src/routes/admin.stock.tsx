@@ -1,9 +1,12 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { AdminSidebar } from "@/components/AdminSidebar";
 import { usePolling } from "@/hooks/usePolling";
+import { PERIOD_OPTIONS, type Period, inPeriod, periodBuckets } from "@/lib/period";
+import { exportCsv } from "@/lib/export-csv";
+import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
 type HistoryRow = {
   id: string;
@@ -16,7 +19,16 @@ type HistoryRow = {
 };
 
 export const Route = createFileRoute("/admin/stock")({
-  head: () => ({ meta: [{ title: "Diamond Stock — Admin" }] }),
+  head: () => ({
+    meta: [
+      { title: "Diamond Stock — DiamondHub Admin" },
+      { name: "description", content: "Track diamond inventory, add stock and review add/deduct movement history." },
+      { property: "og:title", content: "Diamond Stock — DiamondHub Admin" },
+      { property: "og:description", content: "Track diamond inventory, add stock and review add/deduct movement history." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+  }),
   component: AdminStock,
 });
 
@@ -29,6 +41,8 @@ function AdminStock() {
   const [note, setNote] = useState<string>("");
   const [saving, setSaving] = useState(false);
   const [filter, setFilter] = useState<"all" | "add" | "deduct">("all");
+  const [period, setPeriod] = useState<Period>("month");
+
 
   const load = async () => {
     const [s, h] = await Promise.all([
@@ -66,15 +80,56 @@ function AdminStock() {
     await load();
   };
 
+  const periodHistory = useMemo(
+    () => history.filter((h) => inPeriod(h.created_at, period)),
+    [history, period],
+  );
+
+  const chart = useMemo(() => {
+    const { keys, keyOf } = periodBuckets(period, history.map((h) => h.created_at));
+    const map = new Map(keys.map((k) => [k, { name: k, added: 0, deducted: 0 }]));
+    for (const h of periodHistory) {
+      const row = map.get(keyOf(new Date(h.created_at)));
+      if (!row) continue;
+      if (h.activity_type === "add") row.added += h.amount;
+      else row.deducted += h.amount;
+    }
+    return Array.from(map.values());
+  }, [periodHistory, history, period]);
+
   if (isAdmin === null) return <div className="container mx-auto p-10 text-center">Loading…</div>;
 
-  const filtered = history.filter((h) => filter === "all" || h.activity_type === filter);
+  const filtered = periodHistory.filter((h) => filter === "all" || h.activity_type === filter);
+
+  const exportHistory = () => {
+    exportCsv(
+      `diamond-stock-history-${period}.csv`,
+      ["Date", "Activity", "Amount", "Note"],
+      filtered.map((h) => [
+        new Date(h.created_at).toLocaleString("en-US"),
+        h.activity_type === "add" ? "Add" : "Deduct",
+        (h.activity_type === "add" ? "+" : "-") + h.amount,
+        h.note ?? "",
+      ]),
+    );
+  };
+
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row">
       <AdminSidebar />
       <main className="flex-1 p-4 sm:p-6 min-w-0">
-        <h1 className="font-display text-2xl mb-6">Diamond Stock</h1>
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+          <h1 className="font-display text-2xl">Diamond Stock</h1>
+          <select
+            className="rounded-md bg-input border border-border px-3 py-2 text-sm"
+            value={period}
+            onChange={(e) => setPeriod(e.target.value as Period)}
+          >
+            {PERIOD_OPTIONS.map((p) => <option key={p.value} value={p.value}>{p.label}</option>)}
+          </select>
+        </div>
+
 
         <div className="grid gap-4 md:grid-cols-2 mb-6 items-stretch">
           <div className="card-premium rounded-xl p-4 sm:p-5 flex h-full flex-col">
@@ -113,19 +168,44 @@ function AdminStock() {
           </div>
         </div>
 
+        <div className="card-premium rounded-xl p-4 sm:p-5 mb-6">
+          <h2 className="font-display text-lg mb-3">Stock Movement</h2>
+          <div className="h-[240px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={chart} margin={{ left: 4, right: 8, top: 8, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+                <XAxis dataKey="name" tick={{ fontSize: 11, fill: "var(--muted-foreground)" }} interval="preserveStartEnd" />
+                <YAxis tick={{ fontSize: 11, fill: "var(--muted-foreground)" }} width={48}
+                  tickFormatter={(v: number) => (v >= 1000 ? `${Math.round(v / 1000)}k` : String(v))} />
+                <Tooltip contentStyle={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 8, fontSize: 12 }} />
+                <Legend wrapperStyle={{ fontSize: 12 }} />
+                <Bar name="Added" dataKey="added" fill="var(--gold)" radius={[4, 4, 0, 0]} />
+                <Bar name="Deducted" dataKey="deducted" fill="var(--primary)" radius={[4, 4, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
         <div className="card-premium rounded-xl p-4 sm:p-5">
           <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
             <h2 className="font-display text-lg">Stock History</h2>
-            <select
-              className="rounded-md bg-input border border-border px-3 py-2 text-sm"
-              value={filter}
-              onChange={(e) => setFilter(e.target.value as "all" | "add" | "deduct")}
-            >
-              <option value="all">All</option>
-              <option value="add">Add</option>
-              <option value="deduct">Deduct</option>
-            </select>
+            <div className="flex flex-wrap items-center gap-2">
+              <select
+                className="rounded-md bg-input border border-border px-3 py-2 text-sm"
+                value={filter}
+                onChange={(e) => setFilter(e.target.value as "all" | "add" | "deduct")}
+              >
+                <option value="all">All</option>
+                <option value="add">Add</option>
+                <option value="deduct">Deduct</option>
+              </select>
+              <button onClick={exportHistory}
+                className="rounded-md btn-gold px-4 py-2 text-sm active:scale-95 transition">
+                Export Excel
+              </button>
+            </div>
           </div>
+
           {/* Desktop */}
           <div className="hidden md:block table-scroll">
             <table className="w-full text-sm">
