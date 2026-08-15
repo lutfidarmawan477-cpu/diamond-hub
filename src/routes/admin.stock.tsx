@@ -1,9 +1,12 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { AdminSidebar } from "@/components/AdminSidebar";
 import { usePolling } from "@/hooks/usePolling";
+import { PERIOD_OPTIONS, type Period, inPeriod, periodBuckets } from "@/lib/period";
+import { exportCsv } from "@/lib/export-csv";
+import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
 type HistoryRow = {
   id: string;
@@ -16,7 +19,16 @@ type HistoryRow = {
 };
 
 export const Route = createFileRoute("/admin/stock")({
-  head: () => ({ meta: [{ title: "Diamond Stock — Admin" }] }),
+  head: () => ({
+    meta: [
+      { title: "Diamond Stock — DiamondHub Admin" },
+      { name: "description", content: "Track diamond inventory, add stock and review add/deduct movement history." },
+      { property: "og:title", content: "Diamond Stock — DiamondHub Admin" },
+      { property: "og:description", content: "Track diamond inventory, add stock and review add/deduct movement history." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+  }),
   component: AdminStock,
 });
 
@@ -29,6 +41,8 @@ function AdminStock() {
   const [note, setNote] = useState<string>("");
   const [saving, setSaving] = useState(false);
   const [filter, setFilter] = useState<"all" | "add" | "deduct">("all");
+  const [period, setPeriod] = useState<Period>("month");
+
 
   const load = async () => {
     const [s, h] = await Promise.all([
