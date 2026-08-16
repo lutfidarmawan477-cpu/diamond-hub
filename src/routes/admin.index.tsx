@@ -336,9 +336,9 @@ function formatWib(iso: string) {
   return `${get("day")}/${get("month")}/${get("year")} ${get("hour")}:${get("minute")} WIB`;
 }
 
-function Stat({ label, value }: { label: string; value: string }) {
+function Stat({ label, value, className = "" }: { label: string; value: string; className?: string }) {
   return (
-    <div className="card-premium rounded-xl p-5 min-w-[170px] flex-1 shrink-0 snap-start">
+    <div className={`card-premium rounded-xl p-4 sm:p-5 min-w-0 ${className}`}>
       <div className="text-xs text-muted-foreground">{label}</div>
       <div className="font-display text-2xl gold-text mt-1 whitespace-nowrap">{value}</div>
     </div>
