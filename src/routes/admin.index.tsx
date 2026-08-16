@@ -7,6 +7,7 @@ import { AdminSidebar } from "@/components/AdminSidebar";
 import { usePolling } from "@/hooks/usePolling";
 import { PERIOD_OPTIONS, type Period, inPeriod, periodBuckets } from "@/lib/period";
 import { exportCsv } from "@/lib/export-csv";
+import { useAxisProps } from "@/lib/chart-axis";
 import {
   Area,
   AreaChart,
