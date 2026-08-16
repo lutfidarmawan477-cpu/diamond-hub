@@ -51,6 +51,7 @@ function AdminPage() {
   const [filter, setFilter] = useState<string>("all");
   const [search, setSearch] = useState("");
   const [period, setPeriod] = useState<Period>("month");
+  const axis = useAxisProps(period);
   const [confirming, setConfirming] = useState<string | null>(null);
 
   const loadOrders = async () => {
