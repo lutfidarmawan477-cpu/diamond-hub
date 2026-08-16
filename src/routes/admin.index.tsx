@@ -177,7 +177,7 @@ function AdminPage() {
             <Stat label="Successful" value={stats.success.toString()} />
             <Stat label="Pending" value={stats.pending.toString()} />
             <Stat label="Failed" value={stats.failed.toString()} />
-            <Stat label="Revenue" value={formatIDR(stats.revenue)} className="col-span-2 sm:col-span-1" />
+            <Stat label="Revenue" value={formatIDR(stats.revenue)} className="col-span-2 sm:col-span-3 lg:col-span-1" />
           </div>
 
 

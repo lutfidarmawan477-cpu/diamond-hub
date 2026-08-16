@@ -43,6 +43,7 @@ function AdminStock() {
   const [saving, setSaving] = useState(false);
   const [filter, setFilter] = useState<"all" | "add" | "deduct">("all");
   const [period, setPeriod] = useState<Period>("month");
+  const axis = useAxisProps(period);
 
 
   const load = async () => {
@@ -171,12 +172,14 @@ function AdminStock() {
 
         <div className="card-premium rounded-xl p-4 sm:p-5 mb-6">
           <h2 className="font-display text-lg mb-3">Stock Movement</h2>
-          <div className="h-[240px]">
+          <div className="h-[240px] lg:h-[300px]">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={chart} margin={{ left: 4, right: 8, top: 8, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-                <XAxis dataKey="name" tick={{ fontSize: 11, fill: "var(--muted-foreground)" }} interval="preserveStartEnd" />
-                <YAxis tick={{ fontSize: 11, fill: "var(--muted-foreground)" }} width={48}
+                <XAxis dataKey="name" tick={axis.tick} interval={axis.interval}
+                  angle={axis.angle} textAnchor={axis.angle ? "end" : "middle"}
+                  height={axis.height} minTickGap={axis.minTickGap} />
+                <YAxis tick={axis.tick} width={48}
                   tickFormatter={(v: number) => (v >= 1000 ? `${Math.round(v / 1000)}k` : String(v))} />
                 <Tooltip contentStyle={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 8, fontSize: 12 }} />
                 <Legend wrapperStyle={{ fontSize: 12 }} />
