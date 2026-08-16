@@ -17,7 +17,8 @@ export function useChartWidth() {
  * X-axis label density for a period. Desktop shows every label; tablet/mobile
  * show a readable subset (data itself is untouched).
  */
-export function useAxisProps(period: Period, width = useChartWidth()) {
+export function useAxisProps(period: Period) {
+  const width = useChartWidth();
   const desktop = width >= 1024;
   const tablet = width >= 640;
 
