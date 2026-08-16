@@ -135,9 +135,11 @@ function SiteHeader({
 
   // Guests browsing the checkout flow only get a way back Home.
   const guestCheckout = !role && (pathname === "/topup" || pathname.startsWith("/invoice"));
+  // On Track Order / Terms, mobile guests only see Home (desktop keeps full nav).
+  const guestInfoPage = !role && (pathname === "/tracking" || pathname === "/terms");
 
   // Determine which links to show based on role + current page.
-  let links: { to: string; label: string; icon: LucideIcon }[] = [];
+  let links: { to: string; label: string; icon: LucideIcon; mobileOnly?: boolean }[] = [];
   if (role === "customer") {
     if (pathname === "/dashboard") {
       links = [{ to: "/tracking", label: "Track Order", icon: PackageSearch }];
@@ -148,7 +150,7 @@ function SiteHeader({
     links = guestCheckout
       ? [{ to: "/", label: "Home", icon: Home }]
       : [
-          { to: "/", label: "Home", icon: Home },
+          { to: "/", label: "Home", icon: Home, mobileOnly: guestInfoPage },
           { to: "/topup", label: "Top Up", icon: Zap },
           { to: "/tracking", label: "Track Order", icon: PackageSearch },
         ];
@@ -174,7 +176,7 @@ function SiteHeader({
               <Link
                 key={l.to}
                 to={l.to}
-                className={`${role === null && !guestCheckout ? "hidden sm:inline-flex" : "inline-flex"} ${linkCls}`}
+                className={`${l.mobileOnly || !(role === null && !guestCheckout) ? "inline-flex" : "hidden sm:inline-flex"} ${linkCls}`}
               >
                 <Icon className="h-[18px] w-[18px]" strokeWidth={2} />
                 {l.label}
@@ -182,7 +184,7 @@ function SiteHeader({
             );
           })}
           {role === null && !guestCheckout && (
-            <Link to="/auth" className={`inline-flex ${linkCls}`}>
+            <Link to="/auth" className={`${guestInfoPage ? "hidden sm:inline-flex" : "inline-flex"} ${linkCls}`}>
               <LogIn className="h-[18px] w-[18px]" strokeWidth={2} />
               Sign In
             </Link>
