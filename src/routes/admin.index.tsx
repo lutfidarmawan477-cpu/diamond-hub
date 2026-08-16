@@ -169,14 +169,15 @@ function AdminPage() {
             </select>
           </div>
 
-          {/* Statistics cards — one mobile-style card design across all breakpoints */}
-          <div className="mb-6 flex gap-3 overflow-x-auto pb-2 snap-x">
+          {/* Statistics cards */}
+          <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
             <Stat label="Total Orders" value={stats.total.toString()} />
             <Stat label="Successful" value={stats.success.toString()} />
             <Stat label="Pending" value={stats.pending.toString()} />
             <Stat label="Failed" value={stats.failed.toString()} />
-            <Stat label="Revenue" value={formatIDR(stats.revenue)} />
+            <Stat label="Revenue" value={formatIDR(stats.revenue)} className="col-span-2 sm:col-span-1" />
           </div>
+
 
           {/* Sales analytics */}
           <div className="mb-6 grid gap-4 lg:grid-cols-2">
