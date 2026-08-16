@@ -180,10 +180,10 @@ function AdminPage() {
 
 
           {/* Sales analytics */}
-          <div className="mb-6 grid gap-4 lg:grid-cols-2">
+          <div className="mb-6 grid gap-4">
             <div className="card-premium rounded-xl p-4 sm:p-5">
               <h2 className="font-display text-lg mb-3">Revenue</h2>
-              <div className="h-[240px]">
+              <div className="h-[240px] lg:h-[300px]">
                 <ResponsiveContainer width="100%" height="100%">
                   <AreaChart data={chart} margin={{ left: 4, right: 8, top: 8, bottom: 0 }}>
                     <defs>
@@ -193,8 +193,10 @@ function AdminPage() {
                       </linearGradient>
                     </defs>
                     <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-                    <XAxis dataKey="name" tick={{ fontSize: 11, fill: "var(--muted-foreground)" }} interval="preserveStartEnd" />
-                    <YAxis tick={{ fontSize: 11, fill: "var(--muted-foreground)" }} width={60}
+                    <XAxis dataKey="name" tick={axis.tick} interval={axis.interval}
+                      angle={axis.angle} textAnchor={axis.angle ? "end" : "middle"}
+                      height={axis.height} minTickGap={axis.minTickGap} />
+                    <YAxis tick={axis.tick} width={60}
                       tickFormatter={(v: number) => (v >= 1000 ? `${Math.round(v / 1000)}k` : String(v))} />
                     <Tooltip
                       contentStyle={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 8, fontSize: 12 }}
@@ -207,12 +209,14 @@ function AdminPage() {
             </div>
             <div className="card-premium rounded-xl p-4 sm:p-5">
               <h2 className="font-display text-lg mb-3">Orders</h2>
-              <div className="h-[240px]">
+              <div className="h-[240px] lg:h-[300px]">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={chart} margin={{ left: 4, right: 8, top: 8, bottom: 0 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-                    <XAxis dataKey="name" tick={{ fontSize: 11, fill: "var(--muted-foreground)" }} interval="preserveStartEnd" />
-                    <YAxis allowDecimals={false} tick={{ fontSize: 11, fill: "var(--muted-foreground)" }} width={36} />
+                    <XAxis dataKey="name" tick={axis.tick} interval={axis.interval}
+                      angle={axis.angle} textAnchor={axis.angle ? "end" : "middle"}
+                      height={axis.height} minTickGap={axis.minTickGap} />
+                    <YAxis allowDecimals={false} tick={axis.tick} width={36} />
                     <Tooltip
                       contentStyle={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 8, fontSize: 12 }}
                     />
