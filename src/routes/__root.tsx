@@ -176,7 +176,7 @@ function SiteHeader({
               <Link
                 key={l.to}
                 to={l.to}
-                className={`${role === null && !guestCheckout ? "hidden sm:inline-flex" : "inline-flex"} ${linkCls}`}
+                className={`${l.mobileOnly || !(role === null && !guestCheckout) ? "inline-flex" : "hidden sm:inline-flex"} ${linkCls}`}
               >
                 <Icon className="h-[18px] w-[18px]" strokeWidth={2} />
                 {l.label}
@@ -184,7 +184,7 @@ function SiteHeader({
             );
           })}
           {role === null && !guestCheckout && (
-            <Link to="/auth" className={`inline-flex ${linkCls}`}>
+            <Link to="/auth" className={`${guestInfoPage ? "hidden sm:inline-flex" : "inline-flex"} ${linkCls}`}>
               <LogIn className="h-[18px] w-[18px]" strokeWidth={2} />
               Sign In
             </Link>
