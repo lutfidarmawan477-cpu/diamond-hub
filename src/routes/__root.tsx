@@ -135,9 +135,11 @@ function SiteHeader({
 
   // Guests browsing the checkout flow only get a way back Home.
   const guestCheckout = !role && (pathname === "/topup" || pathname.startsWith("/invoice"));
+  // On Track Order / Terms, mobile guests only see Home (desktop keeps full nav).
+  const guestInfoPage = !role && (pathname === "/tracking" || pathname === "/terms");
 
   // Determine which links to show based on role + current page.
-  let links: { to: string; label: string; icon: LucideIcon }[] = [];
+  let links: { to: string; label: string; icon: LucideIcon; mobileOnly?: boolean }[] = [];
   if (role === "customer") {
     if (pathname === "/dashboard") {
       links = [{ to: "/tracking", label: "Track Order", icon: PackageSearch }];
@@ -148,7 +150,7 @@ function SiteHeader({
     links = guestCheckout
       ? [{ to: "/", label: "Home", icon: Home }]
       : [
-          { to: "/", label: "Home", icon: Home },
+          { to: "/", label: "Home", icon: Home, mobileOnly: guestInfoPage },
           { to: "/topup", label: "Top Up", icon: Zap },
           { to: "/tracking", label: "Track Order", icon: PackageSearch },
         ];
