@@ -9,49 +9,24 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as VouchersRouteImport } from './routes/vouchers'
-import { Route as TrackingRouteImport } from './routes/tracking'
-import { Route as TopupRouteImport } from './routes/topup'
-import { Route as TermsRouteImport } from './routes/terms'
-import { Route as ResetPasswordRouteImport } from './routes/reset-password'
-import { Route as DashboardRouteImport } from './routes/dashboard'
-import { Route as AuthRouteImport } from './routes/auth'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as DashboardRouteImport } from './routes/dashboard'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as TermsRouteImport } from './routes/terms'
+import { Route as TopupRouteImport } from './routes/topup'
+import { Route as TrackingRouteImport } from './routes/tracking'
+import { Route as VouchersRouteImport } from './routes/vouchers'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
-import { Route as InvoiceInvoiceRouteImport } from './routes/invoice.$invoice'
-import { Route as AdminVouchersRouteImport } from './routes/admin.vouchers'
-import { Route as AdminStockRouteImport } from './routes/admin.stock'
-import { Route as AdminPackagesRouteImport } from './routes/admin.packages'
 import { Route as AdminHistoryRouteImport } from './routes/admin.history'
+import { Route as AdminPackagesRouteImport } from './routes/admin.packages'
+import { Route as AdminStockRouteImport } from './routes/admin.stock'
+import { Route as AdminVouchersRouteImport } from './routes/admin.vouchers'
+import { Route as InvoiceInvoiceRouteImport } from './routes/invoice.$invoice'
 
-const VouchersRoute = VouchersRouteImport.update({
-  id: '/vouchers',
-  path: '/vouchers',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const TrackingRoute = TrackingRouteImport.update({
-  id: '/tracking',
-  path: '/tracking',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const TopupRoute = TopupRouteImport.update({
-  id: '/topup',
-  path: '/topup',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const TermsRoute = TermsRouteImport.update({
-  id: '/terms',
-  path: '/terms',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ResetPasswordRoute = ResetPasswordRouteImport.update({
-  id: '/reset-password',
-  path: '/reset-password',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DashboardRoute = DashboardRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -59,9 +34,34 @@ const AuthRoute = AuthRouteImport.update({
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const DashboardRoute = DashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TopupRoute = TopupRouteImport.update({
+  id: '/topup',
+  path: '/topup',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TrackingRoute = TrackingRouteImport.update({
+  id: '/tracking',
+  path: '/tracking',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VouchersRoute = VouchersRouteImport.update({
+  id: '/vouchers',
+  path: '/vouchers',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminIndexRoute = AdminIndexRouteImport.update({
@@ -69,19 +69,9 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   path: '/admin/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const InvoiceInvoiceRoute = InvoiceInvoiceRouteImport.update({
-  id: '/invoice/$invoice',
-  path: '/invoice/$invoice',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminVouchersRoute = AdminVouchersRouteImport.update({
-  id: '/admin/vouchers',
-  path: '/admin/vouchers',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminStockRoute = AdminStockRouteImport.update({
-  id: '/admin/stock',
-  path: '/admin/stock',
+const AdminHistoryRoute = AdminHistoryRouteImport.update({
+  id: '/admin/history',
+  path: '/admin/history',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminPackagesRoute = AdminPackagesRouteImport.update({
@@ -89,9 +79,19 @@ const AdminPackagesRoute = AdminPackagesRouteImport.update({
   path: '/admin/packages',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminHistoryRoute = AdminHistoryRouteImport.update({
-  id: '/admin/history',
-  path: '/admin/history',
+const AdminStockRoute = AdminStockRouteImport.update({
+  id: '/admin/stock',
+  path: '/admin/stock',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminVouchersRoute = AdminVouchersRouteImport.update({
+  id: '/admin/vouchers',
+  path: '/admin/vouchers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InvoiceInvoiceRoute = InvoiceInvoiceRouteImport.update({
+  id: '/invoice/$invoice',
+  path: '/invoice/$invoice',
   getParentRoute: () => rootRouteImport,
 } as any)
 
@@ -214,46 +214,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/vouchers': {
-      id: '/vouchers'
-      path: '/vouchers'
-      fullPath: '/vouchers'
-      preLoaderRoute: typeof VouchersRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/tracking': {
-      id: '/tracking'
-      path: '/tracking'
-      fullPath: '/tracking'
-      preLoaderRoute: typeof TrackingRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/topup': {
-      id: '/topup'
-      path: '/topup'
-      fullPath: '/topup'
-      preLoaderRoute: typeof TopupRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/terms': {
-      id: '/terms'
-      path: '/terms'
-      fullPath: '/terms'
-      preLoaderRoute: typeof TermsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/reset-password': {
-      id: '/reset-password'
-      path: '/reset-password'
-      fullPath: '/reset-password'
-      preLoaderRoute: typeof ResetPasswordRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/dashboard': {
-      id: '/dashboard'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof DashboardRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth': {
@@ -263,11 +228,46 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/dashboard': {
+      id: '/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/topup': {
+      id: '/topup'
+      path: '/topup'
+      fullPath: '/topup'
+      preLoaderRoute: typeof TopupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tracking': {
+      id: '/tracking'
+      path: '/tracking'
+      fullPath: '/tracking'
+      preLoaderRoute: typeof TrackingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/vouchers': {
+      id: '/vouchers'
+      path: '/vouchers'
+      fullPath: '/vouchers'
+      preLoaderRoute: typeof VouchersRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/': {
@@ -277,25 +277,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/invoice/$invoice': {
-      id: '/invoice/$invoice'
-      path: '/invoice/$invoice'
-      fullPath: '/invoice/$invoice'
-      preLoaderRoute: typeof InvoiceInvoiceRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/vouchers': {
-      id: '/admin/vouchers'
-      path: '/admin/vouchers'
-      fullPath: '/admin/vouchers'
-      preLoaderRoute: typeof AdminVouchersRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/stock': {
-      id: '/admin/stock'
-      path: '/admin/stock'
-      fullPath: '/admin/stock'
-      preLoaderRoute: typeof AdminStockRouteImport
+    '/admin/history': {
+      id: '/admin/history'
+      path: '/admin/history'
+      fullPath: '/admin/history'
+      preLoaderRoute: typeof AdminHistoryRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/packages': {
@@ -305,11 +291,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminPackagesRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin/history': {
-      id: '/admin/history'
-      path: '/admin/history'
-      fullPath: '/admin/history'
-      preLoaderRoute: typeof AdminHistoryRouteImport
+    '/admin/stock': {
+      id: '/admin/stock'
+      path: '/admin/stock'
+      fullPath: '/admin/stock'
+      preLoaderRoute: typeof AdminStockRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/vouchers': {
+      id: '/admin/vouchers'
+      path: '/admin/vouchers'
+      fullPath: '/admin/vouchers'
+      preLoaderRoute: typeof AdminVouchersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/invoice/$invoice': {
+      id: '/invoice/$invoice'
+      path: '/invoice/$invoice'
+      fullPath: '/invoice/$invoice'
+      preLoaderRoute: typeof InvoiceInvoiceRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
