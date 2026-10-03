@@ -271,6 +271,30 @@ function InvoicePage() {
 
       </div>
 
+      {showSuccess && (
+        <div className="fixed inset-0 z-50 grid place-items-center bg-background/80 backdrop-blur-sm p-4 no-print" onClick={() => setShowSuccess(false)}>
+          <div className="card-premium w-[92%] max-w-[480px] max-h-[90vh] overflow-y-auto rounded-2xl p-6 animate-scale-in" onClick={(e) => e.stopPropagation()}>
+            <div className="text-center">
+              <div className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-success/20 text-success text-2xl">✓</div>
+              <h2 className="mt-3 font-display text-2xl text-success">PAYMENT SUCCESSFUL</h2>
+            </div>
+            <div className="mt-4 rounded-xl border border-border p-4">
+              <Row label="Order ID" value={order.invoice_no} />
+              <Row label="User ID" value={order.game_user_id} />
+              <Row label="Zone ID" value={order.zone_id} />
+              <Row label="Nickname" value={order.nickname ?? "—"} />
+              <Row label="Package" value={order.package_name} />
+              <Row label="Payment Method" value={order.payment_method_name} />
+              <Row label="Subtotal" value={formatIDR(order.subtotal)} />
+              <Row label="Fee" value={formatIDR(order.fee)} />
+              <Row label="Total" value={formatIDR(order.total)} highlight />
+              <Row label="Status" value="SUCCESS" />
+              <Row label="Date/Time" value={new Date(order.updated_at ?? order.created_at).toLocaleString("en-US")} />
+            </div>
+            <button onClick={() => setShowSuccess(false)} className="mt-4 w-full rounded-md btn-gold px-4 py-2.5 text-sm">Close</button>
+          </div>
+        </div>
+      )}
     </div>
 
   );
