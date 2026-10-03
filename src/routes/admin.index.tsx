@@ -172,12 +172,12 @@ function AdminPage() {
           </div>
 
           {/* Statistics cards */}
-          <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+          <div className="mb-6 grid grid-cols-2 gap-3 lg:grid-cols-4">
             <Stat label="Total Orders" value={stats.total.toString()} />
             <Stat label="Successful" value={stats.success.toString()} />
             <Stat label="Pending" value={stats.pending.toString()} />
             <Stat label="Failed" value={stats.failed.toString()} />
-            <Stat label="Revenue" value={formatIDR(stats.revenue)} className="col-span-2 sm:col-span-3 lg:col-span-1" />
+            <Stat label="Revenue" value={formatIDR(stats.revenue)} className="col-span-2 lg:col-span-4" />
           </div>
 
 

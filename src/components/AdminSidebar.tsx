@@ -31,7 +31,7 @@ export function AdminSidebar() {
   };
 
   return (
-    <aside className="flex w-full flex-col border-b border-border p-4 md:min-h-screen md:w-60 md:border-b-0 md:border-r">
+    <aside className="flex w-full flex-col border-b border-border p-4 md:sticky md:top-0 md:h-screen md:w-60 md:shrink-0 md:self-start md:overflow-y-auto md:border-b-0 md:border-r">
       <div className="flex items-center gap-2 mb-6">
         <div className="grid h-9 w-9 place-items-center rounded-lg btn-gold">💎</div>
         <span className="font-display font-bold">Admin Page</span>

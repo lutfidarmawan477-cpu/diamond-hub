@@ -8,6 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import diamondLogo from "@/assets/diamond.png";
 import { useSession } from "@/hooks/useSession";
+import { usePolling } from "@/hooks/usePolling";
 
 const ADMIN_WA = "628989110355";
 
@@ -115,6 +116,15 @@ function InvoicePage() {
     })();
   }, [remaining, isPending, order.invoice_no, invoice, queryClient, refetch]);
 
+  // Live status: poll while pending so admin confirmation shows instantly.
+  const [showSuccess, setShowSuccess] = useState(false);
+  const prevStatus = useRef(order.status);
+  usePolling(() => { if (prevStatus.current === "pending") void refetch(); }, 3000);
+  useEffect(() => {
+    if (prevStatus.current === "pending" && isSuccess) setShowSuccess(true);
+    prevStatus.current = order.status;
+  }, [order.status, isSuccess]);
+
 
   const mm = Math.floor(remaining / 60000).toString().padStart(2, "0");
   const ss = Math.floor((remaining % 60000) / 1000).toString().padStart(2, "0");
@@ -131,15 +141,22 @@ function InvoicePage() {
   };
 
   const cancelOrder = async () => {
-    if (isSuccess) return;
+    if (!isPending) return;
     if (!confirm("Cancel this order? It will be permanently removed from your transaction history.")) return;
     setCancelling(true);
-    const { error } = await supabase
+    const { data: deleted, error } = await supabase
       .from("orders")
       .delete()
-      .eq("invoice_no", order.invoice_no);
+      .eq("invoice_no", order.invoice_no)
+      .eq("status", "pending")
+      .select("id");
     setCancelling(false);
     if (error) return toast.error(error.message);
+    if (!deleted || deleted.length === 0) {
+      toast.error("Only pending orders can be cancelled.");
+      refetch();
+      return;
+    }
     toast.success("Order cancelled and removed");
     await queryClient.invalidateQueries({ queryKey: ["order", invoice] });
     await queryClient.invalidateQueries({ queryKey: ["orders"] });
@@ -235,7 +252,7 @@ function InvoicePage() {
           ) : (
             <Link to="/" className="rounded-md border border-border px-4 py-2 text-sm hover:border-primary transition">Back to Home</Link>
           )}
-          {!isSuccess && (
+          {isPending && (
             <button
               onClick={cancelOrder}
               disabled={cancelling}
@@ -254,6 +271,30 @@ function InvoicePage() {
 
       </div>
 
+      {showSuccess && (
+        <div className="fixed inset-0 z-50 grid place-items-center bg-background/80 backdrop-blur-sm p-4 no-print" onClick={() => setShowSuccess(false)}>
+          <div className="card-premium w-[92%] max-w-[480px] max-h-[90vh] overflow-y-auto rounded-2xl p-6 animate-scale-in" onClick={(e) => e.stopPropagation()}>
+            <div className="text-center">
+              <div className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-success/20 text-success text-2xl">✓</div>
+              <h2 className="mt-3 font-display text-2xl text-success">PAYMENT SUCCESSFUL</h2>
+            </div>
+            <div className="mt-4 rounded-xl border border-border p-4">
+              <Row label="Order ID" value={order.invoice_no} />
+              <Row label="User ID" value={order.game_user_id} />
+              <Row label="Zone ID" value={order.zone_id} />
+              <Row label="Nickname" value={order.nickname ?? "—"} />
+              <Row label="Package" value={order.package_name} />
+              <Row label="Payment Method" value={order.payment_method_name} />
+              <Row label="Subtotal" value={formatIDR(order.subtotal)} />
+              <Row label="Fee" value={formatIDR(order.fee)} />
+              <Row label="Total" value={formatIDR(order.total)} highlight />
+              <Row label="Status" value="SUCCESS" />
+              <Row label="Date/Time" value={new Date(order.updated_at ?? order.created_at).toLocaleString("en-US")} />
+            </div>
+            <button onClick={() => setShowSuccess(false)} className="mt-4 w-full rounded-md btn-gold px-4 py-2.5 text-sm">Close</button>
+          </div>
+        </div>
+      )}
     </div>
 
   );
