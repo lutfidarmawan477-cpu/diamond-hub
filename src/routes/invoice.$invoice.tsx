@@ -8,6 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import diamondLogo from "@/assets/diamond.png";
 import { useSession } from "@/hooks/useSession";
+import { usePolling } from "@/hooks/usePolling";
 
 const ADMIN_WA = "628989110355";
 
@@ -115,6 +116,15 @@ function InvoicePage() {
     })();
   }, [remaining, isPending, order.invoice_no, invoice, queryClient, refetch]);
 
+  // Live status: poll while pending so admin confirmation shows instantly.
+  const [showSuccess, setShowSuccess] = useState(false);
+  const prevStatus = useRef(order.status);
+  usePolling(() => { if (prevStatus.current === "pending") void refetch(); }, 3000);
+  useEffect(() => {
+    if (prevStatus.current === "pending" && isSuccess) setShowSuccess(true);
+    prevStatus.current = order.status;
+  }, [order.status, isSuccess]);
+
 
   const mm = Math.floor(remaining / 60000).toString().padStart(2, "0");
   const ss = Math.floor((remaining % 60000) / 1000).toString().padStart(2, "0");
@@ -131,15 +141,22 @@ function InvoicePage() {
   };
 
   const cancelOrder = async () => {
-    if (isSuccess) return;
+    if (!isPending) return;
     if (!confirm("Cancel this order? It will be permanently removed from your transaction history.")) return;
     setCancelling(true);
-    const { error } = await supabase
+    const { data: deleted, error } = await supabase
       .from("orders")
       .delete()
-      .eq("invoice_no", order.invoice_no);
+      .eq("invoice_no", order.invoice_no)
+      .eq("status", "pending")
+      .select("id");
     setCancelling(false);
     if (error) return toast.error(error.message);
+    if (!deleted || deleted.length === 0) {
+      toast.error("Only pending orders can be cancelled.");
+      refetch();
+      return;
+    }
     toast.success("Order cancelled and removed");
     await queryClient.invalidateQueries({ queryKey: ["order", invoice] });
     await queryClient.invalidateQueries({ queryKey: ["orders"] });
@@ -235,7 +252,7 @@ function InvoicePage() {
           ) : (
             <Link to="/" className="rounded-md border border-border px-4 py-2 text-sm hover:border-primary transition">Back to Home</Link>
           )}
-          {!isSuccess && (
+          {isPending && (
             <button
               onClick={cancelOrder}
               disabled={cancelling}
