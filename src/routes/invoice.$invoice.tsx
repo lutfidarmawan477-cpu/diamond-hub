@@ -27,7 +27,7 @@ export const Route = createFileRoute("/invoice/$invoice")({
     ],
   }),
   loader: ({ context, params }) => context.queryClient.ensureQueryData(orderQO(params.invoice)),
-  errorComponent: ({ error }: { error: Error }) => <div className="container mx-auto p-10 text-center">Failed to load: {error.message}</div>,
+  errorComponent: ({ error }) => <div className="container mx-auto p-10 text-center">Failed to load: {error instanceof Error ? error.message : String(error)}</div>,
   notFoundComponent: () => <div className="container mx-auto p-10 text-center">Invoice not found</div>,
   component: InvoicePage,
 });

@@ -20,7 +20,7 @@ export const Route = createFileRoute("/")({
     ],
   }),
   loader: ({ context }) => context.queryClient.ensureQueryData(storefrontQO),
-  errorComponent: ({ error }: { error: Error }) => <div className="container mx-auto p-10 text-center">Failed to load: {error.message}</div>,
+  errorComponent: ({ error }) => <div className="container mx-auto p-10 text-center">Failed to load: {error instanceof Error ? error.message : String(error)}</div>,
   notFoundComponent: () => <div className="container mx-auto p-10 text-center">Not found</div>,
   component: Home,
 });
