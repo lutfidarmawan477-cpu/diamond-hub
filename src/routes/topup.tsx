@@ -23,7 +23,7 @@ export const Route = createFileRoute("/topup")({
     ],
   }),
   loader: ({ context }) => context.queryClient.ensureQueryData(storefrontQO),
-  errorComponent: ({ error }) => <div className="container mx-auto p-10 text-center">Failed to load: {error.message}</div>,
+  errorComponent: ({ error }: { error: Error }) => <div className="container mx-auto p-10 text-center">Failed to load: {error.message}</div>,
   notFoundComponent: () => <div className="container mx-auto p-10 text-center">Not found</div>,
   component: TopupPage,
 });
