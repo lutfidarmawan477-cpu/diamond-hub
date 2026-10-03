@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { queryOptions, useSuspenseQuery, useMutation } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
 import PhoneInput, { isValidPhoneNumber } from "react-phone-number-input";
@@ -23,7 +23,7 @@ export const Route = createFileRoute("/topup")({
     ],
   }),
   loader: ({ context }) => context.queryClient.ensureQueryData(storefrontQO),
-  errorComponent: ({ error }) => <div className="container mx-auto p-10 text-center">Failed to load: {error.message}</div>,
+  errorComponent: ({ error }) => <div className="container mx-auto p-10 text-center">Failed to load: {error instanceof Error ? error.message : String(error)}</div>,
   notFoundComponent: () => <div className="container mx-auto p-10 text-center">Not found</div>,
   component: TopupPage,
 });
@@ -58,10 +58,29 @@ function TopupPage() {
     | { status: "invalid"; message: string }
   >({ status: "idle" });
 
-  // Reset ML check when inputs change
+  // Auto-check nickname shortly after both IDs are entered
   useEffect(() => {
     setMlCheck({ status: "idle" });
+    if (userId.length < 5 || zoneId.length < 3) return;
+    let cancelled = false;
+    setMlCheck({ status: "loading" });
+    const t = setTimeout(async () => {
+      try {
+        const res = await validateMlAccount({ data: { userId, zoneId } });
+        if (cancelled) return;
+        setMlCheck(res.valid ? { status: "valid", nickname: res.nickname } : { status: "invalid" });
+      } catch {
+        if (!cancelled) setMlCheck({ status: "invalid" });
+      }
+    }, 700);
+    return () => { cancelled = true; clearTimeout(t); };
   }, [userId, zoneId]);
+
+  const paymentRef = useRef<HTMLDivElement>(null);
+  const pickPackage = (id: string) => {
+    setPkgId(id);
+    setTimeout(() => paymentRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 50);
+  };
 
   // Reset voucher when package changes
   useEffect(() => {
@@ -104,26 +123,6 @@ function TopupPage() {
       const msg = e instanceof Error ? e.message : "Invalid voucher";
       setVoucherState({ status: "invalid", message: msg });
       toast.error(msg);
-    }
-  };
-
-  const checkNick = async () => {
-    if (!userId || !zoneId) { toast.error("Please enter both User ID and Zone ID first"); return; }
-    if (!/^\d+$/.test(userId) || !/^\d+$/.test(zoneId)) {
-      setMlCheck({ status: "invalid" });
-      return;
-    }
-    setMlCheck({ status: "loading" });
-    try {
-      const res = await validateMlAccount({ data: { userId, zoneId } });
-      if (res.valid) {
-        setMlCheck({ status: "valid", nickname: res.nickname });
-        toast.success("Mobile Legends account found successfully.");
-      } else {
-        setMlCheck({ status: "invalid" });
-      }
-    } catch {
-      setMlCheck({ status: "invalid" });
     }
   };
 
@@ -205,17 +204,11 @@ function TopupPage() {
                 />
               </Field>
             </div>
-            <div className="mt-3 flex flex-wrap items-center gap-3">
-              <button
-                type="button"
-                onClick={checkNick}
-                disabled={mlCheck.status === "loading"}
-                className="rounded-md border border-gold/50 bg-gold/10 text-gold px-4 py-2 text-sm hover:bg-gold/20 transition disabled:opacity-50 inline-flex items-center gap-2"
-              >
-                {mlCheck.status === "loading" && <Loader2 className="h-4 w-4 animate-spin" />}
-                {mlCheck.status === "loading" ? "Loading..." : "Check Nickname"}
-              </button>
-            </div>
+            {mlCheck.status === "loading" && (
+              <div className="mt-3 flex items-center gap-2 text-sm text-muted-foreground">
+                <Loader2 className="h-4 w-4 animate-spin" /> Checking nickname…
+              </div>
+            )}
             {mlCheck.status === "valid" && (
               <div className="mt-3 flex items-start gap-2 rounded-md border border-success/40 bg-success/10 px-3 py-2 text-sm text-success">
                 <CheckCircle2 className="h-4 w-4 mt-0.5 shrink-0" />
@@ -241,7 +234,7 @@ function TopupPage() {
                 const selected = p.id === pkgId;
                 const oos = (data.stock ?? 0) < p.diamond_amount;
                 return (
-                  <button type="button" key={p.id} onClick={() => !oos && setPkgId(p.id)}
+                  <button type="button" key={p.id} onClick={() => !oos && pickPackage(p.id)}
                     disabled={oos}
                     className={`text-left rounded-xl p-4 border transition relative ${selected ? "border-gold glow-ring bg-primary/20" : "border-border card-premium hover:border-primary/60"} ${oos ? "opacity-50 cursor-not-allowed" : ""}`}>
                     {p.badge && <span className="absolute -top-2 right-3 rounded-full btn-gold px-2 py-0.5 text-[10px]">{p.badge}</span>}
@@ -263,6 +256,7 @@ function TopupPage() {
           </Card>
 
           {/* 3. Payment */}
+          <div ref={paymentRef} className="scroll-mt-24">
           <Card step="3" title="Payment Method">
             <div className="space-y-4">
               {Object.entries(groupedPay).map(([type, list]) => {
@@ -296,6 +290,7 @@ function TopupPage() {
 
             </div>
           </Card>
+          </div>
 
           {/* 4. Buyer */}
           <Card step="4" title="Buyer Information">

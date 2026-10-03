@@ -1,6 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { queryOptions, useSuspenseQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { Printer } from "lucide-react";
 import { getOrderByInvoice } from "@/lib/storefront.functions";
 import { formatIDR } from "@/lib/format";
@@ -26,7 +27,7 @@ export const Route = createFileRoute("/invoice/$invoice")({
     ],
   }),
   loader: ({ context, params }) => context.queryClient.ensureQueryData(orderQO(params.invoice)),
-  errorComponent: ({ error }) => <div className="container mx-auto p-10 text-center">Failed to load: {error.message}</div>,
+  errorComponent: ({ error }) => <div className="container mx-auto p-10 text-center">Failed to load: {error instanceof Error ? error.message : String(error)}</div>,
   notFoundComponent: () => <div className="container mx-auto p-10 text-center">Invoice not found</div>,
   component: InvoicePage,
 });
@@ -124,6 +125,12 @@ function InvoicePage() {
     if (prevStatus.current === "pending" && isSuccess) setShowSuccess(true);
     prevStatus.current = order.status;
   }, [order.status, isSuccess]);
+  useEffect(() => {
+    if (!showSuccess) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => { document.body.style.overflow = prev; };
+  }, [showSuccess]);
 
 
   const mm = Math.floor(remaining / 60000).toString().padStart(2, "0");
@@ -272,8 +279,9 @@ function InvoicePage() {
       </div>
 
       {showSuccess && (
-        <div className="fixed inset-0 z-50 grid place-items-center bg-background/80 backdrop-blur-sm p-4 no-print" onClick={() => setShowSuccess(false)}>
-          <div className="card-premium w-[92%] max-w-[480px] max-h-[90vh] overflow-y-auto rounded-2xl p-6 animate-scale-in" onClick={(e) => e.stopPropagation()}>
+        createPortal(
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-background/85 backdrop-blur-sm p-4 no-print" role="dialog" aria-modal="true">
+          <div className="card-premium w-[92%] max-w-[480px] max-h-[90vh] overflow-y-auto overscroll-contain rounded-2xl p-6 animate-scale-in">
             <div className="text-center">
               <div className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-success/20 text-success text-2xl">✓</div>
               <h2 className="mt-3 font-display text-2xl text-success">PAYMENT SUCCESSFUL</h2>
@@ -293,7 +301,7 @@ function InvoicePage() {
             </div>
             <button onClick={() => setShowSuccess(false)} className="mt-4 w-full rounded-md btn-gold px-4 py-2.5 text-sm">Close</button>
           </div>
-        </div>
+        </div>, document.body)
       )}
     </div>
 
