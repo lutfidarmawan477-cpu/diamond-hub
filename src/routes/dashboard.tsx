@@ -76,11 +76,7 @@ function DashboardPage() {
       const rows = (ordersRes.data as Order[]) ?? [];
       const expired = rows.filter((o) => o.status === "pending" && new Date(o.expires_at).getTime() <= now);
       if (expired.length > 0) {
-        await Promise.all(
-          expired.map((o) =>
-            supabase.from("orders").update({ status: "failed" }).eq("id", o.id).eq("status", "pending"),
-          ),
-        );
+        await supabase.rpc("expire_my_orders");
         expired.forEach((o) => (o.status = "failed"));
       }
       setOrders(rows.filter((o) => ALLOWED_STATUSES.includes(o.status as typeof ALLOWED_STATUSES[number])));
