@@ -79,9 +79,9 @@ function AdminPage() {
 
   const confirmPayment = async (o: Order) => {
     setConfirming(o.id);
-    const { error } = await supabase.from("orders").update({ status: "paid" }).eq("id", o.id);
+    const { error } = await supabase.rpc("admin_confirm_payment", { _order_id: o.id });
     setConfirming(null);
-    if (error) return toast.error(error.message);
+    if (error) return toast.error(error.message.includes("stock") ? "Not enough diamond stock" : error.message.includes("pending") ? "This order is no longer pending" : "Could not confirm payment");
     toast.success(`Payment confirmed for ${o.invoice_no}`);
     await loadOrders();
   };

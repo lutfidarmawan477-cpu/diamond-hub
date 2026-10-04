@@ -111,7 +111,7 @@ function InvoicePage() {
     if (autoExpiredRef.current) return;
     autoExpiredRef.current = true;
     (async () => {
-      await supabase.from("orders").update({ status: "failed" }).eq("invoice_no", order.invoice_no).eq("status", "pending");
+      await supabase.rpc("expire_order", { _invoice: order.invoice_no });
       await queryClient.invalidateQueries({ queryKey: ["order", invoice] });
       refetch();
     })();
@@ -151,15 +151,10 @@ function InvoicePage() {
     if (!isPending) return;
     if (!confirm("Cancel this order? It will be permanently removed from your transaction history.")) return;
     setCancelling(true);
-    const { data: deleted, error } = await supabase
-      .from("orders")
-      .delete()
-      .eq("invoice_no", order.invoice_no)
-      .eq("status", "pending")
-      .select("id");
+    const { data: deleted, error } = await supabase.rpc("cancel_order", { _invoice: order.invoice_no });
     setCancelling(false);
-    if (error) return toast.error(error.message);
-    if (!deleted || deleted.length === 0) {
+    if (error) return toast.error("Could not cancel this order. Please try again.");
+    if (!deleted) {
       toast.error("Only pending orders can be cancelled.");
       refetch();
       return;
