@@ -15,7 +15,9 @@ import { Route as TopupRouteImport } from './routes/topup'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as DashboardRouteImport } from './routes/dashboard'
+import { Route as CustomerRouteImport } from './routes/customer'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as InvoiceInvoiceRouteImport } from './routes/invoice.$invoice'
@@ -23,9 +25,14 @@ import { Route as CustomerTopupRouteImport } from './routes/customer.topup'
 import { Route as CustomerPurchaseHistoryRouteImport } from './routes/customer.purchase-history'
 import { Route as CustomerDashboardRouteImport } from './routes/customer.dashboard'
 import { Route as AdminVouchersRouteImport } from './routes/admin.vouchers'
+import { Route as AdminVoucherRouteImport } from './routes/admin.voucher'
 import { Route as AdminStockRouteImport } from './routes/admin.stock'
 import { Route as AdminPackagesRouteImport } from './routes/admin.packages'
+import { Route as AdminManageProductRouteImport } from './routes/admin.manage-product'
+import { Route as AdminLoginHistoryRouteImport } from './routes/admin.login-history'
 import { Route as AdminHistoryRouteImport } from './routes/admin.history'
+import { Route as AdminDiamondStockRouteImport } from './routes/admin.diamond-stock'
+import { Route as AdminDashboardRouteImport } from './routes/admin.dashboard'
 import { Route as CustomerPaymentInvoiceRouteImport } from './routes/customer.payment.$invoice'
 
 const VouchersRoute = VouchersRouteImport.update({
@@ -58,9 +65,19 @@ const DashboardRoute = DashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CustomerRoute = CustomerRouteImport.update({
+  id: '/customer',
+  path: '/customer',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -69,9 +86,9 @@ const IndexRoute = IndexRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminIndexRoute = AdminIndexRouteImport.update({
-  id: '/admin/',
-  path: '/admin/',
-  getParentRoute: () => rootRouteImport,
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminRoute,
 } as any)
 const InvoiceInvoiceRoute = InvoiceInvoiceRouteImport.update({
   id: '/invoice/$invoice',
@@ -79,58 +96,90 @@ const InvoiceInvoiceRoute = InvoiceInvoiceRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const CustomerTopupRoute = CustomerTopupRouteImport.update({
-  id: '/customer/topup',
-  path: '/customer/topup',
-  getParentRoute: () => rootRouteImport,
+  id: '/topup',
+  path: '/topup',
+  getParentRoute: () => CustomerRoute,
 } as any)
 const CustomerPurchaseHistoryRoute = CustomerPurchaseHistoryRouteImport.update({
-  id: '/customer/purchase-history',
-  path: '/customer/purchase-history',
-  getParentRoute: () => rootRouteImport,
+  id: '/purchase-history',
+  path: '/purchase-history',
+  getParentRoute: () => CustomerRoute,
 } as any)
 const CustomerDashboardRoute = CustomerDashboardRouteImport.update({
-  id: '/customer/dashboard',
-  path: '/customer/dashboard',
-  getParentRoute: () => rootRouteImport,
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => CustomerRoute,
 } as any)
 const AdminVouchersRoute = AdminVouchersRouteImport.update({
-  id: '/admin/vouchers',
-  path: '/admin/vouchers',
-  getParentRoute: () => rootRouteImport,
+  id: '/vouchers',
+  path: '/vouchers',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminVoucherRoute = AdminVoucherRouteImport.update({
+  id: '/voucher',
+  path: '/voucher',
+  getParentRoute: () => AdminRoute,
 } as any)
 const AdminStockRoute = AdminStockRouteImport.update({
-  id: '/admin/stock',
-  path: '/admin/stock',
-  getParentRoute: () => rootRouteImport,
+  id: '/stock',
+  path: '/stock',
+  getParentRoute: () => AdminRoute,
 } as any)
 const AdminPackagesRoute = AdminPackagesRouteImport.update({
-  id: '/admin/packages',
-  path: '/admin/packages',
-  getParentRoute: () => rootRouteImport,
+  id: '/packages',
+  path: '/packages',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminManageProductRoute = AdminManageProductRouteImport.update({
+  id: '/manage-product',
+  path: '/manage-product',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminLoginHistoryRoute = AdminLoginHistoryRouteImport.update({
+  id: '/login-history',
+  path: '/login-history',
+  getParentRoute: () => AdminRoute,
 } as any)
 const AdminHistoryRoute = AdminHistoryRouteImport.update({
-  id: '/admin/history',
-  path: '/admin/history',
-  getParentRoute: () => rootRouteImport,
+  id: '/history',
+  path: '/history',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminDiamondStockRoute = AdminDiamondStockRouteImport.update({
+  id: '/diamond-stock',
+  path: '/diamond-stock',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminDashboardRoute = AdminDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AdminRoute,
 } as any)
 const CustomerPaymentInvoiceRoute = CustomerPaymentInvoiceRouteImport.update({
-  id: '/customer/payment/$invoice',
-  path: '/customer/payment/$invoice',
-  getParentRoute: () => rootRouteImport,
+  id: '/payment/$invoice',
+  path: '/payment/$invoice',
+  getParentRoute: () => CustomerRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteWithChildren
   '/auth': typeof AuthRoute
+  '/customer': typeof CustomerRouteWithChildren
   '/dashboard': typeof DashboardRoute
   '/reset-password': typeof ResetPasswordRoute
   '/terms': typeof TermsRoute
   '/topup': typeof TopupRoute
   '/tracking': typeof TrackingRoute
   '/vouchers': typeof VouchersRoute
+  '/admin/dashboard': typeof AdminDashboardRoute
+  '/admin/diamond-stock': typeof AdminDiamondStockRoute
   '/admin/history': typeof AdminHistoryRoute
+  '/admin/login-history': typeof AdminLoginHistoryRoute
+  '/admin/manage-product': typeof AdminManageProductRoute
   '/admin/packages': typeof AdminPackagesRoute
   '/admin/stock': typeof AdminStockRoute
+  '/admin/voucher': typeof AdminVoucherRoute
   '/admin/vouchers': typeof AdminVouchersRoute
   '/customer/dashboard': typeof CustomerDashboardRoute
   '/customer/purchase-history': typeof CustomerPurchaseHistoryRoute
@@ -142,15 +191,21 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/customer': typeof CustomerRouteWithChildren
   '/dashboard': typeof DashboardRoute
   '/reset-password': typeof ResetPasswordRoute
   '/terms': typeof TermsRoute
   '/topup': typeof TopupRoute
   '/tracking': typeof TrackingRoute
   '/vouchers': typeof VouchersRoute
+  '/admin/dashboard': typeof AdminDashboardRoute
+  '/admin/diamond-stock': typeof AdminDiamondStockRoute
   '/admin/history': typeof AdminHistoryRoute
+  '/admin/login-history': typeof AdminLoginHistoryRoute
+  '/admin/manage-product': typeof AdminManageProductRoute
   '/admin/packages': typeof AdminPackagesRoute
   '/admin/stock': typeof AdminStockRoute
+  '/admin/voucher': typeof AdminVoucherRoute
   '/admin/vouchers': typeof AdminVouchersRoute
   '/customer/dashboard': typeof CustomerDashboardRoute
   '/customer/purchase-history': typeof CustomerPurchaseHistoryRoute
@@ -162,16 +217,23 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteWithChildren
   '/auth': typeof AuthRoute
+  '/customer': typeof CustomerRouteWithChildren
   '/dashboard': typeof DashboardRoute
   '/reset-password': typeof ResetPasswordRoute
   '/terms': typeof TermsRoute
   '/topup': typeof TopupRoute
   '/tracking': typeof TrackingRoute
   '/vouchers': typeof VouchersRoute
+  '/admin/dashboard': typeof AdminDashboardRoute
+  '/admin/diamond-stock': typeof AdminDiamondStockRoute
   '/admin/history': typeof AdminHistoryRoute
+  '/admin/login-history': typeof AdminLoginHistoryRoute
+  '/admin/manage-product': typeof AdminManageProductRoute
   '/admin/packages': typeof AdminPackagesRoute
   '/admin/stock': typeof AdminStockRoute
+  '/admin/voucher': typeof AdminVoucherRoute
   '/admin/vouchers': typeof AdminVouchersRoute
   '/customer/dashboard': typeof CustomerDashboardRoute
   '/customer/purchase-history': typeof CustomerPurchaseHistoryRoute
@@ -184,16 +246,23 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/admin'
     | '/auth'
+    | '/customer'
     | '/dashboard'
     | '/reset-password'
     | '/terms'
     | '/topup'
     | '/tracking'
     | '/vouchers'
+    | '/admin/dashboard'
+    | '/admin/diamond-stock'
     | '/admin/history'
+    | '/admin/login-history'
+    | '/admin/manage-product'
     | '/admin/packages'
     | '/admin/stock'
+    | '/admin/voucher'
     | '/admin/vouchers'
     | '/customer/dashboard'
     | '/customer/purchase-history'
@@ -205,15 +274,21 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
+    | '/customer'
     | '/dashboard'
     | '/reset-password'
     | '/terms'
     | '/topup'
     | '/tracking'
     | '/vouchers'
+    | '/admin/dashboard'
+    | '/admin/diamond-stock'
     | '/admin/history'
+    | '/admin/login-history'
+    | '/admin/manage-product'
     | '/admin/packages'
     | '/admin/stock'
+    | '/admin/voucher'
     | '/admin/vouchers'
     | '/customer/dashboard'
     | '/customer/purchase-history'
@@ -224,16 +299,23 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/admin'
     | '/auth'
+    | '/customer'
     | '/dashboard'
     | '/reset-password'
     | '/terms'
     | '/topup'
     | '/tracking'
     | '/vouchers'
+    | '/admin/dashboard'
+    | '/admin/diamond-stock'
     | '/admin/history'
+    | '/admin/login-history'
+    | '/admin/manage-product'
     | '/admin/packages'
     | '/admin/stock'
+    | '/admin/voucher'
     | '/admin/vouchers'
     | '/customer/dashboard'
     | '/customer/purchase-history'
@@ -245,23 +327,16 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AdminRoute: typeof AdminRouteWithChildren
   AuthRoute: typeof AuthRoute
+  CustomerRoute: typeof CustomerRouteWithChildren
   DashboardRoute: typeof DashboardRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   TermsRoute: typeof TermsRoute
   TopupRoute: typeof TopupRoute
   TrackingRoute: typeof TrackingRoute
   VouchersRoute: typeof VouchersRoute
-  AdminHistoryRoute: typeof AdminHistoryRoute
-  AdminPackagesRoute: typeof AdminPackagesRoute
-  AdminStockRoute: typeof AdminStockRoute
-  AdminVouchersRoute: typeof AdminVouchersRoute
-  CustomerDashboardRoute: typeof CustomerDashboardRoute
-  CustomerPurchaseHistoryRoute: typeof CustomerPurchaseHistoryRoute
-  CustomerTopupRoute: typeof CustomerTopupRoute
   InvoiceInvoiceRoute: typeof InvoiceInvoiceRoute
-  AdminIndexRoute: typeof AdminIndexRoute
-  CustomerPaymentInvoiceRoute: typeof CustomerPaymentInvoiceRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -308,11 +383,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/customer': {
+      id: '/customer'
+      path: '/customer'
+      fullPath: '/customer'
+      preLoaderRoute: typeof CustomerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth': {
       id: '/auth'
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -324,10 +413,10 @@ declare module '@tanstack/react-router' {
     }
     '/admin/': {
       id: '/admin/'
-      path: '/admin'
+      path: '/'
       fullPath: '/admin/'
       preLoaderRoute: typeof AdminIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AdminRoute
     }
     '/invoice/$invoice': {
       id: '/invoice/$invoice'
@@ -338,82 +427,156 @@ declare module '@tanstack/react-router' {
     }
     '/customer/topup': {
       id: '/customer/topup'
-      path: '/customer/topup'
+      path: '/topup'
       fullPath: '/customer/topup'
       preLoaderRoute: typeof CustomerTopupRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof CustomerRoute
     }
     '/customer/purchase-history': {
       id: '/customer/purchase-history'
-      path: '/customer/purchase-history'
+      path: '/purchase-history'
       fullPath: '/customer/purchase-history'
       preLoaderRoute: typeof CustomerPurchaseHistoryRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof CustomerRoute
     }
     '/customer/dashboard': {
       id: '/customer/dashboard'
-      path: '/customer/dashboard'
+      path: '/dashboard'
       fullPath: '/customer/dashboard'
       preLoaderRoute: typeof CustomerDashboardRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof CustomerRoute
     }
     '/admin/vouchers': {
       id: '/admin/vouchers'
-      path: '/admin/vouchers'
+      path: '/vouchers'
       fullPath: '/admin/vouchers'
       preLoaderRoute: typeof AdminVouchersRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/voucher': {
+      id: '/admin/voucher'
+      path: '/voucher'
+      fullPath: '/admin/voucher'
+      preLoaderRoute: typeof AdminVoucherRouteImport
+      parentRoute: typeof AdminRoute
     }
     '/admin/stock': {
       id: '/admin/stock'
-      path: '/admin/stock'
+      path: '/stock'
       fullPath: '/admin/stock'
       preLoaderRoute: typeof AdminStockRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AdminRoute
     }
     '/admin/packages': {
       id: '/admin/packages'
-      path: '/admin/packages'
+      path: '/packages'
       fullPath: '/admin/packages'
       preLoaderRoute: typeof AdminPackagesRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/manage-product': {
+      id: '/admin/manage-product'
+      path: '/manage-product'
+      fullPath: '/admin/manage-product'
+      preLoaderRoute: typeof AdminManageProductRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/login-history': {
+      id: '/admin/login-history'
+      path: '/login-history'
+      fullPath: '/admin/login-history'
+      preLoaderRoute: typeof AdminLoginHistoryRouteImport
+      parentRoute: typeof AdminRoute
     }
     '/admin/history': {
       id: '/admin/history'
-      path: '/admin/history'
+      path: '/history'
       fullPath: '/admin/history'
       preLoaderRoute: typeof AdminHistoryRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/diamond-stock': {
+      id: '/admin/diamond-stock'
+      path: '/diamond-stock'
+      fullPath: '/admin/diamond-stock'
+      preLoaderRoute: typeof AdminDiamondStockRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/dashboard': {
+      id: '/admin/dashboard'
+      path: '/dashboard'
+      fullPath: '/admin/dashboard'
+      preLoaderRoute: typeof AdminDashboardRouteImport
+      parentRoute: typeof AdminRoute
     }
     '/customer/payment/$invoice': {
       id: '/customer/payment/$invoice'
-      path: '/customer/payment/$invoice'
+      path: '/payment/$invoice'
       fullPath: '/customer/payment/$invoice'
       preLoaderRoute: typeof CustomerPaymentInvoiceRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof CustomerRoute
     }
   }
 }
 
+interface AdminRouteChildren {
+  AdminDashboardRoute: typeof AdminDashboardRoute
+  AdminDiamondStockRoute: typeof AdminDiamondStockRoute
+  AdminHistoryRoute: typeof AdminHistoryRoute
+  AdminLoginHistoryRoute: typeof AdminLoginHistoryRoute
+  AdminManageProductRoute: typeof AdminManageProductRoute
+  AdminPackagesRoute: typeof AdminPackagesRoute
+  AdminStockRoute: typeof AdminStockRoute
+  AdminVoucherRoute: typeof AdminVoucherRoute
+  AdminVouchersRoute: typeof AdminVouchersRoute
+  AdminIndexRoute: typeof AdminIndexRoute
+}
+
+const AdminRouteChildren: AdminRouteChildren = {
+  AdminDashboardRoute: AdminDashboardRoute,
+  AdminDiamondStockRoute: AdminDiamondStockRoute,
+  AdminHistoryRoute: AdminHistoryRoute,
+  AdminLoginHistoryRoute: AdminLoginHistoryRoute,
+  AdminManageProductRoute: AdminManageProductRoute,
+  AdminPackagesRoute: AdminPackagesRoute,
+  AdminStockRoute: AdminStockRoute,
+  AdminVoucherRoute: AdminVoucherRoute,
+  AdminVouchersRoute: AdminVouchersRoute,
+  AdminIndexRoute: AdminIndexRoute,
+}
+
+const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
+
+interface CustomerRouteChildren {
+  CustomerDashboardRoute: typeof CustomerDashboardRoute
+  CustomerPurchaseHistoryRoute: typeof CustomerPurchaseHistoryRoute
+  CustomerTopupRoute: typeof CustomerTopupRoute
+  CustomerPaymentInvoiceRoute: typeof CustomerPaymentInvoiceRoute
+}
+
+const CustomerRouteChildren: CustomerRouteChildren = {
+  CustomerDashboardRoute: CustomerDashboardRoute,
+  CustomerPurchaseHistoryRoute: CustomerPurchaseHistoryRoute,
+  CustomerTopupRoute: CustomerTopupRoute,
+  CustomerPaymentInvoiceRoute: CustomerPaymentInvoiceRoute,
+}
+
+const CustomerRouteWithChildren = CustomerRoute._addFileChildren(
+  CustomerRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AdminRoute: AdminRouteWithChildren,
   AuthRoute: AuthRoute,
+  CustomerRoute: CustomerRouteWithChildren,
   DashboardRoute: DashboardRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   TermsRoute: TermsRoute,
   TopupRoute: TopupRoute,
   TrackingRoute: TrackingRoute,
   VouchersRoute: VouchersRoute,
-  AdminHistoryRoute: AdminHistoryRoute,
-  AdminPackagesRoute: AdminPackagesRoute,
-  AdminStockRoute: AdminStockRoute,
-  AdminVouchersRoute: AdminVouchersRoute,
-  CustomerDashboardRoute: CustomerDashboardRoute,
-  CustomerPurchaseHistoryRoute: CustomerPurchaseHistoryRoute,
-  CustomerTopupRoute: CustomerTopupRoute,
   InvoiceInvoiceRoute: InvoiceInvoiceRoute,
-  AdminIndexRoute: AdminIndexRoute,
-  CustomerPaymentInvoiceRoute: CustomerPaymentInvoiceRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
