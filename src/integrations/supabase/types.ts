@@ -14,6 +14,36 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_audit_log: {
+        Row: {
+          action: string
+          actor_id: string | null
+          created_at: string
+          details: Json | null
+          entity: string
+          entity_id: string | null
+          id: string
+        }
+        Insert: {
+          action: string
+          actor_id?: string | null
+          created_at?: string
+          details?: Json | null
+          entity: string
+          entity_id?: string | null
+          id?: string
+        }
+        Update: {
+          action?: string
+          actor_id?: string | null
+          created_at?: string
+          details?: Json | null
+          entity?: string
+          entity_id?: string | null
+          id?: string
+        }
+        Relationships: []
+      }
       diamond_packages: {
         Row: {
           active: boolean
@@ -407,6 +437,7 @@ export type Database = {
         Args: { _amount: number; _note?: string }
         Returns: number
       }
+      admin_confirm_payment: { Args: { _order_id: string }; Returns: string }
       admin_list_customers: {
         Args: never
         Returns: {
@@ -420,6 +451,9 @@ export type Database = {
           total_spent: number
         }[]
       }
+      cancel_order: { Args: { _invoice: string }; Returns: boolean }
+      expire_my_orders: { Args: never; Returns: undefined }
+      expire_order: { Args: { _invoice: string }; Returns: undefined }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
