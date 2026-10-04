@@ -1,8 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { storefrontQO, TopupPage } from "@/components/pages/TopupPage";
 
-export const Route = createFileRoute("/topup")({
+export const Route = createFileRoute("/customer/topup")({
   head: () => ({
+    // customer area
+
     meta: [
       { title: "Top Up Mobile Legends Diamond — DiamondHub" },
       { name: "description", content: "Top up Mobile Legends diamonds. Choose a package, enter your User ID & Zone ID, pay — diamonds delivered instantly." },
