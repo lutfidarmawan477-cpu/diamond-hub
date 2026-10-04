@@ -19,10 +19,14 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as InvoiceInvoiceRouteImport } from './routes/invoice.$invoice'
+import { Route as CustomerTopupRouteImport } from './routes/customer.topup'
+import { Route as CustomerPurchaseHistoryRouteImport } from './routes/customer.purchase-history'
+import { Route as CustomerDashboardRouteImport } from './routes/customer.dashboard'
 import { Route as AdminVouchersRouteImport } from './routes/admin.vouchers'
 import { Route as AdminStockRouteImport } from './routes/admin.stock'
 import { Route as AdminPackagesRouteImport } from './routes/admin.packages'
 import { Route as AdminHistoryRouteImport } from './routes/admin.history'
+import { Route as CustomerPaymentInvoiceRouteImport } from './routes/customer.payment.$invoice'
 
 const VouchersRoute = VouchersRouteImport.update({
   id: '/vouchers',
@@ -74,6 +78,21 @@ const InvoiceInvoiceRoute = InvoiceInvoiceRouteImport.update({
   path: '/invoice/$invoice',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CustomerTopupRoute = CustomerTopupRouteImport.update({
+  id: '/customer/topup',
+  path: '/customer/topup',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CustomerPurchaseHistoryRoute = CustomerPurchaseHistoryRouteImport.update({
+  id: '/customer/purchase-history',
+  path: '/customer/purchase-history',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CustomerDashboardRoute = CustomerDashboardRouteImport.update({
+  id: '/customer/dashboard',
+  path: '/customer/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminVouchersRoute = AdminVouchersRouteImport.update({
   id: '/admin/vouchers',
   path: '/admin/vouchers',
@@ -94,6 +113,11 @@ const AdminHistoryRoute = AdminHistoryRouteImport.update({
   path: '/admin/history',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CustomerPaymentInvoiceRoute = CustomerPaymentInvoiceRouteImport.update({
+  id: '/customer/payment/$invoice',
+  path: '/customer/payment/$invoice',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -108,8 +132,12 @@ export interface FileRoutesByFullPath {
   '/admin/packages': typeof AdminPackagesRoute
   '/admin/stock': typeof AdminStockRoute
   '/admin/vouchers': typeof AdminVouchersRoute
+  '/customer/dashboard': typeof CustomerDashboardRoute
+  '/customer/purchase-history': typeof CustomerPurchaseHistoryRoute
+  '/customer/topup': typeof CustomerTopupRoute
   '/invoice/$invoice': typeof InvoiceInvoiceRoute
   '/admin/': typeof AdminIndexRoute
+  '/customer/payment/$invoice': typeof CustomerPaymentInvoiceRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -124,8 +152,12 @@ export interface FileRoutesByTo {
   '/admin/packages': typeof AdminPackagesRoute
   '/admin/stock': typeof AdminStockRoute
   '/admin/vouchers': typeof AdminVouchersRoute
+  '/customer/dashboard': typeof CustomerDashboardRoute
+  '/customer/purchase-history': typeof CustomerPurchaseHistoryRoute
+  '/customer/topup': typeof CustomerTopupRoute
   '/invoice/$invoice': typeof InvoiceInvoiceRoute
   '/admin': typeof AdminIndexRoute
+  '/customer/payment/$invoice': typeof CustomerPaymentInvoiceRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -141,8 +173,12 @@ export interface FileRoutesById {
   '/admin/packages': typeof AdminPackagesRoute
   '/admin/stock': typeof AdminStockRoute
   '/admin/vouchers': typeof AdminVouchersRoute
+  '/customer/dashboard': typeof CustomerDashboardRoute
+  '/customer/purchase-history': typeof CustomerPurchaseHistoryRoute
+  '/customer/topup': typeof CustomerTopupRoute
   '/invoice/$invoice': typeof InvoiceInvoiceRoute
   '/admin/': typeof AdminIndexRoute
+  '/customer/payment/$invoice': typeof CustomerPaymentInvoiceRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -159,8 +195,12 @@ export interface FileRouteTypes {
     | '/admin/packages'
     | '/admin/stock'
     | '/admin/vouchers'
+    | '/customer/dashboard'
+    | '/customer/purchase-history'
+    | '/customer/topup'
     | '/invoice/$invoice'
     | '/admin/'
+    | '/customer/payment/$invoice'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -175,8 +215,12 @@ export interface FileRouteTypes {
     | '/admin/packages'
     | '/admin/stock'
     | '/admin/vouchers'
+    | '/customer/dashboard'
+    | '/customer/purchase-history'
+    | '/customer/topup'
     | '/invoice/$invoice'
     | '/admin'
+    | '/customer/payment/$invoice'
   id:
     | '__root__'
     | '/'
@@ -191,8 +235,12 @@ export interface FileRouteTypes {
     | '/admin/packages'
     | '/admin/stock'
     | '/admin/vouchers'
+    | '/customer/dashboard'
+    | '/customer/purchase-history'
+    | '/customer/topup'
     | '/invoice/$invoice'
     | '/admin/'
+    | '/customer/payment/$invoice'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -208,8 +256,12 @@ export interface RootRouteChildren {
   AdminPackagesRoute: typeof AdminPackagesRoute
   AdminStockRoute: typeof AdminStockRoute
   AdminVouchersRoute: typeof AdminVouchersRoute
+  CustomerDashboardRoute: typeof CustomerDashboardRoute
+  CustomerPurchaseHistoryRoute: typeof CustomerPurchaseHistoryRoute
+  CustomerTopupRoute: typeof CustomerTopupRoute
   InvoiceInvoiceRoute: typeof InvoiceInvoiceRoute
   AdminIndexRoute: typeof AdminIndexRoute
+  CustomerPaymentInvoiceRoute: typeof CustomerPaymentInvoiceRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -284,6 +336,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof InvoiceInvoiceRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/customer/topup': {
+      id: '/customer/topup'
+      path: '/customer/topup'
+      fullPath: '/customer/topup'
+      preLoaderRoute: typeof CustomerTopupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/customer/purchase-history': {
+      id: '/customer/purchase-history'
+      path: '/customer/purchase-history'
+      fullPath: '/customer/purchase-history'
+      preLoaderRoute: typeof CustomerPurchaseHistoryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/customer/dashboard': {
+      id: '/customer/dashboard'
+      path: '/customer/dashboard'
+      fullPath: '/customer/dashboard'
+      preLoaderRoute: typeof CustomerDashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/vouchers': {
       id: '/admin/vouchers'
       path: '/admin/vouchers'
@@ -312,6 +385,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminHistoryRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/customer/payment/$invoice': {
+      id: '/customer/payment/$invoice'
+      path: '/customer/payment/$invoice'
+      fullPath: '/customer/payment/$invoice'
+      preLoaderRoute: typeof CustomerPaymentInvoiceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -328,8 +408,12 @@ const rootRouteChildren: RootRouteChildren = {
   AdminPackagesRoute: AdminPackagesRoute,
   AdminStockRoute: AdminStockRoute,
   AdminVouchersRoute: AdminVouchersRoute,
+  CustomerDashboardRoute: CustomerDashboardRoute,
+  CustomerPurchaseHistoryRoute: CustomerPurchaseHistoryRoute,
+  CustomerTopupRoute: CustomerTopupRoute,
   InvoiceInvoiceRoute: InvoiceInvoiceRoute,
   AdminIndexRoute: AdminIndexRoute,
+  CustomerPaymentInvoiceRoute: CustomerPaymentInvoiceRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
