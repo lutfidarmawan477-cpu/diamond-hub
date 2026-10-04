@@ -175,7 +175,9 @@ export const createOrder = createServerFn({ method: "POST" })
     const total = Math.max(0, subtotal + fee - discount);
     const invoice_no = "DH" + Date.now().toString(36).toUpperCase() + Math.random().toString(36).slice(2, 6).toUpperCase();
 
-    const insert = await sb.from("orders").insert({
+    // Orders are written with server privileges only; clients cannot insert/alter orders directly.
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const insert = await supabaseAdmin.from("orders").insert({
       invoice_no,
       user_id: userId,
       game_user_id: data.game_user_id,
@@ -195,10 +197,13 @@ export const createOrder = createServerFn({ method: "POST" })
       buyer_email: data.buyer_email,
       status: "pending",
     }).select("id,invoice_no").single();
-    if (insert.error) throw new Error(insert.error.message);
+    if (insert.error) {
+      console.error("createOrder insert failed", insert.error);
+      throw new Error("Could not create your order. Please try again.");
+    }
 
     if (voucherId && userId) {
-      await sb.from("voucher_redemptions").insert({
+      await supabaseAdmin.from("voucher_redemptions").insert({
         voucher_id: voucherId,
         user_id: userId,
         order_id: insert.data.id,
@@ -210,10 +215,21 @@ export const createOrder = createServerFn({ method: "POST" })
 
 
 export const getOrderByInvoice = createServerFn({ method: "GET" })
-  .inputValidator((d: unknown) => z.object({ invoice_no: z.string().trim().min(4).max(40) }).parse(d))
+  .inputValidator((d: unknown) => z.object({ invoice_no: z.string().trim().min(4).max(40).regex(/^[A-Za-z0-9]+$/) }).parse(d))
   .handler(async ({ data }) => {
+    // The invoice number is the order's lookup secret. Expire overdue orders, then
+    // return only the fields the payment/tracking pages need.
     const sb = publicClient();
-    const r = await sb.from("orders").select("*").eq("invoice_no", data.invoice_no).maybeSingle();
-    if (r.error) throw new Error(r.error.message);
+    await sb.rpc("expire_order", { _invoice: data.invoice_no });
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const r = await supabaseAdmin
+      .from("orders")
+      .select("id,invoice_no,status,created_at,updated_at,expires_at,game_user_id,zone_id,nickname,package_name,diamond_amount,payment_method_name,subtotal,fee,discount,total,voucher_code,buyer_name,buyer_whatsapp,buyer_email")
+      .eq("invoice_no", data.invoice_no)
+      .maybeSingle();
+    if (r.error) {
+      console.error("getOrderByInvoice failed", r.error);
+      throw new Error("Could not load this order.");
+    }
     return r.data;
   });

@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { orderQO, InvoicePage } from "@/components/pages/InvoicePage";
 
-export const Route = createFileRoute("/invoice/$invoice")({
+export const Route = createFileRoute("/customer/payment/$invoice")({
   head: ({ params }) => ({
     meta: [
       { title: `Invoice ${params.invoice} — DiamondHub` },
