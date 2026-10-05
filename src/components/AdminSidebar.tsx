@@ -6,11 +6,11 @@ import { toast } from "sonner";
 import { LayoutDashboard, Package, History, LogOut, Boxes, Ticket, Menu, X, type LucideIcon } from "lucide-react";
 
 const NAV_ITEMS: { to: string; label: string; Icon: LucideIcon }[] = [
-  { to: "/admin", label: "Dashboard", Icon: LayoutDashboard },
-  { to: "/admin/packages", label: "Manage Products", Icon: Package },
-  { to: "/admin/stock", label: "Diamond Stock", Icon: Boxes },
-  { to: "/admin/vouchers", label: "Vouchers", Icon: Ticket },
-  { to: "/admin/history", label: "Login History", Icon: History },
+  { to: "/admin/dashboard", label: "Dashboard", Icon: LayoutDashboard },
+  { to: "/admin/manage-product", label: "Manage Products", Icon: Package },
+  { to: "/admin/diamond-stock", label: "Diamond Stock", Icon: Boxes },
+  { to: "/admin/voucher", label: "Vouchers", Icon: Ticket },
+  { to: "/admin/login-history", label: "Login History", Icon: History },
 ];
 
 export function AdminSidebar() {
@@ -29,7 +29,7 @@ export function AdminSidebar() {
     queryClient.clear();
     await supabase.auth.signOut();
     toast.success("Signed out successfully");
-    navigate({ to: "/auth", replace: true });
+    navigate({ to: "/admin/login", replace: true });
   };
 
   const item = (to: string, label: string, Icon: LucideIcon, onNavigate?: () => void) => {

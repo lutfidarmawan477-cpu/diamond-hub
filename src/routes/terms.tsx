@@ -125,7 +125,7 @@ function TermsPage() {
 
         <div className="pt-4 text-center">
           {loggedIn ? (
-            <Link to="/dashboard" className="text-sm text-gold underline">Back to Dashboard</Link>
+            <Link to="/customer/dashboard" className="text-sm text-gold underline">Back to Dashboard</Link>
           ) : (
             <Link to="/" className="text-sm text-gold underline">Back to Home</Link>
           )}

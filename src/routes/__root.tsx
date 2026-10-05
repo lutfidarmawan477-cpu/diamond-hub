@@ -141,10 +141,10 @@ function SiteHeader({
   // Determine which links to show based on role + current page.
   let links: { to: string; label: string; icon: LucideIcon; mobileOnly?: boolean }[] = [];
   if (role === "customer") {
-    if (pathname === "/dashboard") {
+    if (pathname === "/customer/dashboard") {
       links = [{ to: "/tracking", label: "Track Order", icon: PackageSearch }];
     } else {
-      links = [{ to: "/dashboard", label: "Dashboard", icon: LayoutDashboard }];
+      links = [{ to: "/customer/dashboard", label: "Dashboard", icon: LayoutDashboard }];
     }
   } else if (!role) {
     links = guestCheckout
