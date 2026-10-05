@@ -1,7 +1,7 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
-import { Eye, EyeOff, ShieldCheck, ArrowLeft } from "lucide-react";
+import { Eye, EyeOff, ShieldCheck } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/admin/login")({
@@ -79,9 +79,6 @@ function AdminLoginPage() {
             </button>
           </form>
         </div>
-        <Link to="/" className="mt-4 inline-flex w-full items-center justify-center gap-2 text-xs text-muted-foreground hover:text-foreground">
-          <ArrowLeft className="h-[18px] w-[18px]" /> Back to Home
-        </Link>
       </div>
     </div>
   );
