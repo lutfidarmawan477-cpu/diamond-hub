@@ -25,6 +25,10 @@ function AdminLoginPage() {
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const lockUntil = Number(sessionStorage.getItem("admin_lock") ?? 0);
+    if (Date.now() < lockUntil) {
+      return toast.error(`Too many attempts. Try again in ${Math.ceil((lockUntil - Date.now()) / 1000)}s.`);
+    }
     setLoading(true);
     try {
       const { data, error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
@@ -37,10 +41,16 @@ function AdminLoginPage() {
       try {
         await supabase.from("login_history").insert({ user_id: data.user.id, email: data.user.email ?? email, user_agent: navigator.userAgent });
       } catch { /* ignore */ }
+      sessionStorage.removeItem("admin_fails");
       setEmail(""); setPassword("");
       toast.success("Welcome, admin!");
       navigate({ to: "/admin/dashboard", replace: true });
     } catch (err) {
+      const fails = Number(sessionStorage.getItem("admin_fails") ?? 0) + 1;
+      if (fails >= 5) {
+        sessionStorage.setItem("admin_lock", String(Date.now() + 60_000));
+        sessionStorage.setItem("admin_fails", "0");
+      } else sessionStorage.setItem("admin_fails", String(fails));
       toast.error((err as Error).message);
     } finally {
       setLoading(false);

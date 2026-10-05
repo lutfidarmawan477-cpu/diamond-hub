@@ -133,40 +133,8 @@ function AdminPackages() {
         </div>
 
         <div className="card-premium rounded-xl p-4 sm:p-5">
-          {/* Desktop table */}
-          <div className="hidden md:block overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead className="text-left text-xs text-muted-foreground border-b border-border">
-                <tr>
-                  <th className="py-2 pr-3">Name</th>
-                  <th className="pr-3 text-right">Diamonds</th>
-                  <th className="pr-3 text-right">Price</th>
-                  <th className="pr-3">Badge</th>
-                  <th className="pr-3 text-right">Order</th>
-                  <th className="pr-3 text-center">Active</th>
-                  <th className="text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {list.map((p) => (
-                  <tr key={p.id} className="border-b border-border/60 align-middle">
-                    <td className="py-3 pr-3 max-w-[240px] truncate">{p.name}</td>
-                    <td className="pr-3 text-right whitespace-nowrap">{p.diamond_amount}</td>
-                    <td className="pr-3 text-right gold-text font-semibold whitespace-nowrap">{formatIDR(p.price)}</td>
-                    <td className="pr-3">{p.badge ?? "—"}</td>
-                    <td className="pr-3 text-right">{p.sort_order}</td>
-                    <td className="pr-3 text-center">{p.active ? "✓" : "✗"}</td>
-                    <td className="text-right whitespace-nowrap space-x-3">
-                      <button onClick={() => setEditing(p)} className="text-gold underline text-xs">Edit</button>
-                      <button onClick={() => remove(p.id)} className="text-destructive underline text-xs">Delete</button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-          {/* Mobile cards */}
-          <div className="grid gap-3 md:hidden">
+          {/* Product cards */}
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             {list.map((p) => (
               <div key={p.id} className="rounded-lg border border-border/60 p-3">
                 <div className="flex items-start justify-between gap-2">
@@ -190,7 +158,7 @@ function AdminPackages() {
                 </div>
               </div>
             ))}
-            {list.length === 0 && <div className="py-8 text-center text-sm text-muted-foreground">No products</div>}
+            {list.length === 0 && <div className="col-span-full py-8 text-center text-sm text-muted-foreground">No products</div>}
           </div>
         </div>
 
