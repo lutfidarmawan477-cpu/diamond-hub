@@ -270,7 +270,7 @@ function RootComponent() {
     queryClient.clear();
     setRole(null);
     await supabase.auth.signOut();
-    router.navigate({ to: "/auth", replace: true });
+    router.navigate({ to: isAdminPath ? "/admin/login" : "/auth", replace: true });
   };
 
   useEffect(() => {
@@ -300,20 +300,21 @@ function RootComponent() {
   // Role lock: admins stay in admin area, customers stay out of admin/login pages.
   useEffect(() => {
     if (role === undefined) return;
+    const isAdminLogin = pathname === "/admin/login";
 
-    if (pathname === "/auth") {
-      if (role === "admin") router.navigate({ to: "/admin", replace: true });
-      if (role === "customer") router.navigate({ to: "/dashboard", replace: true });
+    if (pathname === "/auth" || isAdminLogin) {
+      if (role === "admin") router.navigate({ to: "/admin/dashboard", replace: true });
+      if (role === "customer") router.navigate({ to: "/customer/dashboard", replace: true });
       return;
     }
 
     if (isAdminPath) {
-      if (role === null) router.navigate({ to: "/auth", replace: true });
-      if (role === "customer") router.navigate({ to: "/dashboard", replace: true });
+      if (role === null) router.navigate({ to: "/admin/login", replace: true });
+      if (role === "customer") router.navigate({ to: "/customer/dashboard", replace: true });
       return;
     }
 
-    if (role === "admin") router.navigate({ to: "/admin", replace: true });
+    if (role === "admin") router.navigate({ to: "/admin/dashboard", replace: true });
   }, [role, pathname, isAdminPath, router]);
 
   return (

@@ -45,7 +45,13 @@ function AuthPage() {
       .select("role")
       .eq("user_id", userId);
     const isAdmin = (roles ?? []).some((r) => r.role === "admin");
-    navigate({ to: isAdmin ? "/admin" : "/dashboard", replace: true });
+    if (isAdmin) {
+      // Admins must use the separate admin portal.
+      await supabase.auth.signOut();
+      toast.error("Admin accounts must sign in through the Admin Portal.");
+      return;
+    }
+    navigate({ to: "/customer/dashboard", replace: true });
   };
 
   const trackLogin = async (userId: string, userEmail: string) => {
