@@ -38,7 +38,7 @@ function AdminHistory() {
   useEffect(() => {
     (async () => {
       const { data: s } = await supabase.auth.getSession();
-      if (!s.session) { navigate({ to: "/auth", replace: true }); return; }
+      if (!s.session) { navigate({ to: "/admin/login", replace: true }); return; }
       const { data: roles } = await supabase.from("user_roles").select("role").eq("user_id", s.session.user.id);
       const admin = (roles ?? []).some((r) => r.role === "admin");
       if (!admin) { navigate({ to: "/customer/dashboard", replace: true }); return; }

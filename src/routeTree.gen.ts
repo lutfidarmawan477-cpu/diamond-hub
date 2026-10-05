@@ -30,6 +30,7 @@ import { Route as AdminStockRouteImport } from './routes/admin.stock'
 import { Route as AdminPackagesRouteImport } from './routes/admin.packages'
 import { Route as AdminManageProductRouteImport } from './routes/admin.manage-product'
 import { Route as AdminLoginHistoryRouteImport } from './routes/admin.login-history'
+import { Route as AdminLoginRouteImport } from './routes/admin.login'
 import { Route as AdminHistoryRouteImport } from './routes/admin.history'
 import { Route as AdminDiamondStockRouteImport } from './routes/admin.diamond-stock'
 import { Route as AdminDashboardRouteImport } from './routes/admin.dashboard'
@@ -140,6 +141,11 @@ const AdminLoginHistoryRoute = AdminLoginHistoryRouteImport.update({
   path: '/login-history',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminLoginRoute = AdminLoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminHistoryRoute = AdminHistoryRouteImport.update({
   id: '/history',
   path: '/history',
@@ -175,6 +181,7 @@ export interface FileRoutesByFullPath {
   '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/diamond-stock': typeof AdminDiamondStockRoute
   '/admin/history': typeof AdminHistoryRoute
+  '/admin/login': typeof AdminLoginRoute
   '/admin/login-history': typeof AdminLoginHistoryRoute
   '/admin/manage-product': typeof AdminManageProductRoute
   '/admin/packages': typeof AdminPackagesRoute
@@ -201,6 +208,7 @@ export interface FileRoutesByTo {
   '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/diamond-stock': typeof AdminDiamondStockRoute
   '/admin/history': typeof AdminHistoryRoute
+  '/admin/login': typeof AdminLoginRoute
   '/admin/login-history': typeof AdminLoginHistoryRoute
   '/admin/manage-product': typeof AdminManageProductRoute
   '/admin/packages': typeof AdminPackagesRoute
@@ -229,6 +237,7 @@ export interface FileRoutesById {
   '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/diamond-stock': typeof AdminDiamondStockRoute
   '/admin/history': typeof AdminHistoryRoute
+  '/admin/login': typeof AdminLoginRoute
   '/admin/login-history': typeof AdminLoginHistoryRoute
   '/admin/manage-product': typeof AdminManageProductRoute
   '/admin/packages': typeof AdminPackagesRoute
@@ -258,6 +267,7 @@ export interface FileRouteTypes {
     | '/admin/dashboard'
     | '/admin/diamond-stock'
     | '/admin/history'
+    | '/admin/login'
     | '/admin/login-history'
     | '/admin/manage-product'
     | '/admin/packages'
@@ -284,6 +294,7 @@ export interface FileRouteTypes {
     | '/admin/dashboard'
     | '/admin/diamond-stock'
     | '/admin/history'
+    | '/admin/login'
     | '/admin/login-history'
     | '/admin/manage-product'
     | '/admin/packages'
@@ -311,6 +322,7 @@ export interface FileRouteTypes {
     | '/admin/dashboard'
     | '/admin/diamond-stock'
     | '/admin/history'
+    | '/admin/login'
     | '/admin/login-history'
     | '/admin/manage-product'
     | '/admin/packages'
@@ -488,6 +500,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminLoginHistoryRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/login': {
+      id: '/admin/login'
+      path: '/login'
+      fullPath: '/admin/login'
+      preLoaderRoute: typeof AdminLoginRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/history': {
       id: '/admin/history'
       path: '/history'
@@ -523,6 +542,7 @@ interface AdminRouteChildren {
   AdminDashboardRoute: typeof AdminDashboardRoute
   AdminDiamondStockRoute: typeof AdminDiamondStockRoute
   AdminHistoryRoute: typeof AdminHistoryRoute
+  AdminLoginRoute: typeof AdminLoginRoute
   AdminLoginHistoryRoute: typeof AdminLoginHistoryRoute
   AdminManageProductRoute: typeof AdminManageProductRoute
   AdminPackagesRoute: typeof AdminPackagesRoute
@@ -536,6 +556,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminDashboardRoute: AdminDashboardRoute,
   AdminDiamondStockRoute: AdminDiamondStockRoute,
   AdminHistoryRoute: AdminHistoryRoute,
+  AdminLoginRoute: AdminLoginRoute,
   AdminLoginHistoryRoute: AdminLoginHistoryRoute,
   AdminManageProductRoute: AdminManageProductRoute,
   AdminPackagesRoute: AdminPackagesRoute,

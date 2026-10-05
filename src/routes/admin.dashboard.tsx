@@ -66,7 +66,7 @@ function AdminPage() {
   useEffect(() => {
     (async () => {
       const { data: s } = await supabase.auth.getSession();
-      if (!s.session) { navigate({ to: "/auth", replace: true }); return; }
+      if (!s.session) { navigate({ to: "/admin/login", replace: true }); return; }
       const { data: roles } = await supabase.from("user_roles").select("role").eq("user_id", s.session.user.id);
       const admin = (roles ?? []).some((r) => r.role === "admin");
       if (!admin) { navigate({ to: "/customer/dashboard", replace: true }); return; }
@@ -111,7 +111,7 @@ function AdminPage() {
       <div className="container mx-auto max-w-md p-10 text-center">
         <h1 className="font-display text-2xl">Access denied</h1>
         <p className="mt-2 text-sm text-muted-foreground">Customer accounts cannot access the admin area.</p>
-        <Link to="/dashboard" className="mt-4 inline-block text-gold underline">Back to Dashboard</Link>
+        <Link to="/admin/dashboard" className="mt-4 inline-block text-gold underline">Back to Dashboard</Link>
       </div>
     );
   }

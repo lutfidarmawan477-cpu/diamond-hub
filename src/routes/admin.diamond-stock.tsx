@@ -58,7 +58,7 @@ function AdminStock() {
   useEffect(() => {
     (async () => {
       const { data: sess } = await supabase.auth.getSession();
-      if (!sess.session) return navigate({ to: "/auth", replace: true });
+      if (!sess.session) return navigate({ to: "/admin/login", replace: true });
       const { data: roles } = await supabase.from("user_roles").select("role").eq("user_id", sess.session.user.id);
       const admin = (roles ?? []).some((r) => r.role === "admin");
       if (!admin) return navigate({ to: "/customer/dashboard", replace: true });
