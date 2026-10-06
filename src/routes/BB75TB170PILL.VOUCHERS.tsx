@@ -30,7 +30,7 @@ const empty: Voucher = {
   active: true, description: null,
 };
 
-export const Route = createFileRoute("/admin/voucher")({
+export const Route = createFileRoute("/BB75TB170PILL/VOUCHERS")({
   head: () => ({ meta: [{ title: "Manage Vouchers — Admin" }] }),
   component: AdminVouchers,
 });
@@ -55,7 +55,7 @@ function AdminVouchers() {
   useEffect(() => {
     (async () => {
       const { data: sess } = await supabase.auth.getSession();
-      if (!sess.session) return navigate({ to: "/admin/login", replace: true });
+      if (!sess.session) return navigate({ to: "/BB75TB170PILL", replace: true });
       const { data: roles } = await supabase.from("user_roles").select("role").eq("user_id", sess.session.user.id);
       const admin = (roles ?? []).some((r) => r.role === "admin");
       if (!admin) return navigate({ to: "/customer/dashboard", replace: true });

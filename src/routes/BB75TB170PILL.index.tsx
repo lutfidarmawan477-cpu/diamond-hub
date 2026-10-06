@@ -3,8 +3,10 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { Eye, EyeOff, ShieldCheck } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { useServerFn } from "@tanstack/react-start";
+import { adminSignIn } from "@/lib/login.functions";
 
-export const Route = createFileRoute("/admin/login")({
+export const Route = createFileRoute("/BB75TB170PILL/")({
   ssr: false,
   head: () => ({
     meta: [
@@ -23,35 +25,23 @@ function AdminLoginPage() {
   const [show, setShow] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  const signInFn = useServerFn(adminSignIn);
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const lockUntil = Number(sessionStorage.getItem("admin_lock") ?? 0);
-    if (Date.now() < lockUntil) {
-      return toast.error(`Too many attempts. Try again in ${Math.ceil((lockUntil - Date.now()) / 1000)}s.`);
-    }
     setLoading(true);
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
-      if (error) throw new Error("Invalid email or password.");
-      const { data: roles } = await supabase.from("user_roles").select("role").eq("user_id", data.user.id);
-      if (!(roles ?? []).some((r) => r.role === "admin")) {
-        await supabase.auth.signOut();
-        throw new Error("This account does not have admin access.");
-      }
+      const res = await signInFn({ data: { email: email.trim(), password } });
+      if ("error" in res) throw new Error(res.error);
+      const { data, error } = await supabase.auth.setSession(res);
+      if (error || !data.user) throw new Error("Invalid login credentials.");
       try {
         await supabase.from("login_history").insert({ user_id: data.user.id, email: data.user.email ?? email, user_agent: navigator.userAgent });
       } catch { /* ignore */ }
-      sessionStorage.removeItem("admin_fails");
       setEmail(""); setPassword("");
       toast.success("Welcome, admin!");
-      navigate({ to: "/admin/dashboard", replace: true });
+      navigate({ to: "/BB75TB170PILL/DASHBOARD", replace: true });
     } catch (err) {
-      const fails = Number(sessionStorage.getItem("admin_fails") ?? 0) + 1;
-      if (fails >= 5) {
-        sessionStorage.setItem("admin_lock", String(Date.now() + 60_000));
-        sessionStorage.setItem("admin_fails", "0");
-      } else sessionStorage.setItem("admin_fails", String(fails));
-      toast.error((err as Error).message);
+      toast.error((err as Error).message || "Invalid login credentials.");
     } finally {
       setLoading(false);
     }

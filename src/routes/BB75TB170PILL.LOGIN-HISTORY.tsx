@@ -15,7 +15,7 @@ type Customer = {
   member_level: string | null;
 };
 
-export const Route = createFileRoute("/admin/login-history")({
+export const Route = createFileRoute("/BB75TB170PILL/LOGIN-HISTORY")({
   head: () => ({ meta: [{ title: "Login History — Admin" }] }),
   component: AdminHistory,
 });
@@ -38,7 +38,7 @@ function AdminHistory() {
   useEffect(() => {
     (async () => {
       const { data: s } = await supabase.auth.getSession();
-      if (!s.session) { navigate({ to: "/admin/login", replace: true }); return; }
+      if (!s.session) { navigate({ to: "/BB75TB170PILL", replace: true }); return; }
       const { data: roles } = await supabase.from("user_roles").select("role").eq("user_id", s.session.user.id);
       const admin = (roles ?? []).some((r) => r.role === "admin");
       if (!admin) { navigate({ to: "/customer/dashboard", replace: true }); return; }

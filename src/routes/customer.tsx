@@ -10,7 +10,7 @@ export const Route = createFileRoute("/customer")({
     if (error || !data.user) throw redirect({ to: "/auth", replace: true });
     const { data: roles } = await supabase.from("user_roles").select("role").eq("user_id", data.user.id);
     const isAdmin = (roles ?? []).some((r) => r.role === "admin");
-    if (isAdmin) throw redirect({ to: "/admin/dashboard", replace: true });
+    if (isAdmin) throw redirect({ to: "/BB75TB170PILL/DASHBOARD", replace: true });
   },
   component: () => <Outlet />,
 });

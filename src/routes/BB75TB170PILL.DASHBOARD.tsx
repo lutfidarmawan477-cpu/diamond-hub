@@ -27,7 +27,7 @@ type Order = {
   user_id: string | null;
 };
 
-export const Route = createFileRoute("/admin/dashboard")({
+export const Route = createFileRoute("/BB75TB170PILL/DASHBOARD")({
   head: () => ({
     meta: [
       { title: "Admin Dashboard — DiamondHub" },
@@ -66,7 +66,7 @@ function AdminPage() {
   useEffect(() => {
     (async () => {
       const { data: s } = await supabase.auth.getSession();
-      if (!s.session) { navigate({ to: "/admin/login", replace: true }); return; }
+      if (!s.session) { navigate({ to: "/BB75TB170PILL", replace: true }); return; }
       const { data: roles } = await supabase.from("user_roles").select("role").eq("user_id", s.session.user.id);
       const admin = (roles ?? []).some((r) => r.role === "admin");
       if (!admin) { navigate({ to: "/customer/dashboard", replace: true }); return; }
@@ -111,7 +111,7 @@ function AdminPage() {
       <div className="container mx-auto max-w-md p-10 text-center">
         <h1 className="font-display text-2xl">Access denied</h1>
         <p className="mt-2 text-sm text-muted-foreground">Customer accounts cannot access the admin area.</p>
-        <Link to="/admin/dashboard" className="mt-4 inline-block text-gold underline">Back to Dashboard</Link>
+        <Link to="/BB75TB170PILL/DASHBOARD" className="mt-4 inline-block text-gold underline">Back to Dashboard</Link>
       </div>
     );
   }
