@@ -6,7 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 export const Route = createFileRoute("/BB75TB170PILL")({
   ssr: false,
   beforeLoad: async ({ location }) => {
-    if (location.pathname === "/BB75TB170PILL") return;
+    if (location.pathname.replace(/\/+$/, "") === "/BB75TB170PILL") return;
     const { data, error } = await supabase.auth.getUser();
     if (error || !data.user) throw redirect({ to: "/BB75TB170PILL", replace: true });
     const { data: roles } = await supabase.from("user_roles").select("role").eq("user_id", data.user.id);

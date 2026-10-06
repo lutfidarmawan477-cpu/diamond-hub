@@ -300,7 +300,7 @@ function RootComponent() {
   // Role lock: admins stay in admin area, customers stay out of admin/login pages.
   useEffect(() => {
     if (role === undefined) return;
-    const isAdminLogin = pathname === "/BB75TB170PILL";
+    const isAdminLogin = pathname.replace(/\/+$/, "") === "/BB75TB170PILL";
 
     if (pathname === "/auth" || isAdminLogin) {
       if (role === "admin") router.navigate({ to: "/BB75TB170PILL/DASHBOARD", replace: true });

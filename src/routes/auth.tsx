@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Eye, EyeOff, MailCheck } from "lucide-react";
+import { useServerFn } from "@tanstack/react-start";
+import { customerSignIn } from "@/lib/login.functions";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
@@ -18,6 +20,7 @@ type Mode = "login" | "signup" | "forgot";
 
 function AuthPage() {
   const navigate = useNavigate();
+  const customerSignInFn = useServerFn(customerSignIn);
   const [mode, setMode] = useState<Mode>("login");
   // Sign In, Sign Up and Forgot Password each keep their own isolated state so
   // typing in one form never leaks into another.
@@ -46,9 +49,7 @@ function AuthPage() {
       .eq("user_id", userId);
     const isAdmin = (roles ?? []).some((r) => r.role === "admin");
     if (isAdmin) {
-      // Admins must use the separate admin portal.
       await supabase.auth.signOut();
-      toast.error("Admin accounts must sign in through the Admin Portal.");
       return;
     }
     navigate({ to: "/customer/dashboard", replace: true });
@@ -123,13 +124,10 @@ function AuthPage() {
           toast.success("Verification email sent. Please confirm your email before signing in.");
         }
       } else {
-        const { data, error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
-        if (error) {
-          if (/confirm/i.test(error.message)) {
-            throw new Error("Your email is not verified yet. Please open the verification link we emailed you.");
-          }
-          throw error;
-        }
+        const res = await customerSignInFn({ data: { email: email.trim(), password } });
+        if ("error" in res) throw new Error(res.error);
+        const { data, error } = await supabase.auth.setSession(res);
+        if (error || !data.user) throw new Error("Invalid login credentials.");
         toast.success("Welcome back!");
         clearAuthForms();
         await trackLogin(data.user.id, data.user.email ?? email);
