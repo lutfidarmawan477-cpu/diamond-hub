@@ -44,6 +44,36 @@ export type Database = {
         }
         Relationships: []
       }
+      admin_login_attempts: {
+        Row: {
+          blocked: boolean
+          email: string
+          fails: number
+          last_ip: string | null
+          locked_until: string | null
+          sessions_used: number
+          updated_at: string
+        }
+        Insert: {
+          blocked?: boolean
+          email: string
+          fails?: number
+          last_ip?: string | null
+          locked_until?: string | null
+          sessions_used?: number
+          updated_at?: string
+        }
+        Update: {
+          blocked?: boolean
+          email?: string
+          fails?: number
+          last_ip?: string | null
+          locked_until?: string | null
+          sessions_used?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       diamond_packages: {
         Row: {
           active: boolean
@@ -450,6 +480,24 @@ export type Database = {
           status: string
           total_spent: number
         }[]
+      }
+      admin_login_register_failure: {
+        Args: { _email: string; _ip: string }
+        Returns: {
+          blocked: boolean
+          email: string
+          fails: number
+          last_ip: string | null
+          locked_until: string | null
+          sessions_used: number
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "admin_login_attempts"
+          isOneToOne: true
+          isSetofReturn: false
+        }
       }
       cancel_order: { Args: { _invoice: string }; Returns: boolean }
       expire_my_orders: { Args: never; Returns: undefined }
