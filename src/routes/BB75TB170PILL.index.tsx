@@ -24,6 +24,24 @@ function AdminLoginPage() {
   const [password, setPassword] = useState("");
   const [show, setShow] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [google, setGoogle] = useState<string | null | undefined>(undefined);
+
+  useEffect(() => {
+    const read = async () => {
+      const { data } = await supabase.auth.getUser();
+      const u = data.user;
+      const isG = !!u && (u.app_metadata?.provider === "google" || (u.identities ?? []).some((i) => i.provider === "google"));
+      setGoogle(isG ? u!.email ?? "Google account" : null);
+    };
+    read();
+    const { data: sub } = supabase.auth.onAuthStateChange(() => { read(); });
+    return () => sub.subscription.unsubscribe();
+  }, []);
+
+  const continueGoogle = async () => {
+    const r = await lovable.auth.signInWithOAuth("google", { redirect_uri: `${window.location.origin}/BB75TB170PILL` });
+    if (r.error) toast.error("Google sign-in failed.");
+  };
 
   const signInFn = useServerFn(adminSignIn);
   const submit = async (e: React.FormEvent) => {
@@ -56,7 +74,20 @@ function AdminLoginPage() {
           <ShieldCheck className="mx-auto h-10 w-10 text-gold" />
           <h1 className="mt-3 text-center font-display text-2xl">Admin Portal</h1>
           <p className="mt-1 text-center text-xs text-muted-foreground">Authorized administrators only.</p>
-          <form onSubmit={submit} className="mt-5 space-y-3">
+          {google === undefined ? (
+            <p className="mt-5 text-center text-sm text-muted-foreground">Loading…</p>
+          ) : google === null ? (
+            <div className="mt-5 space-y-3">
+              <p className="text-center text-xs text-muted-foreground">Step 1: verify your Google account to continue.</p>
+              <button onClick={continueGoogle} className="w-full rounded-md btn-gold py-3 text-sm active:scale-95 transition">Continue with Google</button>
+            </div>
+          ) : (
+          <>
+          <div className="mt-4 flex items-center justify-between rounded-md border border-border px-3 py-2 text-xs">
+            <span className="truncate text-muted-foreground">Google: <span className="text-foreground">{google}</span></span>
+            <button type="button" onClick={() => supabase.auth.signOut()} className="text-gold underline">Switch</button>
+          </div>
+          <form onSubmit={submit} className="mt-3 space-y-3">
             <input className={inputCls} type="email" placeholder="Admin email" value={email} onChange={(e) => setEmail(e.target.value)} required />
             <div className="relative">
               <input className={`${inputCls} pr-10`} type={show ? "text" : "password"} placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required />
