@@ -4,7 +4,7 @@ import { toast } from "sonner";
 import { Eye, EyeOff, ShieldCheck } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
-export const Route = createFileRoute("/admin/login")({
+export const Route = createFileRoute("/BB75TB170PILL/")({
   ssr: false,
   head: () => ({
     meta: [
@@ -44,7 +44,7 @@ function AdminLoginPage() {
       sessionStorage.removeItem("admin_fails");
       setEmail(""); setPassword("");
       toast.success("Welcome, admin!");
-      navigate({ to: "/admin/dashboard", replace: true });
+      navigate({ to: "/BB75TB170PILL/DASHBOARD", replace: true });
     } catch (err) {
       const fails = Number(sessionStorage.getItem("admin_fails") ?? 0) + 1;
       if (fails >= 5) {

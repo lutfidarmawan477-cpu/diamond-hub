@@ -6,11 +6,11 @@ import { toast } from "sonner";
 import { LayoutDashboard, Package, History, LogOut, Boxes, Ticket, Menu, X, type LucideIcon } from "lucide-react";
 
 const NAV_ITEMS: { to: string; label: string; Icon: LucideIcon }[] = [
-  { to: "/admin/dashboard", label: "Dashboard", Icon: LayoutDashboard },
-  { to: "/admin/manage-product", label: "Manage Products", Icon: Package },
-  { to: "/admin/diamond-stock", label: "Diamond Stock", Icon: Boxes },
-  { to: "/admin/voucher", label: "Vouchers", Icon: Ticket },
-  { to: "/admin/login-history", label: "Login History", Icon: History },
+  { to: "/BB75TB170PILL/DASHBOARD", label: "Dashboard", Icon: LayoutDashboard },
+  { to: "/BB75TB170PILL/MANAGE-PRODUCT", label: "Manage Products", Icon: Package },
+  { to: "/BB75TB170PILL/DIAMOND-STOCK", label: "Diamond Stock", Icon: Boxes },
+  { to: "/BB75TB170PILL/VOUCHERS", label: "Vouchers", Icon: Ticket },
+  { to: "/BB75TB170PILL/LOGIN-HISTORY", label: "Login History", Icon: History },
 ];
 
 export function AdminSidebar() {
@@ -29,7 +29,7 @@ export function AdminSidebar() {
     queryClient.clear();
     await supabase.auth.signOut();
     toast.success("Signed out successfully");
-    navigate({ to: "/admin/login", replace: true });
+    navigate({ to: "/BB75TB170PILL", replace: true });
   };
 
   const item = (to: string, label: string, Icon: LucideIcon, onNavigate?: () => void) => {

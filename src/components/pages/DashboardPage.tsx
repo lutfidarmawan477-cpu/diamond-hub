@@ -49,7 +49,7 @@ export function DashboardPage() {
       if (!s.session) { navigate({ to: "/auth", replace: true }); return; }
       const { data: roles } = await supabase.from("user_roles").select("role").eq("user_id", s.session.user.id);
       if ((roles ?? []).some((r) => r.role === "admin")) {
-        navigate({ to: "/admin/dashboard", replace: true });
+        navigate({ to: "/BB75TB170PILL/DASHBOARD", replace: true });
         return;
       }
       const userEmail = s.session.user.email ?? "";
