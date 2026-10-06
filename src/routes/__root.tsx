@@ -304,7 +304,8 @@ function RootComponent() {
 
     if (pathname === "/auth" || isAdminLogin) {
       if (role === "admin") router.navigate({ to: "/BB75TB170PILL/DASHBOARD", replace: true });
-      if (role === "customer") router.navigate({ to: "/customer/dashboard", replace: true });
+      // On the admin portal a non-admin session is the Google identity step, so stay.
+      if (role === "customer" && !isAdminLogin) router.navigate({ to: "/customer/dashboard", replace: true });
       return;
     }
 
