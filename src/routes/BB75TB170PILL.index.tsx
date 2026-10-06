@@ -1,5 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { lovable } from "@/integrations/lovable";
 import { toast } from "sonner";
 import { Eye, EyeOff, ShieldCheck } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -99,6 +100,8 @@ function AdminLoginPage() {
               {loading ? "Verifying…" : "Sign In as Admin"}
             </button>
           </form>
+          </>
+          )}
         </div>
       </div>
     </div>
