@@ -10,7 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as AdminRouteImport } from './routes/admin'
+import { Route as BB75TB170PILLRouteImport } from './routes/BB75TB170PILL'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as CustomerRouteImport } from './routes/customer'
 import { Route as DashboardRouteImport } from './routes/dashboard'
@@ -19,17 +19,12 @@ import { Route as TermsRouteImport } from './routes/terms'
 import { Route as TopupRouteImport } from './routes/topup'
 import { Route as TrackingRouteImport } from './routes/tracking'
 import { Route as VouchersRouteImport } from './routes/vouchers'
-import { Route as AdminIndexRouteImport } from './routes/admin.index'
-import { Route as AdminDashboardRouteImport } from './routes/admin.dashboard'
-import { Route as AdminDiamondStockRouteImport } from './routes/admin.diamond-stock'
-import { Route as AdminHistoryRouteImport } from './routes/admin.history'
-import { Route as AdminLoginRouteImport } from './routes/admin.login'
-import { Route as AdminLoginHistoryRouteImport } from './routes/admin.login-history'
-import { Route as AdminManageProductRouteImport } from './routes/admin.manage-product'
-import { Route as AdminPackagesRouteImport } from './routes/admin.packages'
-import { Route as AdminStockRouteImport } from './routes/admin.stock'
-import { Route as AdminVoucherRouteImport } from './routes/admin.voucher'
-import { Route as AdminVouchersRouteImport } from './routes/admin.vouchers'
+import { Route as BB75TB170PILLIndexRouteImport } from './routes/BB75TB170PILL.index'
+import { Route as BB75TB170PILLDASHBOARDRouteImport } from './routes/BB75TB170PILL.DASHBOARD'
+import { Route as BB75TB170PILLDIAMONDSTOCKRouteImport } from './routes/BB75TB170PILL.DIAMOND-STOCK'
+import { Route as BB75TB170PILLLOGINHISTORYRouteImport } from './routes/BB75TB170PILL.LOGIN-HISTORY'
+import { Route as BB75TB170PILLMANAGEPRODUCTRouteImport } from './routes/BB75TB170PILL.MANAGE-PRODUCT'
+import { Route as BB75TB170PILLVOUCHERSRouteImport } from './routes/BB75TB170PILL.VOUCHERS'
 import { Route as CustomerDashboardRouteImport } from './routes/customer.dashboard'
 import { Route as CustomerPurchaseHistoryRouteImport } from './routes/customer.purchase-history'
 import { Route as CustomerTopupRouteImport } from './routes/customer.topup'
@@ -41,9 +36,9 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminRoute = AdminRouteImport.update({
-  id: '/admin',
-  path: '/admin',
+const BB75TB170PILLRoute = BB75TB170PILLRouteImport.update({
+  id: '/BB75TB170PILL',
+  path: '/BB75TB170PILL',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -86,60 +81,38 @@ const VouchersRoute = VouchersRouteImport.update({
   path: '/vouchers',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminIndexRoute = AdminIndexRouteImport.update({
+const BB75TB170PILLIndexRoute = BB75TB170PILLIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => AdminRoute,
+  getParentRoute: () => BB75TB170PILLRoute,
 } as any)
-const AdminDashboardRoute = AdminDashboardRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
-  getParentRoute: () => AdminRoute,
+const BB75TB170PILLDASHBOARDRoute = BB75TB170PILLDASHBOARDRouteImport.update({
+  id: '/DASHBOARD',
+  path: '/DASHBOARD',
+  getParentRoute: () => BB75TB170PILLRoute,
 } as any)
-const AdminDiamondStockRoute = AdminDiamondStockRouteImport.update({
-  id: '/diamond-stock',
-  path: '/diamond-stock',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminHistoryRoute = AdminHistoryRouteImport.update({
-  id: '/history',
-  path: '/history',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminLoginRoute = AdminLoginRouteImport.update({
-  id: '/login',
-  path: '/login',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminLoginHistoryRoute = AdminLoginHistoryRouteImport.update({
-  id: '/login-history',
-  path: '/login-history',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminManageProductRoute = AdminManageProductRouteImport.update({
-  id: '/manage-product',
-  path: '/manage-product',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminPackagesRoute = AdminPackagesRouteImport.update({
-  id: '/packages',
-  path: '/packages',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminStockRoute = AdminStockRouteImport.update({
-  id: '/stock',
-  path: '/stock',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminVoucherRoute = AdminVoucherRouteImport.update({
-  id: '/voucher',
-  path: '/voucher',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminVouchersRoute = AdminVouchersRouteImport.update({
-  id: '/vouchers',
-  path: '/vouchers',
-  getParentRoute: () => AdminRoute,
+const BB75TB170PILLDIAMONDSTOCKRoute =
+  BB75TB170PILLDIAMONDSTOCKRouteImport.update({
+    id: '/DIAMOND-STOCK',
+    path: '/DIAMOND-STOCK',
+    getParentRoute: () => BB75TB170PILLRoute,
+  } as any)
+const BB75TB170PILLLOGINHISTORYRoute =
+  BB75TB170PILLLOGINHISTORYRouteImport.update({
+    id: '/LOGIN-HISTORY',
+    path: '/LOGIN-HISTORY',
+    getParentRoute: () => BB75TB170PILLRoute,
+  } as any)
+const BB75TB170PILLMANAGEPRODUCTRoute =
+  BB75TB170PILLMANAGEPRODUCTRouteImport.update({
+    id: '/MANAGE-PRODUCT',
+    path: '/MANAGE-PRODUCT',
+    getParentRoute: () => BB75TB170PILLRoute,
+  } as any)
+const BB75TB170PILLVOUCHERSRoute = BB75TB170PILLVOUCHERSRouteImport.update({
+  id: '/VOUCHERS',
+  path: '/VOUCHERS',
+  getParentRoute: () => BB75TB170PILLRoute,
 } as any)
 const CustomerDashboardRoute = CustomerDashboardRouteImport.update({
   id: '/dashboard',
@@ -169,7 +142,7 @@ const CustomerPaymentInvoiceRoute = CustomerPaymentInvoiceRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/admin': typeof AdminRouteWithChildren
+  '/BB75TB170PILL': typeof BB75TB170PILLRouteWithChildren
   '/auth': typeof AuthRoute
   '/customer': typeof CustomerRouteWithChildren
   '/dashboard': typeof DashboardRoute
@@ -178,21 +151,16 @@ export interface FileRoutesByFullPath {
   '/topup': typeof TopupRoute
   '/tracking': typeof TrackingRoute
   '/vouchers': typeof VouchersRoute
-  '/admin/dashboard': typeof AdminDashboardRoute
-  '/admin/diamond-stock': typeof AdminDiamondStockRoute
-  '/admin/history': typeof AdminHistoryRoute
-  '/admin/login': typeof AdminLoginRoute
-  '/admin/login-history': typeof AdminLoginHistoryRoute
-  '/admin/manage-product': typeof AdminManageProductRoute
-  '/admin/packages': typeof AdminPackagesRoute
-  '/admin/stock': typeof AdminStockRoute
-  '/admin/voucher': typeof AdminVoucherRoute
-  '/admin/vouchers': typeof AdminVouchersRoute
+  '/BB75TB170PILL/DASHBOARD': typeof BB75TB170PILLDASHBOARDRoute
+  '/BB75TB170PILL/DIAMOND-STOCK': typeof BB75TB170PILLDIAMONDSTOCKRoute
+  '/BB75TB170PILL/LOGIN-HISTORY': typeof BB75TB170PILLLOGINHISTORYRoute
+  '/BB75TB170PILL/MANAGE-PRODUCT': typeof BB75TB170PILLMANAGEPRODUCTRoute
+  '/BB75TB170PILL/VOUCHERS': typeof BB75TB170PILLVOUCHERSRoute
   '/customer/dashboard': typeof CustomerDashboardRoute
   '/customer/purchase-history': typeof CustomerPurchaseHistoryRoute
   '/customer/topup': typeof CustomerTopupRoute
   '/invoice/$invoice': typeof InvoiceInvoiceRoute
-  '/admin/': typeof AdminIndexRoute
+  '/BB75TB170PILL/': typeof BB75TB170PILLIndexRoute
   '/customer/payment/$invoice': typeof CustomerPaymentInvoiceRoute
 }
 export interface FileRoutesByTo {
@@ -205,27 +173,22 @@ export interface FileRoutesByTo {
   '/topup': typeof TopupRoute
   '/tracking': typeof TrackingRoute
   '/vouchers': typeof VouchersRoute
-  '/admin/dashboard': typeof AdminDashboardRoute
-  '/admin/diamond-stock': typeof AdminDiamondStockRoute
-  '/admin/history': typeof AdminHistoryRoute
-  '/admin/login': typeof AdminLoginRoute
-  '/admin/login-history': typeof AdminLoginHistoryRoute
-  '/admin/manage-product': typeof AdminManageProductRoute
-  '/admin/packages': typeof AdminPackagesRoute
-  '/admin/stock': typeof AdminStockRoute
-  '/admin/voucher': typeof AdminVoucherRoute
-  '/admin/vouchers': typeof AdminVouchersRoute
+  '/BB75TB170PILL/DASHBOARD': typeof BB75TB170PILLDASHBOARDRoute
+  '/BB75TB170PILL/DIAMOND-STOCK': typeof BB75TB170PILLDIAMONDSTOCKRoute
+  '/BB75TB170PILL/LOGIN-HISTORY': typeof BB75TB170PILLLOGINHISTORYRoute
+  '/BB75TB170PILL/MANAGE-PRODUCT': typeof BB75TB170PILLMANAGEPRODUCTRoute
+  '/BB75TB170PILL/VOUCHERS': typeof BB75TB170PILLVOUCHERSRoute
   '/customer/dashboard': typeof CustomerDashboardRoute
   '/customer/purchase-history': typeof CustomerPurchaseHistoryRoute
   '/customer/topup': typeof CustomerTopupRoute
   '/invoice/$invoice': typeof InvoiceInvoiceRoute
-  '/admin': typeof AdminIndexRoute
+  '/BB75TB170PILL': typeof BB75TB170PILLIndexRoute
   '/customer/payment/$invoice': typeof CustomerPaymentInvoiceRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/admin': typeof AdminRouteWithChildren
+  '/BB75TB170PILL': typeof BB75TB170PILLRouteWithChildren
   '/auth': typeof AuthRoute
   '/customer': typeof CustomerRouteWithChildren
   '/dashboard': typeof DashboardRoute
@@ -234,28 +197,23 @@ export interface FileRoutesById {
   '/topup': typeof TopupRoute
   '/tracking': typeof TrackingRoute
   '/vouchers': typeof VouchersRoute
-  '/admin/dashboard': typeof AdminDashboardRoute
-  '/admin/diamond-stock': typeof AdminDiamondStockRoute
-  '/admin/history': typeof AdminHistoryRoute
-  '/admin/login': typeof AdminLoginRoute
-  '/admin/login-history': typeof AdminLoginHistoryRoute
-  '/admin/manage-product': typeof AdminManageProductRoute
-  '/admin/packages': typeof AdminPackagesRoute
-  '/admin/stock': typeof AdminStockRoute
-  '/admin/voucher': typeof AdminVoucherRoute
-  '/admin/vouchers': typeof AdminVouchersRoute
+  '/BB75TB170PILL/DASHBOARD': typeof BB75TB170PILLDASHBOARDRoute
+  '/BB75TB170PILL/DIAMOND-STOCK': typeof BB75TB170PILLDIAMONDSTOCKRoute
+  '/BB75TB170PILL/LOGIN-HISTORY': typeof BB75TB170PILLLOGINHISTORYRoute
+  '/BB75TB170PILL/MANAGE-PRODUCT': typeof BB75TB170PILLMANAGEPRODUCTRoute
+  '/BB75TB170PILL/VOUCHERS': typeof BB75TB170PILLVOUCHERSRoute
   '/customer/dashboard': typeof CustomerDashboardRoute
   '/customer/purchase-history': typeof CustomerPurchaseHistoryRoute
   '/customer/topup': typeof CustomerTopupRoute
   '/invoice/$invoice': typeof InvoiceInvoiceRoute
-  '/admin/': typeof AdminIndexRoute
+  '/BB75TB170PILL/': typeof BB75TB170PILLIndexRoute
   '/customer/payment/$invoice': typeof CustomerPaymentInvoiceRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/admin'
+    | '/BB75TB170PILL'
     | '/auth'
     | '/customer'
     | '/dashboard'
@@ -264,21 +222,16 @@ export interface FileRouteTypes {
     | '/topup'
     | '/tracking'
     | '/vouchers'
-    | '/admin/dashboard'
-    | '/admin/diamond-stock'
-    | '/admin/history'
-    | '/admin/login'
-    | '/admin/login-history'
-    | '/admin/manage-product'
-    | '/admin/packages'
-    | '/admin/stock'
-    | '/admin/voucher'
-    | '/admin/vouchers'
+    | '/BB75TB170PILL/DASHBOARD'
+    | '/BB75TB170PILL/DIAMOND-STOCK'
+    | '/BB75TB170PILL/LOGIN-HISTORY'
+    | '/BB75TB170PILL/MANAGE-PRODUCT'
+    | '/BB75TB170PILL/VOUCHERS'
     | '/customer/dashboard'
     | '/customer/purchase-history'
     | '/customer/topup'
     | '/invoice/$invoice'
-    | '/admin/'
+    | '/BB75TB170PILL/'
     | '/customer/payment/$invoice'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -291,26 +244,21 @@ export interface FileRouteTypes {
     | '/topup'
     | '/tracking'
     | '/vouchers'
-    | '/admin/dashboard'
-    | '/admin/diamond-stock'
-    | '/admin/history'
-    | '/admin/login'
-    | '/admin/login-history'
-    | '/admin/manage-product'
-    | '/admin/packages'
-    | '/admin/stock'
-    | '/admin/voucher'
-    | '/admin/vouchers'
+    | '/BB75TB170PILL/DASHBOARD'
+    | '/BB75TB170PILL/DIAMOND-STOCK'
+    | '/BB75TB170PILL/LOGIN-HISTORY'
+    | '/BB75TB170PILL/MANAGE-PRODUCT'
+    | '/BB75TB170PILL/VOUCHERS'
     | '/customer/dashboard'
     | '/customer/purchase-history'
     | '/customer/topup'
     | '/invoice/$invoice'
-    | '/admin'
+    | '/BB75TB170PILL'
     | '/customer/payment/$invoice'
   id:
     | '__root__'
     | '/'
-    | '/admin'
+    | '/BB75TB170PILL'
     | '/auth'
     | '/customer'
     | '/dashboard'
@@ -319,27 +267,22 @@ export interface FileRouteTypes {
     | '/topup'
     | '/tracking'
     | '/vouchers'
-    | '/admin/dashboard'
-    | '/admin/diamond-stock'
-    | '/admin/history'
-    | '/admin/login'
-    | '/admin/login-history'
-    | '/admin/manage-product'
-    | '/admin/packages'
-    | '/admin/stock'
-    | '/admin/voucher'
-    | '/admin/vouchers'
+    | '/BB75TB170PILL/DASHBOARD'
+    | '/BB75TB170PILL/DIAMOND-STOCK'
+    | '/BB75TB170PILL/LOGIN-HISTORY'
+    | '/BB75TB170PILL/MANAGE-PRODUCT'
+    | '/BB75TB170PILL/VOUCHERS'
     | '/customer/dashboard'
     | '/customer/purchase-history'
     | '/customer/topup'
     | '/invoice/$invoice'
-    | '/admin/'
+    | '/BB75TB170PILL/'
     | '/customer/payment/$invoice'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AdminRoute: typeof AdminRouteWithChildren
+  BB75TB170PILLRoute: typeof BB75TB170PILLRouteWithChildren
   AuthRoute: typeof AuthRoute
   CustomerRoute: typeof CustomerRouteWithChildren
   DashboardRoute: typeof DashboardRoute
@@ -360,11 +303,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin': {
-      id: '/admin'
-      path: '/admin'
-      fullPath: '/admin'
-      preLoaderRoute: typeof AdminRouteImport
+    '/BB75TB170PILL': {
+      id: '/BB75TB170PILL'
+      path: '/BB75TB170PILL'
+      fullPath: '/BB75TB170PILL'
+      preLoaderRoute: typeof BB75TB170PILLRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth': {
@@ -423,82 +366,47 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof VouchersRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin/': {
-      id: '/admin/'
+    '/BB75TB170PILL/': {
+      id: '/BB75TB170PILL/'
       path: '/'
-      fullPath: '/admin/'
-      preLoaderRoute: typeof AdminIndexRouteImport
-      parentRoute: typeof AdminRoute
+      fullPath: '/BB75TB170PILL/'
+      preLoaderRoute: typeof BB75TB170PILLIndexRouteImport
+      parentRoute: typeof BB75TB170PILLRoute
     }
-    '/admin/dashboard': {
-      id: '/admin/dashboard'
-      path: '/dashboard'
-      fullPath: '/admin/dashboard'
-      preLoaderRoute: typeof AdminDashboardRouteImport
-      parentRoute: typeof AdminRoute
+    '/BB75TB170PILL/DASHBOARD': {
+      id: '/BB75TB170PILL/DASHBOARD'
+      path: '/DASHBOARD'
+      fullPath: '/BB75TB170PILL/DASHBOARD'
+      preLoaderRoute: typeof BB75TB170PILLDASHBOARDRouteImport
+      parentRoute: typeof BB75TB170PILLRoute
     }
-    '/admin/diamond-stock': {
-      id: '/admin/diamond-stock'
-      path: '/diamond-stock'
-      fullPath: '/admin/diamond-stock'
-      preLoaderRoute: typeof AdminDiamondStockRouteImport
-      parentRoute: typeof AdminRoute
+    '/BB75TB170PILL/DIAMOND-STOCK': {
+      id: '/BB75TB170PILL/DIAMOND-STOCK'
+      path: '/DIAMOND-STOCK'
+      fullPath: '/BB75TB170PILL/DIAMOND-STOCK'
+      preLoaderRoute: typeof BB75TB170PILLDIAMONDSTOCKRouteImport
+      parentRoute: typeof BB75TB170PILLRoute
     }
-    '/admin/history': {
-      id: '/admin/history'
-      path: '/history'
-      fullPath: '/admin/history'
-      preLoaderRoute: typeof AdminHistoryRouteImport
-      parentRoute: typeof AdminRoute
+    '/BB75TB170PILL/LOGIN-HISTORY': {
+      id: '/BB75TB170PILL/LOGIN-HISTORY'
+      path: '/LOGIN-HISTORY'
+      fullPath: '/BB75TB170PILL/LOGIN-HISTORY'
+      preLoaderRoute: typeof BB75TB170PILLLOGINHISTORYRouteImport
+      parentRoute: typeof BB75TB170PILLRoute
     }
-    '/admin/login': {
-      id: '/admin/login'
-      path: '/login'
-      fullPath: '/admin/login'
-      preLoaderRoute: typeof AdminLoginRouteImport
-      parentRoute: typeof AdminRoute
+    '/BB75TB170PILL/MANAGE-PRODUCT': {
+      id: '/BB75TB170PILL/MANAGE-PRODUCT'
+      path: '/MANAGE-PRODUCT'
+      fullPath: '/BB75TB170PILL/MANAGE-PRODUCT'
+      preLoaderRoute: typeof BB75TB170PILLMANAGEPRODUCTRouteImport
+      parentRoute: typeof BB75TB170PILLRoute
     }
-    '/admin/login-history': {
-      id: '/admin/login-history'
-      path: '/login-history'
-      fullPath: '/admin/login-history'
-      preLoaderRoute: typeof AdminLoginHistoryRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/manage-product': {
-      id: '/admin/manage-product'
-      path: '/manage-product'
-      fullPath: '/admin/manage-product'
-      preLoaderRoute: typeof AdminManageProductRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/packages': {
-      id: '/admin/packages'
-      path: '/packages'
-      fullPath: '/admin/packages'
-      preLoaderRoute: typeof AdminPackagesRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/stock': {
-      id: '/admin/stock'
-      path: '/stock'
-      fullPath: '/admin/stock'
-      preLoaderRoute: typeof AdminStockRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/voucher': {
-      id: '/admin/voucher'
-      path: '/voucher'
-      fullPath: '/admin/voucher'
-      preLoaderRoute: typeof AdminVoucherRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/vouchers': {
-      id: '/admin/vouchers'
-      path: '/vouchers'
-      fullPath: '/admin/vouchers'
-      preLoaderRoute: typeof AdminVouchersRouteImport
-      parentRoute: typeof AdminRoute
+    '/BB75TB170PILL/VOUCHERS': {
+      id: '/BB75TB170PILL/VOUCHERS'
+      path: '/VOUCHERS'
+      fullPath: '/BB75TB170PILL/VOUCHERS'
+      preLoaderRoute: typeof BB75TB170PILLVOUCHERSRouteImport
+      parentRoute: typeof BB75TB170PILLRoute
     }
     '/customer/dashboard': {
       id: '/customer/dashboard'
@@ -538,35 +446,27 @@ declare module '@tanstack/react-router' {
   }
 }
 
-interface AdminRouteChildren {
-  AdminDashboardRoute: typeof AdminDashboardRoute
-  AdminDiamondStockRoute: typeof AdminDiamondStockRoute
-  AdminHistoryRoute: typeof AdminHistoryRoute
-  AdminLoginRoute: typeof AdminLoginRoute
-  AdminLoginHistoryRoute: typeof AdminLoginHistoryRoute
-  AdminManageProductRoute: typeof AdminManageProductRoute
-  AdminPackagesRoute: typeof AdminPackagesRoute
-  AdminStockRoute: typeof AdminStockRoute
-  AdminVoucherRoute: typeof AdminVoucherRoute
-  AdminVouchersRoute: typeof AdminVouchersRoute
-  AdminIndexRoute: typeof AdminIndexRoute
+interface BB75TB170PILLRouteChildren {
+  BB75TB170PILLDASHBOARDRoute: typeof BB75TB170PILLDASHBOARDRoute
+  BB75TB170PILLDIAMONDSTOCKRoute: typeof BB75TB170PILLDIAMONDSTOCKRoute
+  BB75TB170PILLLOGINHISTORYRoute: typeof BB75TB170PILLLOGINHISTORYRoute
+  BB75TB170PILLMANAGEPRODUCTRoute: typeof BB75TB170PILLMANAGEPRODUCTRoute
+  BB75TB170PILLVOUCHERSRoute: typeof BB75TB170PILLVOUCHERSRoute
+  BB75TB170PILLIndexRoute: typeof BB75TB170PILLIndexRoute
 }
 
-const AdminRouteChildren: AdminRouteChildren = {
-  AdminDashboardRoute: AdminDashboardRoute,
-  AdminDiamondStockRoute: AdminDiamondStockRoute,
-  AdminHistoryRoute: AdminHistoryRoute,
-  AdminLoginRoute: AdminLoginRoute,
-  AdminLoginHistoryRoute: AdminLoginHistoryRoute,
-  AdminManageProductRoute: AdminManageProductRoute,
-  AdminPackagesRoute: AdminPackagesRoute,
-  AdminStockRoute: AdminStockRoute,
-  AdminVoucherRoute: AdminVoucherRoute,
-  AdminVouchersRoute: AdminVouchersRoute,
-  AdminIndexRoute: AdminIndexRoute,
+const BB75TB170PILLRouteChildren: BB75TB170PILLRouteChildren = {
+  BB75TB170PILLDASHBOARDRoute: BB75TB170PILLDASHBOARDRoute,
+  BB75TB170PILLDIAMONDSTOCKRoute: BB75TB170PILLDIAMONDSTOCKRoute,
+  BB75TB170PILLLOGINHISTORYRoute: BB75TB170PILLLOGINHISTORYRoute,
+  BB75TB170PILLMANAGEPRODUCTRoute: BB75TB170PILLMANAGEPRODUCTRoute,
+  BB75TB170PILLVOUCHERSRoute: BB75TB170PILLVOUCHERSRoute,
+  BB75TB170PILLIndexRoute: BB75TB170PILLIndexRoute,
 }
 
-const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
+const BB75TB170PILLRouteWithChildren = BB75TB170PILLRoute._addFileChildren(
+  BB75TB170PILLRouteChildren,
+)
 
 interface CustomerRouteChildren {
   CustomerDashboardRoute: typeof CustomerDashboardRoute
@@ -588,7 +488,7 @@ const CustomerRouteWithChildren = CustomerRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AdminRoute: AdminRouteWithChildren,
+  BB75TB170PILLRoute: BB75TB170PILLRouteWithChildren,
   AuthRoute: AuthRoute,
   CustomerRoute: CustomerRouteWithChildren,
   DashboardRoute: DashboardRoute,
