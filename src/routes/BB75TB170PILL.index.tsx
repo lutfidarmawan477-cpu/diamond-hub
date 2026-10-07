@@ -20,6 +20,7 @@ export const Route = createFileRoute("/BB75TB170PILL/")({
 });
 
 const TICKET_KEY = "admin_google_ticket";
+const PENDING_KEY = "admin_google_pending";
 type Ticket = { ticket: string; email: string };
 
 function AdminLoginPage() {
