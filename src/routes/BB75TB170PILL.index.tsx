@@ -33,30 +33,43 @@ function AdminLoginPage() {
 
   useEffect(() => {
     let cancelled = false;
+    let busy = false;
     const run = async () => {
-      const { data } = await supabase.auth.getSession();
-      const u = data.session?.user;
-      if (u && (u.identities ?? []).some((i) => i.provider === "google")) {
-        try {
-          const res = await googleStepFn();
-          if ("ticket" in res) {
-            sessionStorage.setItem(TICKET_KEY, JSON.stringify(res));
+      if (busy) return;
+      busy = true;
+      try {
+        // Only treat a session as the Google identity step when this page started it.
+        if (sessionStorage.getItem(PENDING_KEY)) {
+          const { data } = await supabase.auth.getSession();
+          const u = data.session?.user;
+          if (u && (u.identities ?? []).some((i) => i.provider === "google")) {
+            sessionStorage.removeItem(PENDING_KEY);
+            try {
+              const res = await googleStepFn();
+              if ("ticket" in res) sessionStorage.setItem(TICKET_KEY, JSON.stringify(res));
+            } catch { /* ignore */ }
+            // The Google session is only used to prove identity; drop it right away.
+            await supabase.auth.signOut({ scope: "local" });
           }
-        } catch { /* ignore */ }
-        // The Google session is only used to prove identity; drop it right away.
-        await supabase.auth.signOut({ scope: "local" });
+        }
+        const saved = sessionStorage.getItem(TICKET_KEY);
+        if (!cancelled) setTicket(saved ? (JSON.parse(saved) as Ticket) : null);
+      } finally {
+        busy = false;
       }
-      const saved = sessionStorage.getItem(TICKET_KEY);
-      if (!cancelled) setTicket(saved ? (JSON.parse(saved) as Ticket) : null);
     };
     run();
-    const { data: sub } = supabase.auth.onAuthStateChange((event) => { if (event === "SIGNED_IN") run(); });
+    const { data: sub } = supabase.auth.onAuthStateChange((event) => {
+      // Defer: calling auth methods inside this callback can freeze the page.
+      if (event === "SIGNED_IN" && sessionStorage.getItem(PENDING_KEY)) setTimeout(run, 0);
+    });
     return () => { cancelled = true; sub.subscription.unsubscribe(); };
   }, [googleStepFn]);
 
   const continueGoogle = async () => {
+    sessionStorage.setItem(PENDING_KEY, "1");
     const r = await lovable.auth.signInWithOAuth("google", { redirect_uri: `${window.location.origin}/BB75TB170PILL` });
-    if (r.error) toast.error("Google sign-in failed.");
+    if (r.error) { sessionStorage.removeItem(PENDING_KEY); toast.error("Google sign-in failed."); }
   };
 
   const resetGoogle = () => { sessionStorage.removeItem(TICKET_KEY); setTicket(null); setPassword(""); };

@@ -303,7 +303,9 @@ function RootComponent() {
     const isAdminLogin = pathname.replace(/\/+$/, "") === "/BB75TB170PILL";
 
     if (pathname === "/auth" || isAdminLogin) {
-      if (role === "admin") router.navigate({ to: "/BB75TB170PILL/DASHBOARD", replace: true });
+      // While the admin portal's Google step is in progress, the Google session is not a real admin sign-in.
+      const googleStep = isAdminLogin && typeof window !== "undefined" && !!sessionStorage.getItem("admin_google_pending");
+      if (role === "admin" && !googleStep) router.navigate({ to: "/BB75TB170PILL/DASHBOARD", replace: true });
       // On the admin portal a non-admin session is the Google identity step, so stay.
       if (role === "customer" && !isAdminLogin) router.navigate({ to: "/customer/dashboard", replace: true });
       return;
