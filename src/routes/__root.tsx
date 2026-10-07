@@ -287,7 +287,7 @@ function RootComponent() {
         if (event === "SIGNED_OUT") setRole(null);
         else {
           setRole(undefined);
-          refreshRole();
+          setTimeout(refreshRole, 0);
         }
       }
     });
