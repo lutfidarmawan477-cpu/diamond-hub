@@ -37,20 +37,65 @@ export const customerSignIn = createServerFn({ method: "POST" })
     return { access_token: res.session.access_token, refresh_token: res.session.refresh_token };
   });
 
-// Admin sign-in. Limits are tied to the verified Google account of the caller
-// (from the signed-in Google session token), never to the typed email:
-// 3 tries per round, 1-minute pause between rounds, blocked after 2 rounds.
-export const adminSignIn = createServerFn({ method: "POST" })
+// ---- Admin sign-in (2 steps) ----
+// Step 1: the caller proves a Google account. The server reads the verified Google
+// identity, issues a short-lived signed ticket, and removes any account that the
+// Google sign-in just created so no empty customer records are left behind.
+// Step 2: password only. The email always comes from the signed ticket; both the
+// Google email and the password must match an admin account. Attempt limits are
+// keyed on the Google account id (3 tries per round, 1-minute pause, blocked after 2 rounds).
+
+async function signTicket(payload: { sub: string; email: string; exp: number }) {
+  const { createHmac } = await import("crypto");
+  const body = Buffer.from(JSON.stringify(payload)).toString("base64url");
+  const sig = createHmac("sha256", process.env["ADMIN_TICKET_SECRET"]!).update(body).digest("base64url");
+  return `${body}.${sig}`;
+}
+async function readTicket(ticket: string) {
+  const { createHmac, timingSafeEqual } = await import("crypto");
+  const [body, sig] = ticket.split(".");
+  if (!body || !sig) return null;
+  const exp = createHmac("sha256", process.env["ADMIN_TICKET_SECRET"]!).update(body).digest("base64url");
+  const a = Buffer.from(sig), b = Buffer.from(exp);
+  if (a.length !== b.length || !timingSafeEqual(a, b)) return null;
+  const p = JSON.parse(Buffer.from(body, "base64url").toString()) as { sub: string; email: string; exp: number };
+  return p.exp > Date.now() ? p : null;
+}
+
+export const adminGoogleStep = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) => input.parse(d))
-  .handler(async ({ data, context }) => {
+  .handler(async ({ context }) => {
+    const { data: u } = await context.supabase.auth.getUser();
+    const g = u.user?.identities?.find((i) => i.provider === "google");
+    const sub = (g?.identity_data?.["sub"] as string | undefined) ?? g?.id;
+    const email = ((g?.identity_data?.["email"] as string | undefined) ?? u.user?.email ?? "").toLowerCase();
+    if (!u.user || !g || !sub || !email) return { error: "Please continue with Google first." };
+
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: roles } = await supabaseAdmin.from("user_roles").select("role").eq("user_id", u.user.id);
+    const isAdmin = (roles ?? []).some((r) => r.role === "admin");
+    if (!isAdmin) {
+      const fresh = Date.now() - new Date(u.user.created_at).getTime() < 15 * 60_000;
+      const onlyGoogle = (u.user.identities ?? []).every((i) => i.provider === "google");
+      const { count } = await supabaseAdmin.from("orders").select("id", { count: "exact", head: true }).eq("user_id", u.user.id);
+      if (fresh && onlyGoogle && !count) {
+        await supabaseAdmin.from("login_history").delete().eq("user_id", u.user.id);
+        await supabaseAdmin.from("profiles").delete().eq("id", u.user.id);
+        await supabaseAdmin.from("user_roles").delete().eq("user_id", u.user.id);
+        await supabaseAdmin.auth.admin.deleteUser(u.user.id);
+      }
+    }
+    return { ticket: await signTicket({ sub, email, exp: Date.now() + 15 * 60_000 }), email };
+  });
+
+export const adminPasswordStep = createServerFn({ method: "POST" })
+  .inputValidator((d) => z.object({ ticket: z.string().min(10).max(2000), password: z.string().min(1).max(200) }).parse(d))
+  .handler(async ({ data }) => {
+    const t = await readTicket(data.ticket);
+    if (!t) return { error: "Google verification expired. Please continue with Google again.", restart: true };
     const { getRequestIP } = await import("@tanstack/react-start/server");
     const ip = getRequestIP({ xForwardedFor: true }) ?? null;
-    const { data: u } = await context.supabase.auth.getUser();
-    const isGoogle = !!u.user && (u.user.app_metadata?.provider === "google" ||
-      (u.user.identities ?? []).some((i) => i.provider === "google"));
-    if (!u.user || !isGoogle) return { error: "Please continue with Google first." };
-    const key = `google:${u.user.id}`;
+    const key = `google:${t.sub}`;
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: row } = await supabaseAdmin.from("admin_login_attempts").select("*").eq("email", key).maybeSingle();
     if (row?.blocked) return { error: "Admin sign-in is blocked for this Google account." };
@@ -59,8 +104,8 @@ export const adminSignIn = createServerFn({ method: "POST" })
       return { error: `Too many attempts. Try again in ${s}s.` };
     }
 
-    const res = await trySignIn(data.email, data.password);
-    if (res.ok && res.isAdmin) {
+    const res = await trySignIn(t.email, data.password);
+    if (res.ok && res.isAdmin && (res.session.user.email ?? "").toLowerCase() === t.email) {
       await supabaseAdmin.from("admin_login_attempts").upsert({
         email: key, fails: 0, sessions_used: 0, locked_until: null, blocked: false, last_ip: ip, updated_at: new Date().toISOString(),
       });

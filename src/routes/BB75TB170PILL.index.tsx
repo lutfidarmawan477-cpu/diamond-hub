@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { Eye, EyeOff, ShieldCheck } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useServerFn } from "@tanstack/react-start";
-import { adminSignIn } from "@/lib/login.functions";
+import { adminGoogleStep, adminPasswordStep } from "@/lib/login.functions";
 
 export const Route = createFileRoute("/BB75TB170PILL/")({
   ssr: false,
@@ -19,44 +19,65 @@ export const Route = createFileRoute("/BB75TB170PILL/")({
   component: AdminLoginPage,
 });
 
+const TICKET_KEY = "admin_google_ticket";
+type Ticket = { ticket: string; email: string };
+
 function AdminLoginPage() {
   const navigate = useNavigate();
-  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [show, setShow] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [google, setGoogle] = useState<string | null | undefined>(undefined);
+  const [ticket, setTicket] = useState<Ticket | null | undefined>(undefined);
+  const googleStepFn = useServerFn(adminGoogleStep);
+  const passwordStepFn = useServerFn(adminPasswordStep);
 
   useEffect(() => {
-    const read = async () => {
-      const { data } = await supabase.auth.getUser();
-      const u = data.user;
-      const isG = !!u && (u.app_metadata?.provider === "google" || (u.identities ?? []).some((i) => i.provider === "google"));
-      setGoogle(isG ? u!.email ?? "Google account" : null);
+    let cancelled = false;
+    const run = async () => {
+      const { data } = await supabase.auth.getSession();
+      const u = data.session?.user;
+      if (u && (u.identities ?? []).some((i) => i.provider === "google")) {
+        try {
+          const res = await googleStepFn();
+          if ("ticket" in res) {
+            sessionStorage.setItem(TICKET_KEY, JSON.stringify(res));
+          }
+        } catch { /* ignore */ }
+        // The Google session is only used to prove identity; drop it right away.
+        await supabase.auth.signOut({ scope: "local" });
+      }
+      const saved = sessionStorage.getItem(TICKET_KEY);
+      if (!cancelled) setTicket(saved ? (JSON.parse(saved) as Ticket) : null);
     };
-    read();
-    const { data: sub } = supabase.auth.onAuthStateChange(() => { read(); });
-    return () => sub.subscription.unsubscribe();
-  }, []);
+    run();
+    const { data: sub } = supabase.auth.onAuthStateChange((event) => { if (event === "SIGNED_IN") run(); });
+    return () => { cancelled = true; sub.subscription.unsubscribe(); };
+  }, [googleStepFn]);
 
   const continueGoogle = async () => {
     const r = await lovable.auth.signInWithOAuth("google", { redirect_uri: `${window.location.origin}/BB75TB170PILL` });
     if (r.error) toast.error("Google sign-in failed.");
   };
 
-  const signInFn = useServerFn(adminSignIn);
+  const resetGoogle = () => { sessionStorage.removeItem(TICKET_KEY); setTicket(null); setPassword(""); };
+
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!ticket) return;
     setLoading(true);
     try {
-      const res = await signInFn({ data: { email: email.trim(), password } });
-      if ("error" in res) throw new Error(res.error);
+      const res = await passwordStepFn({ data: { ticket: ticket.ticket, password } });
+      if ("error" in res) {
+        if ("restart" in res && res.restart) resetGoogle();
+        throw new Error(res.error);
+      }
       const { data, error } = await supabase.auth.setSession(res);
       if (error || !data.user) throw new Error("Invalid login credentials.");
+      sessionStorage.removeItem(TICKET_KEY);
       try {
-        await supabase.from("login_history").insert({ user_id: data.user.id, email: data.user.email ?? email, user_agent: navigator.userAgent });
+        await supabase.from("login_history").insert({ user_id: data.user.id, email: data.user.email ?? ticket.email, user_agent: navigator.userAgent });
       } catch { /* ignore */ }
-      setEmail(""); setPassword("");
+      setPassword("");
       toast.success("Welcome, admin!");
       navigate({ to: "/BB75TB170PILL/DASHBOARD", replace: true });
     } catch (err) {
@@ -66,6 +87,7 @@ function AdminLoginPage() {
     }
   };
 
+  const google = ticket === undefined ? undefined : ticket?.email ?? null;
   const inputCls = "w-full rounded-md bg-input border border-border px-3 py-2 text-sm focus:outline-none focus:border-primary";
 
   return (
@@ -85,11 +107,11 @@ function AdminLoginPage() {
           ) : (
           <>
           <div className="mt-4 flex items-center justify-between rounded-md border border-border px-3 py-2 text-xs">
-            <span className="truncate text-muted-foreground">Google: <span className="text-foreground">{google}</span></span>
-            <button type="button" onClick={() => supabase.auth.signOut()} className="text-gold underline">Switch</button>
+            <span className="truncate text-muted-foreground">Email: <span className="text-foreground">{google}</span></span>
+            <button type="button" onClick={resetGoogle} className="text-gold underline">Switch</button>
           </div>
           <form onSubmit={submit} className="mt-3 space-y-3">
-            <input className={inputCls} type="email" placeholder="Admin email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+            <p className="text-xs text-muted-foreground">Step 2: enter the admin password.</p>
             <div className="relative">
               <input className={`${inputCls} pr-10`} type={show ? "text" : "password"} placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required />
               <button type="button" onClick={() => setShow((v) => !v)} aria-label={show ? "Hide password" : "Show password"} className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-1 text-muted-foreground hover:text-foreground">
