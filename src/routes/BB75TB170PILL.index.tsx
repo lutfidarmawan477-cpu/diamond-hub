@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { Eye, EyeOff, ShieldCheck } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useServerFn } from "@tanstack/react-start";
-import { adminSignIn } from "@/lib/login.functions";
+import { adminGoogleStep, adminPasswordStep } from "@/lib/login.functions";
 
 export const Route = createFileRoute("/BB75TB170PILL/")({
   ssr: false,
