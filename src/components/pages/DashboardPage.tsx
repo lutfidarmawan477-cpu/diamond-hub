@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
@@ -140,32 +141,32 @@ export function DashboardPage() {
           <h1 className="font-display text-3xl">Dashboard</h1>
           <p className="text-sm text-muted-foreground">{email}</p>
         </div>
-        <button onClick={signOut} className="rounded-md border border-border px-4 py-2 text-sm hover:border-destructive transition">Sign Out</button>
+        <Button variant="legacy" size="legacy" onClick={signOut} className="rounded-md border border-border px-4 py-2 text-sm hover:border-destructive transition">Sign Out</Button>
       </div>
 
       <div className="mt-6 grid gap-4 md:grid-cols-3">
         <StatCard label="Total Transactions" value={totalOrders.toString()} />
         <StatCard label="Total Spent" value={formatIDR(totalSpent)} />
-        <div className="card-premium rounded-xl p-5">
+        <div className="stat-surface p-5">
           <div className="text-xs text-muted-foreground">Member Level</div>
-          <div className={`font-display text-2xl mt-1 ${meta.color}`}>{meta.icon} {meta.label}</div>
+          <div className={`font-display text-2xl mt-1 ${meta.color}`}>{meta.label}</div>
           {next ? (
             <div className="mt-3">
               <div className="h-2 rounded-full bg-primary/20 overflow-hidden">
-                <div className="h-full bg-gradient-to-r from-gold to-primary transition-all" style={{ width: `${next.progress}%` }} />
+                <div className="h-full bg-gold transition-all" style={{ width: `${next.progress}%` }} />
               </div>
               <div className="mt-2 text-[11px] text-muted-foreground">
                 {formatIDR(totalSpent)} / {formatIDR(next.target)} to {LEVEL_META[next.next].label}
               </div>
             </div>
           ) : (
-            <div className="mt-3 text-xs text-gold">🎉 You've reached the highest membership level.</div>
+            <div className="mt-3 text-xs text-gold">You’re a Diamond member.</div>
           )}
         </div>
       </div>
 
       {/* MY VOUCHERS */}
-      <div className="mt-8 card-premium rounded-xl p-4 sm:p-5">
+      <div className="mt-8 page-section">
         <div className="flex justify-between items-center gap-3 mb-4 flex-wrap">
           <h2 className="font-display text-lg inline-flex items-center gap-2"><Ticket className="h-5 w-5 text-gold" /> My Vouchers</h2>
           <Link to="/vouchers" className="text-xs text-gold underline">Browse all</Link>
@@ -187,16 +188,16 @@ export function DashboardPage() {
                     Remaining {v.usage_per_customer - v.used}/{v.usage_per_customer} • Expires {new Date(v.end_date).toLocaleDateString("en-US")}
                   </div>
                 </div>
-                <button onClick={() => copyCode(v.code)} className="rounded-md btn-gold px-2 py-1 text-xs inline-flex items-center gap-1">
+                <Button variant="legacy" size="legacy" onClick={() => copyCode(v.code)} aria-label="Copy voucher code" title="Copy voucher code" className="rounded-md btn-gold px-2 py-1 text-xs inline-flex items-center gap-1">
                   <Copy className="h-3 w-3" />
-                </button>
+                </Button>
               </div>
             ))}
           </div>
         )}
       </div>
 
-      <div className="mt-8 card-premium rounded-xl p-4 sm:p-5">
+      <div className="mt-8 page-section">
         <div className="flex justify-between items-center gap-3 mb-4 flex-wrap">
           <h2 className="font-display text-lg">Transaction History</h2>
           <Link to="/customer/topup" className="inline-flex shrink-0 items-center whitespace-nowrap rounded-md btn-gold px-3 py-2 text-xs">+ Top Up</Link>
@@ -272,7 +273,7 @@ export function DashboardPage() {
 
 function StatCard({ label, value }: { label: string; value: string }) {
   return (
-    <div className="card-premium rounded-xl p-5">
+    <div className="stat-surface p-5">
       <div className="text-xs text-muted-foreground">{label}</div>
       <div className="font-display text-2xl gold-text mt-1">{value}</div>
     </div>

@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -120,7 +121,7 @@ function AdminStock() {
   return (
     <div className="min-h-screen flex flex-col md:flex-row">
       <AdminSidebar />
-      <main className="flex-1 p-4 sm:p-6 min-w-0">
+      <main className="admin-content flex-1 p-4 sm:p-6 min-w-0">
         <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
           <h1 className="font-display text-2xl">Diamond Stock</h1>
           <select
@@ -134,15 +135,15 @@ function AdminStock() {
 
 
         <div className="grid gap-4 md:grid-cols-2 mb-6 items-stretch">
-          <div className="card-premium rounded-xl p-4 sm:p-5 flex h-full flex-col">
+          <div className="card-premium rounded-lg p-4 sm:p-5 flex h-full flex-col">
             <div className="text-xs text-muted-foreground uppercase tracking-wider">Current Stock</div>
             <div className="mt-3 flex flex-1 flex-wrap items-baseline gap-2">
-              <span className="text-3xl">💎</span>
+              
               <span className="font-display text-3xl sm:text-4xl gold-text">{(stock ?? 0).toLocaleString("en-US")}</span>
               <span className="text-sm text-muted-foreground">Diamonds</span>
             </div>
           </div>
-          <div className="card-premium rounded-xl p-4 sm:p-5 flex h-full flex-col">
+          <div className="card-premium rounded-lg p-4 sm:p-5 flex h-full flex-col">
             <div className="text-xs text-muted-foreground uppercase tracking-wider">Add Diamond</div>
             <div className="mt-3 grid flex-1 content-start gap-2">
               <input
@@ -159,18 +160,18 @@ function AdminStock() {
                 value={note}
                 onChange={(e) => setNote(e.target.value)}
               />
-              <button
+              <Button variant="legacy" size="legacy"
                 onClick={addStock}
                 disabled={saving}
-                className="mt-1 rounded-md btn-gold px-4 py-2 text-sm disabled:opacity-50 active:scale-95 transition"
+                className="mt-1 rounded-md btn-gold px-4 py-2 text-sm disabled:opacity-50  transition"
               >
                 {saving ? "Saving…" : "+ Add Stock"}
-              </button>
+              </Button>
             </div>
           </div>
         </div>
 
-        <div className="card-premium rounded-xl p-4 sm:p-5 mb-6">
+        <div className="page-section mb-6">
           <h2 className="font-display text-lg mb-3">Stock Movement</h2>
           <div className="h-[240px] lg:h-[300px]">
             <ResponsiveContainer width="100%" height="100%">
@@ -190,7 +191,7 @@ function AdminStock() {
           </div>
         </div>
 
-        <div className="card-premium rounded-xl p-4 sm:p-5">
+        <div className="page-section">
           <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
             <h2 className="font-display text-lg">Stock History</h2>
             <div className="flex flex-wrap items-center gap-2">
@@ -203,10 +204,10 @@ function AdminStock() {
                 <option value="add">Add</option>
                 <option value="deduct">Deduct</option>
               </select>
-              <button onClick={exportHistory}
-                className="rounded-md btn-gold px-4 py-2 text-sm active:scale-95 transition">
+              <Button variant="legacy" size="legacy" onClick={exportHistory}
+                className="rounded-md btn-gold px-4 py-2 text-sm  transition">
                 Export Excel
-              </button>
+              </Button>
             </div>
           </div>
 

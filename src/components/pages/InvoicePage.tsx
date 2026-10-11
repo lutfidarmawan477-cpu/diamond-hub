@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { queryOptions, useSuspenseQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
@@ -155,7 +156,7 @@ export function InvoicePage({ invoice }: { invoice: string }) {
 
   return (
     <div className="container mx-auto max-w-3xl px-4 py-10">
-      <div className="card-premium rounded-2xl p-6 md:p-8 print-area">
+      <div className="card-premium rounded-lg p-6 md:p-8 print-area">
         <div className="flex items-start justify-between flex-wrap gap-3">
           <div>
             <div className="text-xs text-muted-foreground">Invoice Number</div>
@@ -167,7 +168,7 @@ export function InvoicePage({ invoice }: { invoice: string }) {
         </div>
 
         {isPending && remaining > 0 && (
-          <div className="mt-6 rounded-xl bg-primary/10 border border-primary/30 p-5 text-center">
+          <div className="mt-6 rounded-lg bg-primary/10 border border-primary/30 p-5 text-center">
             <div className="text-sm text-muted-foreground">Complete payment within</div>
             <div className="font-display text-4xl gold-text mt-1">{mm}:{ss}</div>
             <div className="mt-3 text-sm">Total: <span className="font-bold gold-text">{formatIDR(order.total)}</span></div>
@@ -178,32 +179,32 @@ export function InvoicePage({ invoice }: { invoice: string }) {
                 width={512}
                 height={512}
                 loading="lazy"
-                className="h-full w-full object-contain animate-float drop-shadow-[0_0_25px_hsl(var(--primary)/0.45)]"
+                className="h-full w-full object-contain "
               />
             </div>
             <div className="mt-2 text-xs text-muted-foreground">Pay with {order.payment_method_name}</div>
-            <button
+            <Button variant="legacy" size="legacy"
               type="button"
               className="mt-4 inline-flex items-center gap-2 rounded-md btn-gold px-6 py-2.5 text-sm"
               onClick={handlePay}
             >
               Pay Now
-            </button>
+            </Button>
             <div className="mt-2 text-xs text-muted-foreground">
-              You will be redirected to our admin on WhatsApp to confirm this payment.
+              Confirm your payment with our team on WhatsApp.
             </div>
           </div>
         )}
 
 
         {isFailed && (
-          <div className="mt-6 rounded-xl bg-destructive/10 border border-destructive/30 p-4 text-center text-sm text-destructive">
-            This order has been cancelled or expired. Payment is no longer available. Please create a new order to top up again.
+          <div className="mt-6 rounded-lg bg-destructive/10 border border-destructive/30 p-4 text-center text-sm text-destructive">
+            This order has expired or been cancelled. Create a new order to continue.
           </div>
         )}
 
         {isSuccess && (
-          <div className="mt-6 rounded-xl bg-success/10 border border-success/30 p-4 text-center text-sm text-success">
+          <div className="mt-6 rounded-lg bg-success/10 border border-success/30 p-4 text-center text-sm text-success">
             Payment received. Your diamonds have been delivered.
           </div>
         )}
@@ -233,22 +234,22 @@ export function InvoicePage({ invoice }: { invoice: string }) {
         </div>
 
         <div className="mt-6 flex flex-wrap gap-3 no-print">
-          <button onClick={() => window.print()} className="inline-flex items-center gap-2 rounded-md border border-border px-4 py-2 text-sm hover:border-primary transition">
+          <Button variant="legacy" size="legacy" onClick={() => window.print()} className="inline-flex items-center gap-2 rounded-md border border-border px-4 py-2 text-sm hover:border-primary transition">
             <Printer className="h-4 w-4" /> Print
-          </button>
+          </Button>
           {loggedIn ? (
             <Link to="/customer/dashboard" className="rounded-md border border-border px-4 py-2 text-sm hover:border-primary transition">Back to Dashboard</Link>
           ) : (
             <Link to="/" className="rounded-md border border-border px-4 py-2 text-sm hover:border-primary transition">Back to Home</Link>
           )}
           {isPending && (
-            <button
+            <Button variant="legacy" size="legacy"
               onClick={cancelOrder}
               disabled={cancelling}
               className="rounded-md border border-destructive/60 text-destructive px-4 py-2 text-sm hover:bg-destructive/10 transition disabled:opacity-50"
             >
               {cancelling ? "Cancelling…" : "Cancel Order"}
-            </button>
+            </Button>
           )}
           {isSuccess && (
             <Link to={loggedIn ? "/customer/topup" : "/topup"} className="rounded-md btn-gold px-4 py-2 text-sm">Top Up Again</Link>
@@ -263,12 +264,12 @@ export function InvoicePage({ invoice }: { invoice: string }) {
       {showSuccess && (
         createPortal(
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-background/85 backdrop-blur-sm p-4 no-print" role="dialog" aria-modal="true">
-          <div className="card-premium w-[92%] max-w-[480px] max-h-[90vh] overflow-y-auto overscroll-contain rounded-2xl p-6 animate-scale-in">
+          <div className="card-premium w-[92%] max-w-[480px] max-h-[90vh] overflow-y-auto overscroll-contain rounded-lg p-6 animate-scale-in">
             <div className="text-center">
               <div className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-success/20 text-success text-2xl">✓</div>
-              <h2 className="mt-3 font-display text-2xl text-success">PAYMENT SUCCESSFUL</h2>
+              <h2 className="mt-3 font-display text-2xl text-success">Payment successful</h2>
             </div>
-            <div className="mt-4 rounded-xl border border-border p-4">
+            <div className="mt-4 border-t border-border pt-4">
               <Row label="Order ID" value={order.invoice_no} />
               <Row label="User ID" value={order.game_user_id} />
               <Row label="Zone ID" value={order.zone_id} />
@@ -281,7 +282,7 @@ export function InvoicePage({ invoice }: { invoice: string }) {
               <Row label="Status" value="SUCCESS" />
               <Row label="Date/Time" value={new Date(order.updated_at ?? order.created_at).toLocaleString("en-US")} />
             </div>
-            <button onClick={() => setShowSuccess(false)} className="mt-4 w-full rounded-md btn-gold px-4 py-2.5 text-sm">Close</button>
+            <Button variant="legacy" size="legacy" onClick={() => setShowSuccess(false)} className="mt-4 w-full rounded-md btn-gold px-4 py-2.5 text-sm">Close</Button>
           </div>
         </div>, document.body)
       )}
@@ -292,7 +293,7 @@ export function InvoicePage({ invoice }: { invoice: string }) {
 
 function Block({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="rounded-xl border border-border p-4">
+    <div className="border-t border-border pt-4">
       <div className="text-sm font-semibold mb-2">{title}</div>
       {children}
     </div>

@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -128,7 +129,7 @@ function AuthPage() {
         if ("error" in res) throw new Error(res.error);
         const { data, error } = await supabase.auth.setSession(res);
         if (error || !data.user) throw new Error("Invalid login credentials.");
-        toast.success("Welcome back!");
+        toast.success("Signed in.");
         clearAuthForms();
         await trackLogin(data.user.id, data.user.email ?? email);
         await redirectByRole(data.user.id);
@@ -160,26 +161,26 @@ function AuthPage() {
   if (sentTo) {
     return (
       <div className="container mx-auto max-w-md px-4 py-16">
-        <div className="card-premium rounded-2xl p-6 text-center animate-scale-in">
+        <div className="card-premium rounded-lg p-6 text-center animate-scale-in">
           <MailCheck className="mx-auto h-10 w-10 text-gold" />
           <h1 className="font-display text-2xl mt-3">Verify your email</h1>
           <p className="mt-2 text-sm text-muted-foreground">
             We sent a verification link to <span className="text-gold">{sentTo}</span>. Click the link to activate your
             account, then sign in.
           </p>
-          <button
+          <Button variant="legacy" size="legacy"
             onClick={resendVerification}
             disabled={loading}
-            className="mt-5 w-full rounded-md border border-primary/60 bg-primary/10 py-2.5 text-sm font-semibold transition hover:bg-primary/20 active:scale-95 disabled:opacity-50"
+            className="mt-5 w-full rounded-md border border-primary/60 bg-primary/10 py-2.5 text-sm font-semibold transition hover:bg-primary/20  disabled:opacity-50"
           >
             {loading ? "Sending…" : "Resend verification email"}
-          </button>
-          <button
+          </Button>
+          <Button variant="legacy" size="legacy"
             onClick={() => { setSentTo(null); clearAuthForms(); switchMode("login"); }}
-            className="mt-3 w-full rounded-md btn-gold py-2.5 text-sm active:scale-95 transition"
+            className="mt-3 w-full rounded-md btn-gold py-2.5 text-sm  transition"
           >
             Back to Sign In
-          </button>
+          </Button>
         </div>
       </div>
     );
@@ -187,15 +188,15 @@ function AuthPage() {
 
   return (
     <div className="container mx-auto max-w-md px-4 py-16">
-      <div className="card-premium rounded-2xl p-6">
+      <div className="card-premium rounded-lg p-6">
         <h1 className="font-display text-2xl text-center">
           {mode === "login" ? "Sign In" : mode === "signup" ? "Sign Up" : "Forgot Password"}
         </h1>
 
         {mode !== "forgot" && (
           <div className="mt-4 flex rounded-lg border border-border p-1 text-sm">
-            <button onClick={() => switchMode("login")} className={`flex-1 rounded-md py-2 transition ${mode === "login" ? "btn-gold" : ""}`}>Sign In</button>
-            <button onClick={() => switchMode("signup")} className={`flex-1 rounded-md py-2 transition ${mode === "signup" ? "btn-gold" : ""}`}>Sign Up</button>
+            <Button variant="legacy" size="legacy" onClick={() => switchMode("login")} className={`flex-1 rounded-md py-2 transition ${mode === "login" ? "btn-gold" : ""}`}>Sign In</Button>
+            <Button variant="legacy" size="legacy" onClick={() => switchMode("signup")} className={`flex-1 rounded-md py-2 transition ${mode === "signup" ? "btn-gold" : ""}`}>Sign Up</Button>
           </div>
         )}
 
@@ -205,12 +206,12 @@ function AuthPage() {
             <p className="mt-3 text-sm text-muted-foreground">
               A password reset link has been sent to <span className="text-gold">{email}</span>. Open it to set a new password.
             </p>
-            <button
+            <Button variant="legacy" size="legacy"
               onClick={() => { setResetSent(false); clearAuthForms(); switchMode("login"); }}
-              className="mt-5 w-full rounded-md btn-gold py-2.5 text-sm active:scale-95 transition"
+              className="mt-5 w-full rounded-md btn-gold py-2.5 text-sm  transition"
             >
               Back to Sign In
-            </button>
+            </Button>
           </div>
         ) : (
           <form onSubmit={submit} className="mt-5 space-y-3">
@@ -242,14 +243,14 @@ function AuthPage() {
                     onChange={(e) => setPassword(e.target.value)}
                     required
                   />
-                  <button
+                  <Button variant="legacy" size="legacy"
                     type="button"
                     onClick={() => setShowPassword((v) => !v)}
                     aria-label={showPassword ? "Hide password" : "Show password"}
                     className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-1 text-muted-foreground transition hover:text-foreground"
                   >
                     {showPassword ? <EyeOff className="h-[18px] w-[18px]" /> : <Eye className="h-[18px] w-[18px]" />}
-                  </button>
+                  </Button>
                 </div>
                 {mode === "signup" && password.length > 0 && !passwordValid && (
                   <p className="mt-1 text-xs text-destructive">
@@ -259,19 +260,19 @@ function AuthPage() {
               </div>
             )}
 
-            <button disabled={loading} className="w-full rounded-md btn-gold py-3 text-sm disabled:opacity-50 active:scale-95 transition">
+            <Button variant="legacy" size="legacy" disabled={loading} className="w-full rounded-md btn-gold py-3 text-sm disabled:opacity-50  transition">
               {loading ? "Processing…" : mode === "login" ? "Sign In" : mode === "signup" ? "Sign Up" : "Send Reset Link"}
-            </button>
+            </Button>
 
             {mode === "login" && (
-              <button type="button" onClick={() => switchMode("forgot")} className="w-full text-center text-xs text-gold underline">
+              <Button variant="legacy" size="legacy" type="button" onClick={() => switchMode("forgot")} className="w-full text-center text-xs text-gold underline">
                 Forgot your password?
-              </button>
+              </Button>
             )}
             {mode === "forgot" && (
-              <button type="button" onClick={() => switchMode("login")} className="w-full text-center text-xs text-gold underline">
+              <Button variant="legacy" size="legacy" type="button" onClick={() => switchMode("login")} className="w-full text-center text-xs text-gold underline">
                 Back to Sign In
-              </button>
+              </Button>
             )}
           </form>
         )}

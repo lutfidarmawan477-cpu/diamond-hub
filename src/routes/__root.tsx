@@ -10,7 +10,9 @@ import {
 } from "@tanstack/react-router";
 import { useEffect, useState, type ReactNode } from "react";
 import { Toaster } from "sonner";
-import { Home, Zap, PackageSearch, LayoutDashboard, LogIn, ArrowLeft, type LucideIcon } from "lucide-react";
+import { Home, Zap, PackageSearch, LayoutDashboard, LogIn, ArrowLeft, Diamond, type LucideIcon } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
@@ -55,12 +57,12 @@ function ErrorComponent({ error, reset }: { error: unknown; reset: () => void })
       <div className="max-w-md text-center">
         <h1 className="text-xl font-semibold">Something went wrong</h1>
         <p className="mt-2 text-sm text-muted-foreground">Please try reloading the page.</p>
-        <button
+        <Button variant="legacy" size="legacy"
           onClick={() => { router.invalidate(); reset(); }}
           className="mt-6 rounded-md btn-gold px-5 py-2 text-sm"
         >
           Try again
-        </button>
+        </Button>
       </div>
     </div>
   );
@@ -71,10 +73,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "DiamondHub — Cheap & Fast Mobile Legends Diamond Top Up" },
-      { name: "description", content: "Cheapest Mobile Legends diamond top up, instant 24/7 delivery, pay with DANA OVO GoPay QRIS or bank. Safe and trusted." },
+      { title: "DiamondHub — Mobile Legends Top Up" },
+      { name: "description", content: "Mobile Legends diamond packages, order tracking, and WhatsApp payment confirmation." },
       { property: "og:title", content: "DiamondHub — Mobile Legends Diamond Top Up" },
-      { property: "og:description", content: "Cheapest and fastest ML diamond top up. Instant 24/7 delivery." },
+      { property: "og:description", content: "Mobile Legends diamond packages and order tracking." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -84,7 +86,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
         rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap",
+        href: "https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap",
       },
     ],
   }),
@@ -96,7 +98,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootShell({ children }: { children: ReactNode }) {
   return (
-    <html lang="id">
+    <html lang="en">
       <head><HeadContent /></head>
       <body>{children}<Scripts /></body>
     </html>
@@ -116,14 +118,14 @@ function SiteHeader({
       <header className="sticky top-0 z-50 backdrop-blur-md bg-background/70 border-b border-border no-print">
         <div className="container mx-auto flex items-center justify-between px-4 py-3">
           <Link to="/" className="flex items-center gap-2">
-            <div className="grid h-9 w-9 place-items-center rounded-lg btn-gold text-base">💎</div>
-            <span className="font-display text-lg font-bold tracking-wider">
+            <div className="brand-mark"><Diamond className="h-7 w-7" strokeWidth={1.6} /></div>
+            <span className="brand-name">
               Diamond<span className="gold-text">Hub</span>
             </span>
           </Link>
           <Link
             to="/"
-            className="inline-flex items-center gap-2 rounded-lg border border-primary/60 bg-primary/10 px-4 py-1.5 text-xs font-semibold text-foreground transition-all duration-200 hover:bg-primary/20 hover:border-primary active:scale-95 whitespace-nowrap"
+            className="inline-flex items-center gap-2 site-nav-link border border-primary/60 bg-primary/5 px-4 py-1.5 text-xs font-semibold text-foreground transition-colors duration-150 hover:bg-primary/20 hover:border-primary whitespace-nowrap"
           >
             <ArrowLeft className="h-[18px] w-[18px]" strokeWidth={2} />
             Home
@@ -157,14 +159,14 @@ function SiteHeader({
   }
 
   const linkCls =
-    "items-center gap-2 rounded-lg border border-primary/60 bg-primary/10 px-4 py-1.5 text-xs font-semibold text-foreground transition-all duration-200 hover:bg-primary/20 hover:border-primary active:scale-95 whitespace-nowrap";
+    "items-center gap-2 site-nav-link border border-primary/60 bg-primary/5 px-4 py-1.5 text-xs font-semibold text-foreground transition-colors duration-150 hover:bg-primary/20 hover:border-primary whitespace-nowrap";
 
   return (
-    <header className="sticky top-0 z-50 backdrop-blur-md bg-background/70 border-b border-border no-print animate-fade-in">
+    <header className="sticky top-0 z-50 backdrop-blur-md bg-background/70 border-b border-border no-print ">
       <div className="container mx-auto flex items-center justify-between gap-3 px-4 py-3">
         <Link to="/" className="flex items-center gap-2 shrink-0">
-          <div className="grid h-9 w-9 place-items-center rounded-lg btn-gold text-base">💎</div>
-          <span className="font-display text-lg font-bold tracking-wider">
+          <div className="brand-mark"><Diamond className="h-7 w-7" strokeWidth={1.6} /></div>
+          <span className="brand-name">
             Diamond<span className="gold-text">Hub</span>
           </span>
         </Link>
@@ -198,14 +200,14 @@ function SiteHeader({
 
 function SiteFooter() {
   return (
-    <footer className="border-t border-border mt-20 bg-card/40 no-print">
+    <footer className="site-footer border-t border-border mt-16 no-print">
       <div className="container mx-auto px-4 py-10 grid gap-8 md:grid-cols-4">
         <div>
           <div className="flex items-center gap-2 mb-3">
-            <div className="grid h-9 w-9 place-items-center rounded-lg btn-gold">💎</div>
-            <span className="font-display text-lg font-bold">Diamond<span className="gold-text">Hub</span></span>
+            <div className="brand-mark"><Diamond className="h-7 w-7" strokeWidth={1.6} /></div>
+            <span className="brand-name">Diamond<span className="gold-text">Hub</span></span>
           </div>
-          <p className="text-sm text-muted-foreground">Cheapest and fastest Mobile Legends diamond top up. Available 24/7.</p>
+          <p className="text-sm text-muted-foreground">Mobile Legends top ups, with your account details checked before checkout.</p>
         </div>
         <div>
           <h4 className="font-semibold mb-3">Services</h4>
@@ -218,8 +220,7 @@ function SiteFooter() {
         <div>
           <h4 className="font-semibold mb-3">Support</h4>
           <ul className="space-y-2 text-sm text-muted-foreground">
-            <li>FAQ</li>
-            <li>Contact</li>
+            <li><a href="https://wa.me/628989110355" target="_blank" rel="noopener noreferrer">Order support</a></li>
             <li><Link to="/terms" className="hover:text-gold transition-colors">Terms & Conditions</Link></li>
           </ul>
         </div>

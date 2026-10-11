@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -56,7 +57,7 @@ function ResetPasswordPage() {
   if (!valid) {
     return (
       <div className="container mx-auto max-w-md px-4 py-16 text-center">
-        <div className="card-premium rounded-2xl p-6">
+        <div className="card-premium rounded-lg p-6">
           <h1 className="font-display text-xl">Reset link invalid or expired</h1>
           <p className="mt-2 text-sm text-muted-foreground">Please request a new password reset link.</p>
           <Link to="/auth" className="mt-5 inline-block rounded-md btn-gold px-5 py-2.5 text-sm">Back to Sign In</Link>
@@ -67,7 +68,7 @@ function ResetPasswordPage() {
 
   return (
     <div className="container mx-auto max-w-md px-4 py-16">
-      <div className="card-premium rounded-2xl p-6 animate-scale-in">
+      <div className="card-premium rounded-lg p-6 animate-scale-in">
         <KeyRound className="mx-auto h-9 w-9 text-gold" />
         <h1 className="mt-3 text-center font-display text-2xl">Set a new password</h1>
         <form onSubmit={submit} className="mt-5 space-y-3">
@@ -80,14 +81,14 @@ function ResetPasswordPage() {
               onChange={(e) => setPassword(e.target.value)}
               required
             />
-            <button
+            <Button variant="legacy" size="legacy"
               type="button"
               onClick={() => setShow((v) => !v)}
               aria-label={show ? "Hide password" : "Show password"}
               className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-1 text-muted-foreground transition hover:text-foreground"
             >
               {show ? <EyeOff className="h-[18px] w-[18px]" /> : <Eye className="h-[18px] w-[18px]" />}
-            </button>
+            </Button>
           </div>
           {password.length > 0 && !passwordValid && (
             <p className="text-xs text-destructive">Password must be at least 8 characters and contain letters and numbers.</p>
@@ -103,9 +104,9 @@ function ResetPasswordPage() {
           {confirm.length > 0 && confirm !== password && (
             <p className="text-xs text-destructive">Passwords do not match.</p>
           )}
-          <button disabled={saving} className="w-full rounded-md btn-gold py-3 text-sm disabled:opacity-50 active:scale-95 transition">
+          <Button variant="legacy" size="legacy" disabled={saving} className="w-full rounded-md btn-gold py-3 text-sm disabled:opacity-50  transition">
             {saving ? "Saving…" : "Update Password"}
-          </button>
+          </Button>
         </form>
       </div>
     </div>

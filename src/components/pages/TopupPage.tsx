@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { queryOptions, useSuspenseQuery, useMutation } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
@@ -99,7 +100,7 @@ export function TopupPage() {
 
   const applyVoucher = async () => {
     if (!voucherCode.trim()) return toast.error("Please enter a voucher code");
-    if (!pkgId) return toast.error("Please pick a package first");
+    if (!pkgId) return toast.error("Choose a package first");
     setVoucherState({ status: "loading" });
     try {
       const r = await validateVoucher({ data: { code: voucherCode.trim(), subtotal } });
@@ -128,20 +129,20 @@ export function TopupPage() {
         },
       }),
     onSuccess: (res) => {
-      toast.success("Order created!");
+      toast.success("Order created.");
       navigate({ to: loggedIn ? "/customer/payment/$invoice" : "/invoice/$invoice", params: { invoice: res.invoice_no } });
     },
     onError: (e: Error) => toast.error(e.message),
   });
 
   const disabledReason = (() => {
-    if (!mlValid) return "Please verify your Mobile Legends account first.";
+    if (!mlValid) return "Enter a valid User ID and Server ID.";
     if (!phoneValid) return "Please enter a valid phone number.";
     if (!pkgId) return "Please choose a diamond package.";
-    if (outOfStock) return "Sorry, this product is currently out of stock.";
+    if (outOfStock) return "This package is out of stock.";
     if (!payId) return "Please choose a payment method.";
-    if (!buyerName || !buyerEmail) return "Please complete buyer information.";
-    if (!agree) return "You must agree to the terms and conditions.";
+    if (!buyerName || !buyerEmail) return "Enter your name and email.";
+    if (!agree) return "Accept the terms to continue.";
     return null;
   })();
 
@@ -161,7 +162,7 @@ export function TopupPage() {
     <div className="container mx-auto px-4 py-10">
       <div className="mb-8">
         <h1 className="font-display text-3xl md:text-4xl font-bold">Top Up <span className="gold-text">Mobile Legends Diamonds</span></h1>
-        <p className="text-muted-foreground mt-1">Fill in your details, pick a package, pay — diamonds delivered instantly.</p>
+        <p className="text-muted-foreground mt-1">Choose a package for your Mobile Legends account.</p>
       </div>
 
       <form onSubmit={submit} className="grid gap-6 lg:grid-cols-3">
@@ -199,7 +200,7 @@ export function TopupPage() {
               <div className="mt-3 flex items-start gap-2 rounded-md border border-success/40 bg-success/10 px-3 py-2 text-sm text-success">
                 <CheckCircle2 className="h-4 w-4 mt-0.5 shrink-0" />
                 <div>
-                  <div className="font-medium">Mobile Legends account found successfully.</div>
+                  <div className="font-medium">Account found.</div>
                   <div className="text-xs opacity-90">Nickname: <span className="font-semibold">{mlCheck.nickname}</span></div>
                 </div>
               </div>
@@ -207,7 +208,7 @@ export function TopupPage() {
             {mlCheck.status === "invalid" && (
               <div className="mt-3 flex items-start gap-2 rounded-md border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm text-destructive">
                 <AlertCircle className="h-4 w-4 mt-0.5 shrink-0" />
-                <span>User ID or Server ID not found. Please double-check the data you entered.</span>
+                <span>Account not found. Check your User ID and Server ID.</span>
               </div>
             )}
           </Card>
@@ -220,23 +221,23 @@ export function TopupPage() {
                 const selected = p.id === pkgId;
                 const oos = (data.stock ?? 0) < p.diamond_amount;
                 return (
-                  <button type="button" key={p.id} onClick={() => !oos && pickPackage(p.id)}
+                  <Button variant="legacy" size="legacy" type="button" key={p.id} onClick={() => !oos && pickPackage(p.id)}
                     disabled={oos}
-                    className={`text-left rounded-xl p-4 border transition relative ${selected ? "border-gold glow-ring bg-primary/20" : "border-border card-premium hover:border-primary/60"} ${oos ? "opacity-50 cursor-not-allowed" : ""}`}>
+                    className={`text-left rounded-lg p-4 border transition relative min-h-[104px] ${selected ? "border-gold bg-gold/5" : "border-border card-premium hover:border-primary/60"} ${oos ? "opacity-50 cursor-not-allowed" : ""}`}>
                     {p.badge && <span className="absolute -top-2 right-3 rounded-full btn-gold px-2 py-0.5 text-[10px]">{p.badge}</span>}
                     {oos && <span className="absolute -top-2 left-3 rounded-full bg-destructive px-2 py-0.5 text-[10px] text-destructive-foreground">Out of Stock</span>}
-                    <div className="text-2xl">💎</div>
+                    
                     <div className="font-display mt-1">{p.name}</div>
                     <div className="gold-text font-bold mt-1">{formatIDR(p.price)}</div>
                     {p.original_price && <div className="text-xs text-muted-foreground line-through">{formatIDR(p.original_price)}</div>}
-                  </button>
+                  </Button>
                 );
               })}
             </div>
             {outOfStock && (
               <div className="mt-3 flex items-start gap-2 rounded-md border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm text-destructive">
                 <AlertCircle className="h-4 w-4 mt-0.5 shrink-0" />
-                <span>Sorry, this product is currently out of stock.</span>
+                <span>This package is out of stock.</span>
               </div>
             )}
           </Card>
@@ -261,12 +262,12 @@ export function TopupPage() {
                       {list.map((p) => {
                         const selected = p.id === payId;
                         return (
-                          <button type="button" key={p.id} onClick={() => !locked && setPayId(p.id)}
+                          <Button variant="legacy" size="legacy" type="button" key={p.id} onClick={() => !locked && setPayId(p.id)}
                             disabled={locked}
-                            className={`rounded-lg px-3 py-3 text-left border text-sm transition ${selected ? "border-gold bg-primary/20" : "border-border card-premium hover:border-primary/60"} ${locked ? "opacity-50 cursor-not-allowed" : ""}`}>
+                            className={`rounded-lg px-3 py-3 text-left border text-sm transition ${selected ? "border-gold bg-gold/5" : "border-border card-premium hover:border-primary/60"} ${locked ? "opacity-50 cursor-not-allowed" : ""}`}>
                             <div className="font-medium">{p.name}</div>
                             <div className="text-xs text-muted-foreground">Fee {formatIDR(computeFee(p.type, subtotal))}</div>
-                          </button>
+                          </Button>
                         );
                       })}
                     </div>
@@ -296,7 +297,7 @@ export function TopupPage() {
                 {phoneTouched && (
                   phoneValid ? (
                     <p className="mt-1 flex items-center gap-1 text-xs text-success">
-                      <CheckCircle2 className="h-3.5 w-3.5" /> Phone number is valid.
+                      <CheckCircle2 className="h-3.5 w-3.5" /> Valid phone number.
                     </p>
                   ) : (
                     <p className="mt-1 flex items-center gap-1 text-xs text-destructive">
@@ -322,14 +323,14 @@ export function TopupPage() {
                       value={voucherCode}
                       onChange={(e) => { setVoucherCode(e.target.value.toUpperCase()); setVoucherState({ status: "idle" }); }}
                     />
-                    <button
+                    <Button variant="legacy" size="legacy"
                       type="button"
                       onClick={applyVoucher}
                       disabled={voucherState.status === "loading"}
                       className="shrink-0 rounded-md border border-gold/50 bg-gold/10 text-gold px-3 text-xs hover:bg-gold/20 transition disabled:opacity-50"
                     >
                       {voucherState.status === "loading" ? "…" : "Apply"}
-                    </button>
+                    </Button>
                   </div>
                   {voucherState.status === "valid" && (
                     <p className="mt-1 flex items-center gap-1 text-xs text-success">
@@ -360,7 +361,7 @@ export function TopupPage() {
 
         {/* SUMMARY */}
         <aside className="lg:col-span-1">
-          <div className="card-premium rounded-xl p-5 sticky top-24">
+          <div className="card-premium rounded-lg p-5 sticky top-24">
             <h3 className="font-display text-lg mb-4">Summary</h3>
             <SumRow label="User ID" value={userId || "—"} />
             <SumRow label="Zone ID" value={zoneId || "—"} />
@@ -376,13 +377,13 @@ export function TopupPage() {
               <span>Total</span>
               <span className="gold-text">{formatIDR(total)}</span>
             </div>
-            <button
+            <Button variant="legacy" size="legacy"
               type="submit"
               disabled={mutation.isPending || !!disabledReason}
               className="mt-5 w-full rounded-md btn-gold py-3 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {mutation.isPending ? "Processing…" : "💎 Buy Now"}
-            </button>
+              {mutation.isPending ? "Processing…" : "Buy Now"}
+            </Button>
             {disabledReason && (
               <p className="mt-2 flex items-start gap-1 text-xs text-muted-foreground">
                 <AlertCircle className="h-3.5 w-3.5 mt-0.5 shrink-0" />
@@ -402,9 +403,9 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 }
 function Card({ step, title, children }: { step: string; title: string; children: React.ReactNode }) {
   return (
-    <section className="card-premium rounded-xl p-5">
+    <section className="page-section">
       <div className="mb-4 flex items-center gap-3">
-        <span className="grid h-8 w-8 place-items-center rounded-lg btn-gold font-display text-sm">{step}</span>
+        <span className="grid h-7 w-7 place-items-center rounded-full border border-border text-muted-foreground text-xs">{step}</span>
         <h2 className="font-display text-lg">{title}</h2>
       </div>
       {children}

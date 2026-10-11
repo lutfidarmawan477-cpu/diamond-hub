@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { lovable } from "@/integrations/lovable";
@@ -92,7 +93,7 @@ function AdminLoginPage() {
         await supabase.from("login_history").insert({ user_id: data.user.id, email: data.user.email ?? ticket.email, user_agent: navigator.userAgent });
       } catch { /* ignore */ }
       setPassword("");
-      toast.success("Welcome, admin!");
+      toast.success("Signed in.");
       navigate({ to: "/BB75TB170PILL/DASHBOARD", replace: true });
     } catch (err) {
       toast.error((err as Error).message || "Invalid login credentials.");
@@ -107,7 +108,7 @@ function AdminLoginPage() {
   return (
     <div className="flex min-h-screen items-center justify-center px-4">
       <div className="w-full max-w-md">
-        <div className="card-premium rounded-2xl p-6 animate-scale-in">
+        <div className="card-premium rounded-lg p-6 animate-scale-in">
           <ShieldCheck className="mx-auto h-10 w-10 text-gold" />
           <h1 className="mt-3 text-center font-display text-2xl">Admin Portal</h1>
           <p className="mt-1 text-center text-xs text-muted-foreground">Authorized administrators only.</p>
@@ -116,25 +117,25 @@ function AdminLoginPage() {
           ) : google === null ? (
             <div className="mt-5 space-y-3">
               <p className="text-center text-xs text-muted-foreground">Step 1: verify your Google account to continue.</p>
-              <button onClick={continueGoogle} className="w-full rounded-md btn-gold py-3 text-sm active:scale-95 transition">Continue with Google</button>
+              <Button variant="legacy" size="legacy" onClick={continueGoogle} className="w-full rounded-md btn-gold py-3 text-sm  transition">Continue with Google</Button>
             </div>
           ) : (
           <>
           <div className="mt-4 flex items-center justify-between rounded-md border border-border px-3 py-2 text-xs">
             <span className="truncate text-muted-foreground">Email: <span className="text-foreground">{google}</span></span>
-            <button type="button" onClick={resetGoogle} className="text-gold underline">Switch</button>
+            <Button variant="legacy" size="legacy" type="button" onClick={resetGoogle} className="text-gold underline">Switch</Button>
           </div>
           <form onSubmit={submit} className="mt-3 space-y-3">
             <p className="text-xs text-muted-foreground">Step 2: enter the admin password.</p>
             <div className="relative">
               <input className={`${inputCls} pr-10`} type={show ? "text" : "password"} placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-              <button type="button" onClick={() => setShow((v) => !v)} aria-label={show ? "Hide password" : "Show password"} className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-1 text-muted-foreground hover:text-foreground">
+              <Button variant="legacy" size="legacy" type="button" onClick={() => setShow((v) => !v)} aria-label={show ? "Hide password" : "Show password"} className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-1 text-muted-foreground hover:text-foreground">
                 {show ? <EyeOff className="h-[18px] w-[18px]" /> : <Eye className="h-[18px] w-[18px]" />}
-              </button>
+              </Button>
             </div>
-            <button disabled={loading} className="w-full rounded-md btn-gold py-3 text-sm disabled:opacity-50 active:scale-95 transition">
+            <Button variant="legacy" size="legacy" disabled={loading} className="w-full rounded-md btn-gold py-3 text-sm disabled:opacity-50  transition">
               {loading ? "Verifying…" : "Sign In as Admin"}
-            </button>
+            </Button>
           </form>
           </>
           )}

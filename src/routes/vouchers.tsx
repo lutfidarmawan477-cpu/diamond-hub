@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -56,8 +57,8 @@ function VoucherCard({ v, used }: { v: Voucher; used: boolean }) {
     setTimeout(() => setCopied(false), 1600);
   };
   return (
-    <div className="relative card-premium rounded-xl overflow-hidden flex">
-      <div className="w-24 shrink-0 bg-gradient-to-b from-gold/30 to-gold/5 flex flex-col items-center justify-center border-r border-dashed border-border p-3">
+    <div className="relative card-premium rounded-lg overflow-hidden flex">
+      <div className="w-24 shrink-0 bg-gold/5 flex flex-col items-center justify-center border-r border-dashed border-border p-3">
         <Ticket className="h-6 w-6 text-gold mb-1" />
         <div className="gold-text font-display text-2xl leading-none">{v.discount_percent}%</div>
         <div className="text-[10px] text-muted-foreground uppercase mt-1">Off</div>
@@ -86,14 +87,14 @@ function VoucherCard({ v, used }: { v: Voucher; used: boolean }) {
           <div className="flex-1 rounded-md border border-dashed border-gold/50 bg-gold/5 px-3 py-2 font-mono text-sm text-gold truncate">
             {v.code}
           </div>
-          <button
+          <Button variant="legacy" size="legacy"
             onClick={copy}
             disabled={used || expired}
             className="rounded-md btn-gold px-3 py-2 text-xs inline-flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
             {copied ? "Copied" : "Copy"}
-          </button>
+          </Button>
         </div>
       </div>
     </div>
@@ -179,23 +180,23 @@ function VouchersPage() {
 
       <div className="mb-6 flex flex-wrap items-center justify-center gap-2">
         {filters.map((f) => (
-          <button
+          <Button variant="legacy" size="legacy"
             key={f.key}
             onClick={() => setFilter(f.key)}
-            className={`rounded-lg border px-4 py-1.5 text-xs font-semibold transition-all duration-200 active:scale-95 ${
+            className={`rounded-lg border px-4 py-1.5 text-xs font-semibold transition-colors duration-150  ${
               filter === f.key
                 ? "border-gold bg-gold/15 text-gold"
                 : "border-primary/60 bg-primary/10 text-foreground hover:bg-primary/20"
             }`}
           >
             {f.label}
-          </button>
+          </Button>
         ))}
       </div>
 
       {loading && <div className="text-center text-sm text-muted-foreground">Loading vouchers…</div>}
       {!loading && visible.length === 0 && (
-        <div className="card-premium rounded-xl p-10 text-center">
+        <div className="card-premium rounded-lg p-10 text-center">
           <Ticket className="mx-auto h-10 w-10 text-muted-foreground mb-3" />
           <p className="text-sm text-muted-foreground">No vouchers match this filter right now.</p>
         </div>
@@ -205,7 +206,7 @@ function VouchersPage() {
       </div>
 
       <div className="mt-10 text-center">
-        <Link to="/topup" className="rounded-md btn-gold px-6 py-3 text-sm">💎 Top Up Now</Link>
+        <Link to="/topup" className="rounded-md btn-gold px-6 py-3 text-sm">Top Up</Link>
       </div>
     </div>
   );

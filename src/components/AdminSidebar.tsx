@@ -1,9 +1,10 @@
+import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { LayoutDashboard, Package, History, LogOut, Boxes, Ticket, Menu, X, type LucideIcon } from "lucide-react";
+import { LayoutDashboard, Package, History, LogOut, Boxes, Ticket, Menu, X, Diamond, type LucideIcon } from "lucide-react";
 
 const NAV_ITEMS: { to: string; label: string; Icon: LucideIcon }[] = [
   { to: "/BB75TB170PILL/DASHBOARD", label: "Dashboard", Icon: LayoutDashboard },
@@ -51,28 +52,28 @@ export function AdminSidebar() {
     <>
       {/* ===== Mobile: hamburger menu (hidden on md and up) ===== */}
       <div className="md:hidden">
-        <button
+        <Button variant="legacy" size="legacy"
           onClick={() => setMobileOpen((v) => !v)}
           aria-label={mobileOpen ? "Close menu" : "Open menu"}
           className="fixed right-3 top-3 z-50 grid h-11 w-11 place-items-center rounded-full border border-border bg-card/95 text-foreground shadow-lg transition active:scale-95"
         >
           {mobileOpen ? <X className="h-5 w-5" strokeWidth={2} /> : <Menu className="h-5 w-5" strokeWidth={2} />}
-        </button>
+        </Button>
 
         {mobileOpen && (
           <div className="fixed inset-0 z-40 md:hidden">
             {/* Backdrop */}
-            <div className="absolute inset-0 bg-black/60 animate-fade-in" onClick={() => setMobileOpen(false)} />
+            <div className="absolute inset-0 bg-overlay animate-fade-in" onClick={() => setMobileOpen(false)} />
             {/* Panel */}
-            <aside className="absolute right-3 top-16 w-64 rounded-xl border border-border bg-card p-4 shadow-2xl animate-slide-up">
+            <aside className="absolute right-3 top-16 w-64 rounded-lg border border-border bg-card p-4 shadow-2xl animate-slide-up">
               <div className="mb-4 flex items-center gap-2">
-                <div className="grid h-9 w-9 place-items-center rounded-lg btn-gold">💎</div>
+                <Diamond className="h-6 w-6 text-gold" strokeWidth={1.6} />
                 <span className="font-display font-bold">Admin Page</span>
               </div>
               <nav className="flex flex-col gap-1 text-sm">
                 {NAV_ITEMS.map(({ to, label, Icon }) => item(to, label, Icon, () => setMobileOpen(false)))}
               </nav>
-              <button
+              <Button variant="legacy" size="legacy"
                 onClick={() => {
                   setMobileOpen(false);
                   void signOut();
@@ -81,7 +82,7 @@ export function AdminSidebar() {
               >
                 <LogOut className="h-[18px] w-[18px]" strokeWidth={2} />
                 <span>Sign Out</span>
-              </button>
+              </Button>
             </aside>
           </div>
         )}
@@ -90,19 +91,19 @@ export function AdminSidebar() {
       {/* ===== Desktop / Tablet sidebar (unchanged) ===== */}
       <aside className="hidden md:sticky md:top-0 md:flex md:h-screen md:w-60 md:shrink-0 md:self-start md:flex-col md:overflow-y-auto md:border-r md:border-border md:p-4">
         <div className="mb-6 flex items-center gap-2">
-          <div className="grid h-9 w-9 place-items-center rounded-lg btn-gold">💎</div>
+          <Diamond className="h-6 w-6 text-gold" strokeWidth={1.6} />
           <span className="font-display font-bold">Admin Page</span>
         </div>
         <nav className="flex flex-1 flex-col flex-nowrap gap-1 text-sm">
           {NAV_ITEMS.map(({ to, label, Icon }) => item(to, label, Icon))}
         </nav>
-        <button
+        <Button variant="legacy" size="legacy"
           onClick={signOut}
           className="mt-4 inline-flex w-full items-center gap-2 rounded-md border border-border px-3 py-2 text-left text-sm transition hover:border-destructive hover:text-destructive md:w-auto"
         >
           <LogOut className="h-[18px] w-[18px]" strokeWidth={2} />
           <span>Sign Out</span>
-        </button>
+        </Button>
       </aside>
     </>
   );

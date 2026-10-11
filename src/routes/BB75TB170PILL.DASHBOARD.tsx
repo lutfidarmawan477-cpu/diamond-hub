@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -159,7 +160,7 @@ function AdminPage() {
       <div className="flex flex-col md:flex-row">
         <AdminSidebar />
 
-        <main className="flex-1 p-4 sm:p-6 min-w-0">
+        <main className="admin-content flex-1 p-4 sm:p-6 min-w-0">
           <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
             <h1 className="font-display text-2xl">Admin Dashboard</h1>
             <select
@@ -183,7 +184,7 @@ function AdminPage() {
 
           {/* Sales analytics */}
           <div className="mb-6 grid gap-4">
-            <div className="card-premium rounded-xl p-4 sm:p-5">
+            <div className="page-section">
               <h2 className="font-display text-lg mb-3">Revenue</h2>
               <div className="h-[240px] lg:h-[300px]">
                 <ResponsiveContainer width="100%" height="100%">
@@ -209,7 +210,7 @@ function AdminPage() {
                 </ResponsiveContainer>
               </div>
             </div>
-            <div className="card-premium rounded-xl p-4 sm:p-5">
+            <div className="page-section">
               <h2 className="font-display text-lg mb-3">Orders</h2>
               <div className="h-[240px] lg:h-[300px]">
                 <ResponsiveContainer width="100%" height="100%">
@@ -229,22 +230,22 @@ function AdminPage() {
             </div>
           </div>
 
-          <div className="card-premium rounded-xl p-5">
+          <div className="page-section">
             <h2 className="font-display text-lg mb-4">Purchase History</h2>
             <div className="flex flex-wrap items-center gap-3 mb-4">
               <input className="rounded-md bg-input border border-border px-3 py-2 text-sm flex-1 min-w-[180px]"
                 placeholder="Search invoice / email…" value={search} onChange={(e) => setSearch(e.target.value)} />
               <select className="rounded-md bg-input border border-border px-3 py-2 text-sm"
                 value={filter} onChange={(e) => setFilter(e.target.value)}>
-                <option value="all">All Status</option>
+                <option value="all">All statuses</option>
                 <option value="success">Success</option>
                 <option value="pending">Pending</option>
                 <option value="failed">Failed</option>
               </select>
-              <button onClick={exportHistory}
-                className="rounded-md btn-gold px-4 py-2 text-sm active:scale-95 transition">
+              <Button variant="legacy" size="legacy" onClick={exportHistory}
+                className="rounded-md btn-gold px-4 py-2 text-sm  transition">
                 Export Excel
-              </button>
+              </Button>
             </div>
             <div className="hidden md:block table-scroll">
               <table className="w-full text-sm">
@@ -280,15 +281,15 @@ function AdminPage() {
                       <td className="pr-3">{statusBadge(o.status)}</td>
                       <td>
                         {o.status === "pending" ? (
-                          <button onClick={() => confirmPayment(o)} disabled={confirming === o.id}
-                            className="rounded-md btn-gold px-3 py-1.5 text-xs whitespace-nowrap disabled:opacity-50 active:scale-95 transition">
+                          <Button variant="legacy" size="legacy" onClick={() => confirmPayment(o)} disabled={confirming === o.id}
+                            className="rounded-md btn-gold px-3 py-1.5 text-xs whitespace-nowrap disabled:opacity-50  transition">
                             {confirming === o.id ? "Saving…" : "Confirm Payment"}
-                          </button>
+                          </Button>
                         ) : <span className="text-xs text-muted-foreground">—</span>}
                       </td>
                     </tr>
                   ))}
-                  {filtered.length === 0 && <tr><td colSpan={9} className="py-8 text-center text-sm text-muted-foreground">No data</td></tr>}
+                  {filtered.length === 0 && <tr><td colSpan={9} className="py-8 text-center text-sm text-muted-foreground">No orders found</td></tr>}
                 </tbody>
               </table>
             </div>
@@ -315,14 +316,14 @@ function AdminPage() {
                   </div>
                   <div className="mt-2 gold-text font-semibold">{formatIDR(o.total)}</div>
                   {o.status === "pending" && (
-                    <button onClick={() => confirmPayment(o)} disabled={confirming === o.id}
-                      className="mt-2 w-full rounded-md btn-gold px-3 py-2 text-xs disabled:opacity-50 active:scale-95 transition">
+                    <Button variant="legacy" size="legacy" onClick={() => confirmPayment(o)} disabled={confirming === o.id}
+                      className="mt-2 w-full rounded-md btn-gold px-3 py-2 text-xs disabled:opacity-50  transition">
                       {confirming === o.id ? "Saving…" : "Confirm Payment"}
-                    </button>
+                    </Button>
                   )}
                 </div>
               ))}
-              {filtered.length === 0 && <div className="py-8 text-center text-sm text-muted-foreground">No data</div>}
+              {filtered.length === 0 && <div className="py-8 text-center text-sm text-muted-foreground">No orders found</div>}
             </div>
           </div>
         </main>
@@ -344,7 +345,7 @@ function formatWib(iso: string) {
 
 function Stat({ label, value, className = "" }: { label: string; value: string; className?: string }) {
   return (
-    <div className={`card-premium rounded-xl p-4 sm:p-5 min-w-0 ${className}`}>
+    <div className={`stat-surface p-4 sm:p-5 min-w-0 ${className}`}>
       <div className="text-xs text-muted-foreground">{label}</div>
       <div className="font-display text-xl sm:text-2xl gold-text mt-1 truncate">{value}</div>
     </div>
