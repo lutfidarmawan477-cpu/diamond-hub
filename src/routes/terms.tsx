@@ -16,9 +16,9 @@ export const Route = createFileRoute("/terms")({
 
 function Section({ n, title, children }: { n: number; title: string; children: React.ReactNode }) {
   return (
-    <section className="card-premium rounded-xl p-5 md:p-6">
+    <section className="border-t border-border py-6">
       <div className="mb-3 flex items-center gap-3">
-        <span className="grid h-8 w-8 place-items-center rounded-lg btn-gold font-display text-sm">{n}</span>
+        <span className="grid h-7 w-7 place-items-center rounded-full border border-border text-xs text-muted-foreground">{n}</span>
         <h2 className="font-display text-lg md:text-xl">{title}</h2>
       </div>
       <div className="space-y-2 text-sm md:text-[0.95rem] leading-relaxed text-muted-foreground">
@@ -47,16 +47,15 @@ function TermsPage() {
       <div className="space-y-4">
         <Section n={1} title="Introduction">
           <p>
-            Welcome to DiamondHub. By accessing or using our website and services, you agree to be bound by these
-            Terms and Conditions. Please read them carefully before making a purchase. DiamondHub provides
-            Mobile Legends: Bang Bang diamond top up services for customers worldwide.
+            These terms apply when you use DiamondHub or purchase Mobile Legends: Bang Bang diamonds.
+            Please read them before placing an order.
           </p>
         </Section>
 
         <Section n={2} title="Use of Website">
           <ul className="list-disc pl-5 space-y-1">
             <li>You must be at least 13 years old, or have the consent of a parent or legal guardian, to use this service.</li>
-            <li>You agree to use the website only for lawful purposes and not to engage in fraudulent activity.</li>
+            <li>Use this website lawfully. Fraudulent activity is not permitted.</li>
             <li>You are responsible for the accuracy of the information you provide, including User ID and Server ID.</li>
             <li>DiamondHub reserves the right to suspend accounts that violate these terms.</li>
           </ul>
@@ -116,10 +115,8 @@ function TermsPage() {
 
         <Section n={9} title="Closing">
           <p>
-            By using DiamondHub, you acknowledge that you have read, understood, and agreed to these Terms and
-            Conditions. DiamondHub reserves the right to update these terms at any time, and continued use of the
-            service constitutes acceptance of any changes. For questions, please contact us through our official
-            WhatsApp or Instagram channels.
+            Using DiamondHub means you accept these terms. We may update them, and continued use means
+            you accept any changes. Contact us on WhatsApp or Instagram with questions.
           </p>
         </Section>
 

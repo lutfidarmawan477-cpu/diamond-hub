@@ -8,3 +8,6 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+## Presentation
+- Keep shared presentation tokens and utilities in src/styles.css and use the existing Button for controls; this keeps public, customer, and admin views consistent without changing transaction logic.

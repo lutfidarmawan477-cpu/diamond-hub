@@ -70,20 +70,20 @@ function AdminHistory() {
   return (
     <div className="min-h-screen flex flex-col bg-background md:flex-row animate-fade-in">
       <AdminSidebar />
-      <main className="flex-1 p-4 sm:p-6 min-w-0">
+      <main className="admin-content flex-1 p-4 sm:p-6 min-w-0">
         <h1 className="font-display text-2xl mb-2">Login History</h1>
         <p className="text-sm text-muted-foreground mb-6">
           Registered customer accounts and their most recent sign-in.
         </p>
-        <div className="card-premium rounded-xl p-4 sm:p-5">
+        <div className="page-section">
           <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-            <span className="text-xs text-muted-foreground">{filtered.length} customer(s)</span>
+            <span className="text-xs text-muted-foreground">{filtered.length} customers</span>
             <select
               className="rounded-md bg-input border border-border px-3 py-2 text-sm"
               value={levelFilter}
               onChange={(e) => setLevelFilter(e.target.value)}
             >
-              <option value="all">All Member</option>
+              <option value="all">All levels</option>
               <option value="bronze">Bronze</option>
               <option value="silver">Silver</option>
               <option value="gold">Gold</option>
@@ -115,7 +115,7 @@ function AdminHistory() {
                   </tr>
                 ))}
                 {!loading && filtered.length === 0 && (
-                  <tr><td colSpan={6} className="py-8 text-center text-muted-foreground">No data yet</td></tr>
+                  <tr><td colSpan={6} className="py-8 text-center text-muted-foreground">Nothing to show yet</td></tr>
                 )}
                 {loading && (
                   <tr><td colSpan={6} className="py-8 text-center text-muted-foreground">Loading…</td></tr>
@@ -144,7 +144,7 @@ function AdminHistory() {
                 </div>
               </div>
             ))}
-            {!loading && filtered.length === 0 && <div className="py-8 text-center text-sm text-muted-foreground">No data yet</div>}
+            {!loading && filtered.length === 0 && <div className="py-8 text-center text-sm text-muted-foreground">Nothing to show yet</div>}
             {loading && <div className="py-8 text-center text-sm text-muted-foreground">Loading…</div>}
           </div>
         </div>

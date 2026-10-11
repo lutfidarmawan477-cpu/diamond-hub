@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
@@ -134,15 +135,15 @@ function AdminVouchers() {
   return (
     <div className="min-h-screen flex flex-col md:flex-row">
       <AdminSidebar />
-      <main className="flex-1 p-4 sm:p-6 min-w-0">
+      <main className="admin-content flex-1 p-4 sm:p-6 min-w-0">
         <div className="flex justify-between items-center gap-3 mb-6 flex-wrap">
           <h1 className="font-display text-2xl">Manage Vouchers</h1>
-          <button onClick={() => setEditing({ ...empty })} className="rounded-md btn-gold px-3 py-2 text-sm active:scale-95 transition">+ Add Voucher</button>
+          <Button variant="legacy" size="legacy" onClick={() => setEditing({ ...empty })} className="rounded-md btn-gold px-3 py-2 text-sm  transition">+ Add Voucher</Button>
         </div>
 
-        <div className="card-premium rounded-xl p-4 sm:p-5">
+        <div className="page-section">
           <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-            <span className="text-xs text-muted-foreground">{filtered.length} voucher(s)</span>
+            <span className="text-xs text-muted-foreground">{filtered.length} vouchers</span>
             <select
               className="rounded-md bg-input border border-border px-3 py-2 text-sm"
               value={filter}
@@ -182,8 +183,8 @@ function AdminVouchers() {
                       <td className="pr-3 text-xs">{validity(v)}</td>
                       <td className="pr-3"><span className={`rounded-full border px-2 py-0.5 text-xs uppercase ${st.cls}`}>{st.label}</span></td>
                       <td className="text-right whitespace-nowrap space-x-3">
-                        <button onClick={() => setEditing({ ...v, start_date: v.start_date.slice(0, 16), end_date: v.end_date.slice(0, 16) })} className="text-gold underline text-xs">Edit</button>
-                        <button onClick={() => remove(v.id)} className="text-destructive underline text-xs">Delete</button>
+                        <Button variant="legacy" size="legacy" onClick={() => setEditing({ ...v, start_date: v.start_date.slice(0, 16), end_date: v.end_date.slice(0, 16) })} className="text-gold underline text-xs">Edit</Button>
+                        <Button variant="legacy" size="legacy" onClick={() => remove(v.id)} className="text-destructive underline text-xs">Delete</Button>
                       </td>
                     </tr>
                   );
@@ -211,8 +212,8 @@ function AdminVouchers() {
                     <div className="text-muted-foreground">Valid Until</div><div className="text-right">{validity(v)}</div>
                   </div>
                   <div className="mt-3 flex justify-end gap-4">
-                    <button onClick={() => setEditing({ ...v, start_date: v.start_date.slice(0, 16), end_date: v.end_date.slice(0, 16) })} className="text-gold underline text-xs">Edit</button>
-                    <button onClick={() => remove(v.id)} className="text-destructive underline text-xs">Delete</button>
+                    <Button variant="legacy" size="legacy" onClick={() => setEditing({ ...v, start_date: v.start_date.slice(0, 16), end_date: v.end_date.slice(0, 16) })} className="text-gold underline text-xs">Edit</Button>
+                    <Button variant="legacy" size="legacy" onClick={() => remove(v.id)} className="text-destructive underline text-xs">Delete</Button>
                   </div>
                 </div>
               );
@@ -223,8 +224,8 @@ function AdminVouchers() {
 
         {editing && typeof document !== "undefined" && createPortal(
           <>
-            <div className="fixed inset-0 z-[100] bg-black/70" onClick={() => setEditing(null)} />
-            <div className="fixed left-1/2 top-1/2 z-[101] w-[95%] max-w-[560px] max-h-[90vh] -translate-x-1/2 -translate-y-1/2 flex flex-col overflow-hidden card-premium rounded-2xl shadow-2xl">
+            <div className="fixed inset-0 z-[100] bg-overlay" onClick={() => setEditing(null)} />
+            <div className="fixed left-1/2 top-1/2 z-[101] w-[95%] max-w-[560px] max-h-[90vh] -translate-x-1/2 -translate-y-1/2 flex flex-col overflow-hidden card-premium rounded-lg shadow-2xl">
               <div className="p-6 pb-3 shrink-0">
                 <h2 className="font-display text-lg">{editing.id ? "Edit Voucher" : "Add Voucher"}</h2>
               </div>
@@ -273,8 +274,8 @@ function AdminVouchers() {
                 </label>
               </div>
               <div className="p-6 pt-4 flex gap-2 justify-end shrink-0 border-t border-border/40 mt-3">
-                <button onClick={() => setEditing(null)} className="rounded-md border border-border px-4 py-2 text-sm">Cancel</button>
-                <button onClick={save} className="rounded-md btn-gold px-4 py-2 text-sm active:scale-95 transition">Save</button>
+                <Button variant="legacy" size="legacy" onClick={() => setEditing(null)} className="rounded-md border border-border px-4 py-2 text-sm">Cancel</Button>
+                <Button variant="legacy" size="legacy" onClick={save} className="rounded-md btn-gold px-4 py-2 text-sm  transition">Save</Button>
               </div>
             </div>
           </>,

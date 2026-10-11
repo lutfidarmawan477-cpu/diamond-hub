@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
@@ -126,13 +127,13 @@ function AdminPackages() {
   return (
     <div className="min-h-screen flex flex-col md:flex-row">
       <AdminSidebar />
-      <main className="flex-1 p-4 sm:p-6 min-w-0">
+      <main className="admin-content flex-1 p-4 sm:p-6 min-w-0">
         <div className="flex justify-between items-center gap-3 mb-6 flex-wrap">
           <h1 className="font-display text-2xl">Diamond Products</h1>
-          <button onClick={() => setEditing({ ...empty })} className="rounded-md btn-gold px-3 py-2 text-sm whitespace-nowrap">+ Add Product</button>
+          <Button variant="legacy" size="legacy" onClick={() => setEditing({ ...empty })} className="rounded-md btn-gold px-3 py-2 text-sm whitespace-nowrap">+ Add Product</Button>
         </div>
 
-        <div className="card-premium rounded-xl p-4 sm:p-5">
+        <div className="page-section">
           {/* Product cards */}
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             {list.map((p) => (
@@ -153,8 +154,8 @@ function AdminPackages() {
                   <div className="text-right">{p.active ? "✓" : "✗"}</div>
                 </div>
                 <div className="mt-3 flex justify-end gap-4">
-                  <button onClick={() => setEditing(p)} className="text-gold underline text-xs">Edit</button>
-                  <button onClick={() => remove(p.id)} className="text-destructive underline text-xs">Delete</button>
+                  <Button variant="legacy" size="legacy" onClick={() => setEditing(p)} className="text-gold underline text-xs">Edit</Button>
+                  <Button variant="legacy" size="legacy" onClick={() => remove(p.id)} className="text-destructive underline text-xs">Delete</Button>
                 </div>
               </div>
             ))}
@@ -165,11 +166,11 @@ function AdminPackages() {
         {editing && typeof document !== "undefined" && createPortal(
           <>
             <div
-              className="fixed inset-0 z-[100] bg-black/70"
+              className="fixed inset-0 z-[100] bg-overlay"
               onClick={() => setEditing(null)}
             />
             <div
-              className="fixed left-1/2 top-1/2 z-[101] w-[95%] max-w-[500px] max-h-[90vh] -translate-x-1/2 -translate-y-1/2 flex flex-col overflow-hidden card-premium rounded-2xl shadow-2xl"
+              className="fixed left-1/2 top-1/2 z-[101] w-[95%] max-w-[500px] max-h-[90vh] -translate-x-1/2 -translate-y-1/2 flex flex-col overflow-hidden card-premium rounded-lg shadow-2xl"
             >
               <div className="p-6 pb-3 shrink-0">
                 <h2 className="font-display text-lg">{editing.id ? "Edit Product" : "Add Product"}</h2>
@@ -194,8 +195,8 @@ function AdminPackages() {
                 </div>
               </div>
               <div className="p-6 pt-4 flex gap-2 justify-end shrink-0 border-t border-border/40 mt-3">
-                <button onClick={() => setEditing(null)} className="rounded-md border border-border px-4 py-2 text-sm">Cancel</button>
-                <button onClick={save} className="rounded-md btn-gold px-4 py-2 text-sm">Save</button>
+                <Button variant="legacy" size="legacy" onClick={() => setEditing(null)} className="rounded-md border border-border px-4 py-2 text-sm">Cancel</Button>
+                <Button variant="legacy" size="legacy" onClick={save} className="rounded-md btn-gold px-4 py-2 text-sm">Save</Button>
               </div>
             </div>
           </>,
